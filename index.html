@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharat Education Center - Multi-Test & Teacher Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Hind Vadodara', 'Inter', sans-serif; }
+        .correct-selected { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #15803d !important; font-weight: 600; }
+        .wrong-selected { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #b91c1c !important; font-weight: 600; }
+        .correct-highlight { background-color: #f0fdf4 !important; border-color: #86efac !important; color: #166534 !important; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Navigation Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div>
+                <h1 class="text-lg font-bold text-blue-700 flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap"></i> Bharat Education Center
+                </h1>
+                <p class="text-xs text-slate-500">Teacher: Chetan Soni | Online Test Management Portal</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="showStudentView()" class="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-100">
+                    <i class="fa-solid fa-user"></i> વિદ્યાર્થી પોર્ટલ
+                </button>
+                <button onclick="openTeacherAdmin()" class="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800">
+                    <i class="fa-solid fa-lock"></i> ટીચર ડેશબોર્ડ
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-6 w-full flex-grow">
+
+        <!-- ================= STUDENT PORTAL ================= -->
+        <div id="student-portal-view">
+            <!-- Select Test Modal / Screen -->
+            <div id="test-select-screen" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-md">
+                <h2 class="text-xl font-bold text-slate-900 mb-2">ઉપલબ્ધ ટેસ્ટ સિલેક્ટ કરો (Select Test):</h2>
+                <p class="text-xs text-slate-500 mb-4">તમારે જે ટેસ્ટ આપવો હોય તેની સામે 'ટેસ્ટ શરૂ કરો' પર ક્લિક કરો.</p>
+                <div id="available-tests-list" class="space-y-3">
+                    <p class="text-xs text-slate-400">ટેસ્ટ લોડ થઈ રહ્યા છે...</p>
+                </div>
+            </div>
+
+            <!-- Student Name Entry Modal -->
+            <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-900 mb-1" id="active-test-modal-title">ટેસ્ટ નામ</h3>
+                    <p class="text-xs text-slate-500 mb-4">ટેસ્ટ શરૂ કરવા માટે તમારું નામ દાખલ કરો:</p>
+                    <input type="text" id="student-entry-name" placeholder="તમારું પૂરૂં નામ લખો..." class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm outline-none mb-4 focus:ring-2 focus:ring-blue-500">
+                    <div class="flex gap-2">
+                        <button onclick="closeStudentModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl">કેન્સલ</button>
+                        <button onclick="startStudentTest()" class="w-1/2 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl">શરૂ કરો</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Test Running View -->
+            <div id="active-test-container" class="hidden space-y-6">
+                <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 flex justify-between items-center">
+                    <div>
+                        <h2 class="font-bold text-blue-900 text-base" id="running-test-title">--</h2>
+                        <p class="text-xs text-blue-700">વિદ્યાર્થી: <span id="running-student-name" class="font-semibold">--</span></p>
+                    </div>
+                    <span id="test-progress-counter" class="text-xs font-bold bg-blue-600 text-white px-3 py-1 rounded-full">0 / 0</span>
+                </div>
+
+                <form id="active-quiz-form" onsubmit="submitStudentQuiz(event)" class="space-y-6">
+                    <div id="quiz-questions-wrapper" class="space-y-6"></div>
+                    <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700">
+                        <i class="fa-solid fa-paper-plane"></i> ટેસ્ટ સબમિટ કરો
+                    </button>
+                </form>
+            </div>
+
+            <!-- Student Result Display Card -->
+            <div id="student-result-card" class="hidden bg-white border border-slate-200 rounded-3xl p-6 shadow-xl text-center">
+                <h2 class="text-2xl font-bold text-slate-900 mb-1">તમારું પરિણામ (Test Result)</h2>
+                <p id="res-test-name" class="text-xs text-blue-600 font-bold mb-4">--</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    <div class="bg-slate-50 p-3 rounded-2xl border"><span class="text-[10px] text-slate-400 block font-bold">ગુણ</span><span id="res-score" class="text-xl font-black text-blue-600">0</span></div>
+                    <div class="bg-slate-50 p-3 rounded-2xl border"><span class="text-[10px] text-slate-400 block font-bold">ટકાવારી</span><span id="res-pct" class="text-xl font-black text-emerald-600">0%</span></div>
+                    <div class="bg-slate-50 p-3 rounded-2xl border"><span class="text-[10px] text-slate-400 block font-bold">ગ્રેડ</span><span id="res-grade" class="text-xl font-black text-indigo-600">A</span></div>
+                    <div class="bg-slate-50 p-3 rounded-2xl border"><span class="text-[10px] text-slate-400 block font-bold">સ્ટેટસ</span><span id="res-status" class="text-xl font-black text-emerald-600">PASS</span></div>
+                </div>
+                <div class="mb-6 overflow-hidden rounded-2xl border p-2 bg-slate-100">
+                    <canvas id="student-score-canvas" class="w-full max-w-md mx-auto block"></canvas>
+                </div>
+                <div class="flex gap-3 justify-center">
+                    <button onclick="downloadScoreJPG()" class="px-5 py-3 bg-blue-600 text-white font-bold rounded-xl text-xs"><i class="fa-solid fa-download"></i> સ્કોર કાર્ડ ડાઉનલોડ કરો</button>
+                    <button onclick="showStudentView()" class="px-5 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">હોમ સ્ક્રીન પર જાઓ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TEACHER ADMIN DASHBOARD ================= -->
+        <div id="teacher-dashboard-view" class="hidden space-y-6">
+            <div class="flex justify-between items-center bg-slate-900 text-white p-4 rounded-2xl">
+                <div>
+                    <h2 class="font-bold text-base"><i class="fa-solid fa-user-shield text-blue-400"></i> Teacher Control Center</h2>
+                    <p class="text-xs text-slate-400">અહીંથી નવા ટેસ્ટ બનાવો અને વિદ્યાર્થીઓના રિઝલ્ટ જુઓ</p>
+                </div>
+                <button onclick="showStudentView()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700">લોગઆઉટ</button>
+            </div>
+
+            <!-- Dashboard Tabs -->
+            <div class="flex border-b border-slate-200 gap-4">
+                <button onclick="switchAdminTab('test-builder')" id="tab-btn-builder" class="pb-2 text-sm font-bold border-b-2 border-blue-600 text-blue-600">નવો ટેસ્ટ બનાવો</button>
+                <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="pb-2 text-sm font-bold text-slate-500 hover:text-slate-800">વિદ્યાર્થી રિઝલ્ટ ટ્રેકર</button>
+            </div>
+
+            <!-- TAB 1: Create Test & Add Questions -->
+            <div id="admin-tab-builder" class="space-y-6">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800 text-sm">૧. નવો ટેસ્ટ સેટઅપ કરો:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input type="text" id="new-test-title-input" placeholder="દા.ત. English Chapter 1 Test" class="px-4 py-2.5 rounded-xl border text-sm outline-none">
+                        <input type="number" id="new-test-pass-input" placeholder="પાસિંગ ટકાવારી (Default: 50)" class="px-4 py-2.5 rounded-xl border text-sm outline-none">
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800 text-sm">૨. પ્રશ્નો અને વિકલ્પો ઉમેરો:</h3>
+                    <textarea id="q-text-input" placeholder="પ્રશ્ન ટાઇપ કરો..." class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none h-20"></textarea>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input type="text" id="q-correct-opt" placeholder="સાચો જવાબ (Correct Option)" class="px-4 py-2.5 rounded-xl border border-emerald-300 bg-emerald-50/50 text-sm outline-none">
+                        <input type="text" id="q-wrong-opt1" placeholder="ખોટો વિકલ્પ ૧" class="px-4 py-2.5 rounded-xl border text-sm outline-none">
+                        <input type="text" id="q-wrong-opt2" placeholder="ખોટો વિકલ્પ ૨" class="px-4 py-2.5 rounded-xl border text-sm outline-none">
+                    </div>
+                    <button onclick="addQuestionToDraft()" class="px-4 py-2 bg-slate-800 text-white font-bold rounded-xl text-xs">
+                        <i class="fa-solid fa-plus"></i> આ પ્રશ્ન ટેસ્ટમાં ઉમેરો
+                    </button>
+                </div>
+
+                <!-- Questions Draft Preview -->
+                <div class="bg-slate-100 p-4 rounded-2xl border border-slate-200">
+                    <h4 class="font-bold text-xs text-slate-600 uppercase mb-3">ઉમેરાયેલા પ્રશ્નોનું પ્રિવ્યૂ (<span id="draft-q-count">0</span>):</h4>
+                    <div id="draft-questions-list" class="space-y-2 text-xs"></div>
+                    <button onclick="saveCompleteTest()" class="mt-4 w-full py-3 bg-emerald-600 text-white font-bold rounded-xl text-sm shadow-md">
+                        <i class="fa-solid fa-floppy-disk"></i> આ આખો ટેસ્ટ ક્લાઉડમાં પબ્લિશ કરો
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 2: Student Results Tracker -->
+            <div id="admin-tab-records" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 border-b">
+                                <th class="p-2.5 font-bold">તારીખ</th>
+                                <th class="p-2.5 font-bold">વિદ્યાર્થી</th>
+                                <th class="p-2.5 font-bold">ટેસ્ટનું નામ</th>
+                                <th class="p-2.5 font-bold">ગુણ</th>
+                                <th class="p-2.5 font-bold">ટકા</th>
+                                <th class="p-2.5 font-bold">ગ્રેડ</th>
+                                <th class="p-2.5 font-bold">સ્ટેટસ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-results-table-body">
+                            <tr><td colspan="7" class="p-4 text-center text-slate-400">પરિણામો લોડ થઈ રહ્યા છે...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ================= SUPABASE CONFIGURATION =================
+        const SUPABASE_URL = 'https://fixnefvoznegothpmehu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpeG5lZnZvem5lZ290aHBtZWh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwOTU0MzQsImV4cCI6MjEwNzY3MTQzNH0.zjydOx0wP9KFY1KiP2iaNiis_rGQ-bLPGKleUsXIiFI';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let testsDB = [];
+        let resultsDB = [];
+        
+        let draftQuestions = [];
+        let activeTestIndex = null;
+        let activeStudentName = "";
+        let runningQuizData = [];
+        let studentAnswers = {};
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTestsFromSupabase();
+        });
+
+        // Fetch Tests from Supabase with Fallback Error Handling
+        async function loadTestsFromSupabase() {
+            try {
+                const { data, error } = await supabaseClient.from('tests').select('*');
+                if (!error && data) {
+                    testsDB = data.map(t => ({
+                        id: t.id,
+                        title: t.title,
+                        passMark: t.pass_mark,
+                        questions: t.questions_json
+                    }));
+                    renderStudentTestList();
+                } else {
+                    console.error('Supabase Error:', error);
+                    document.getElementById('available-tests-list').innerHTML = `
+                        <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800">
+                            <strong>ટેસ્ટ લોડ કરવામાં એરર:</strong> ${error ? error.message : 'Table not found'}<br>
+                            <span class="text-[10px] text-slate-500 mt-1 block">કૃપા કરીને તપાસો કે Supabase માં 'tests' અને 'results' નામના Tables બન્યા છે કે નહીં.</span>
+                        </div>`;
+                }
+            } catch (err) {
+                console.error('Network Error:', err);
+                document.getElementById('available-tests-list').innerHTML = `
+                    <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800">
+                        <strong>કનેક્ટિવિટી એરર!</strong> ઇન્ટરનેટ કનેક્શન અથવા Supabase URL/Key તપાસો.
+                    </div>`;
+            }
+        }
+
+        // Fetch Results from Supabase
+        async function loadResultsFromSupabase() {
+            try {
+                const { data, error } = await supabaseClient.from('results').select('*').order('created_at', { ascending: false });
+                if (!error && data) {
+                    resultsDB = data.map(r => ({
+                        date: new Date(r.created_at).toLocaleString(),
+                        student: r.student_name,
+                        testName: r.test_name,
+                        score: r.score,
+                        pct: r.percentage,
+                        grade: r.grade,
+                        status: r.status
+                    }));
+                    renderAdminResultsTable();
+                }
+            } catch(err) {
+                console.error('Results fetch error:', err);
+            }
+        }
+
+        function shuffleArray(arr) {
+            let shuffled = [...arr];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // ================= STUDENT PORTAL LOGIC =================
+        function showStudentView() {
+            document.getElementById('student-portal-view').classList.remove('hidden');
+            document.getElementById('teacher-dashboard-view').classList.add('hidden');
+            document.getElementById('test-select-screen').classList.remove('hidden');
+            document.getElementById('active-test-container').classList.add('hidden');
+            document.getElementById('student-result-card').classList.add('hidden');
+            loadTestsFromSupabase();
+        }
+
+        function renderStudentTestList() {
+            const listContainer = document.getElementById('available-tests-list');
+            listContainer.innerHTML = '';
+
+            if(testsDB.length === 0) {
+                listContainer.innerHTML = `<div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">હજુ સુધી કોઈ ટેસ્ટ ઉપલબ્ધ નથી. ટીચર ડેશબોર્ડમાં જઈને નવો ટેસ્ટ બનાવો.</div>`;
+                return;
+            }
+
+            testsDB.forEach((t, idx) => {
+                const card = document.createElement('div');
+                card.className = "flex justify-between items-center p-4 border border-slate-200 rounded-2xl bg-slate-50/50 hover:bg-slate-100 transition-all";
+                card.innerHTML = `
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-sm">${t.title}</h3>
+                        <p class="text-xs text-slate-500">કુલ પ્રશ્નો: ${t.questions.length} | પાસિંગ: ${t.passMark}%</p>
+                    </div>
+                    <button onclick="openStudentEntryModal(${idx})" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs shadow-sm">
+                        ટેસ્ટ શરૂ કરો
+                    </button>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        function openStudentEntryModal(index) {
+            activeTestIndex = index;
+            document.getElementById('active-test-modal-title').innerText = testsDB[index].title;
+            document.getElementById('student-name-modal').classList.remove('hidden');
+        }
+
+        function closeStudentModal() {
+            document.getElementById('student-name-modal').classList.add('hidden');
+        }
+
+        function startStudentTest() {
+            const name = document.getElementById('student-entry-name').value.trim();
+            if(!name) { alert('કૃપા કરીને પૂરું નામ લખો!'); return; }
+
+            activeStudentName = name;
+            closeStudentModal();
+
+            const targetTest = testsDB[activeTestIndex];
+            document.getElementById('running-test-title').innerText = targetTest.title;
+            document.getElementById('running-student-name').innerText = activeStudentName;
+            document.getElementById('test-progress-counter').innerText = `0 / ${targetTest.questions.length}`;
+
+            runningQuizData = targetTest.questions.map((q, idx) => {
+                let opts = [
+                    { text: q.correct, isCorrect: true },
+                    { text: q.wrong1, isCorrect: false },
+                    { text: q.wrong2, isCorrect: false }
+                ];
+                let shuffled = shuffleArray(opts);
+                return {
+                    id: idx,
+                    question: q.q,
+                    options: shuffled,
+                    correctIndex: shuffled.findIndex(o => o.isCorrect)
+                };
+            });
+
+            studentAnswers = {};
+            renderQuizQuestions();
+
+            document.getElementById('test-select-screen').classList.add('hidden');
+            document.getElementById('active-test-container').classList.remove('hidden');
+        }
+
+        function renderQuizQuestions() {
+            const wrapper = document.getElementById('quiz-questions-wrapper');
+            wrapper.innerHTML = '';
+
+            runningQuizData.forEach((q, qIdx) => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 rounded-2xl border border-slate-200 shadow-sm";
+                
+                let optsHTML = '';
+                q.options.forEach((opt, optIdx) => {
+                    optsHTML += `
+                        <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium text-slate-700 hover:bg-slate-50">
+                            <input type="radio" name="q_${qIdx}" value="${optIdx}" onchange="selectStudentOpt(${qIdx}, ${optIdx})" class="w-4 h-4 text-blue-600">
+                            <span class="ml-2.5">${opt.text}</span>
+                        </label>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="font-bold text-sm text-slate-900 mb-3">Q${qIdx+1}. ${q.question}</div>
+                    <div class="space-y-2">${optsHTML}</div>
+                `;
+                wrapper.appendChild(card);
+            });
+        }
+
+        function selectStudentOpt(qIdx, optIdx) {
+            studentAnswers[qIdx] = optIdx;
+            const count = Object.keys(studentAnswers).length;
+            document.getElementById('test-progress-counter').innerText = `${count} / ${runningQuizData.length}`;
+        }
+
+        async function submitStudentQuiz(e) {
+            e.preventDefault();
+
+            let score = 0;
+            runningQuizData.forEach((q, idx) => {
+                if(studentAnswers[idx] === q.correctIndex) {
+                    score++;
+                }
+            });
+
+            const total = runningQuizData.length;
+            const percentage = Math.round((score / total) * 100);
+            const passPct = testsDB[activeTestIndex].passMark || 50;
+            const status = percentage >= passPct ? "PASS" : "FAIL";
+
+            let grade = "F";
+            if(percentage >= 90) grade = "A+";
+            else if(percentage >= 75) grade = "A";
+            else if(percentage >= 60) grade = "B";
+            else if(percentage >= 50) grade = "C";
+
+            // Insert Result to Supabase
+            await supabaseClient.from('results').insert([{
+                student_name: activeStudentName,
+                test_name: testsDB[activeTestIndex].title,
+                score: `${score} / ${total}`,
+                percentage: percentage,
+                grade: grade,
+                status: status
+            }]);
+
+            // Show Result
+            document.getElementById('active-test-container').classList.add('hidden');
+            document.getElementById('student-result-card').classList.remove('hidden');
+
+            document.getElementById('res-test-name').innerText = testsDB[activeTestIndex].title;
+            document.getElementById('res-score').innerText = `${score}/${total}`;
+            document.getElementById('res-pct').innerText = `${percentage}%`;
+            document.getElementById('res-grade').innerText = grade;
+            document.getElementById('res-status').innerText = status;
+
+            drawScoreCardCanvas(activeStudentName, testsDB[activeTestIndex].title, score, total, percentage, grade, status);
+        }
+
+        function drawScoreCardCanvas(name, testTitle, score, total, pct, grade, status) {
+            const canvas = document.getElementById('student-score-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 700; canvas.height = 450;
+
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 700, 450);
+            ctx.fillStyle = '#1e40af'; ctx.fillRect(0, 0, 700, 90);
+            ctx.fillStyle = '#ffffff'; ctx.font = 'bold 24px Inter, sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText('BHARAT EDUCATION CENTER', 350, 40);
+            ctx.font = '14px Inter, sans-serif'; ctx.fillStyle = '#93c5fd';
+            ctx.fillText(`Teacher: Chetan Soni | ${testTitle}`, 350, 68);
+
+            ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 2; ctx.strokeRect(20, 110, 660, 320);
+
+            ctx.fillStyle = '#0f172a'; ctx.font = 'bold 18px Inter, sans-serif'; ctx.textAlign = 'left';
+            ctx.fillText(`વિદ્યાર્થીનું નામ: ${name.toUpperCase()}`, 40, 150);
+
+            ctx.fillStyle = '#2563eb'; ctx.font = 'bold 16px Inter, sans-serif';
+            ctx.fillText(`કુલ ગુણ: ${score} / ${total} (${pct}%)`, 40, 190);
+            ctx.fillText(`ગ્રેડ: ${grade}`, 40, 225);
+
+            ctx.fillStyle = status === "PASS" ? "#16a34a" : "#dc2626";
+            ctx.font = 'bold 20px Inter, sans-serif';
+            ctx.fillText(`પરિણામ: ${status}`, 40, 265);
+
+            ctx.fillStyle = '#94a3b8'; ctx.font = '12px Inter, sans-serif';
+            ctx.fillText('Authorized Signature: Chetan Soni', 40, 390);
+        }
+
+        function downloadScoreJPG() {
+            const canvas = document.getElementById('student-score-canvas');
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/jpeg');
+            link.download = `${activeStudentName}_ResultCard.jpg`;
+            link.click();
+        }
+
+        // ================= TEACHER ADMIN LOGIC =================
+        function openTeacherAdmin() {
+            const pin = prompt("ટીચર એક્સેસ માટે PIN દાખલ કરો (PIN: 1234):");
+            if(pin === "1234") {
+                document.getElementById('student-portal-view').classList.add('hidden');
+                document.getElementById('teacher-dashboard-view').classList.remove('hidden');
+                loadResultsFromSupabase();
+            } else if(pin !== null) {
+                alert("ખોટો PIN!");
+            }
+        }
+
+        function switchAdminTab(tab) {
+            if(tab === 'test-builder') {
+                document.getElementById('admin-tab-builder').classList.remove('hidden');
+                document.getElementById('admin-tab-records').classList.add('hidden');
+                document.getElementById('tab-btn-builder').className = "pb-2 text-sm font-bold border-b-2 border-blue-600 text-blue-600";
+                document.getElementById('tab-btn-records').className = "pb-2 text-sm font-bold text-slate-500 hover:text-slate-800";
+            } else {
+                document.getElementById('admin-tab-builder').classList.add('hidden');
+                document.getElementById('admin-tab-records').classList.remove('hidden');
+                document.getElementById('tab-btn-builder').className = "pb-2 text-sm font-bold text-slate-500 hover:text-slate-800";
+                document.getElementById('tab-btn-records').className = "pb-2 text-sm font-bold border-b-2 border-blue-600 text-blue-600";
+                loadResultsFromSupabase();
+            }
+        }
+
+        function addQuestionToDraft() {
+            const q = document.getElementById('q-text-input').value.trim();
+            const correct = document.getElementById('q-correct-opt').value.trim();
+            const w1 = document.getElementById('q-wrong-opt1').value.trim();
+            const w2 = document.getElementById('q-wrong-opt2').value.trim();
+
+            if(!q || !correct || !w1 || !w2) {
+                alert('કૃપા કરીને પ્રશ્ન અને ત્રણેય વિકલ્પો ભરો!');
+                return;
+            }
+
+            draftQuestions.push({ q, correct, wrong1: w1, wrong2: w2 });
+            
+            document.getElementById('q-text-input').value = '';
+            document.getElementById('q-correct-opt').value = '';
+            document.getElementById('q-wrong-opt1').value = '';
+            document.getElementById('q-wrong-opt2').value = '';
+
+            renderDraftList();
+        }
+
+        function renderDraftList() {
+            const container = document.getElementById('draft-questions-list');
+            document.getElementById('draft-q-count').innerText = draftQuestions.length;
+            container.innerHTML = '';
+
+            draftQuestions.forEach((item, idx) => {
+                const el = document.createElement('div');
+                el.className = "p-2.5 bg-white border border-slate-200 rounded-lg flex justify-between items-center";
+                el.innerHTML = `
+                    <div>
+                        <strong>Q${idx+1}:</strong> ${item.q}
+                        <div class="text-[10px] text-slate-500">સાચો: ${item.correct} | ખોટો ૧: ${item.wrong1} | ખોટો ૨: ${item.wrong2}</div>
+                    </div>
+                    <button onclick="removeDraftQ(${idx})" class="text-rose-600 font-bold px-2">X</button>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function removeDraftQ(idx) {
+            draftQuestions.splice(idx, 1);
+            renderDraftList();
+        }
+
+        async function saveCompleteTest() {
+            const title = document.getElementById('new-test-title-input').value.trim();
+            const passPct = parseInt(document.getElementById('new-test-pass-input').value) || 50;
+
+            if(!title) { alert('કૃપા કરીને ટેસ્ટનું નામ લખો!'); return; }
+            if(draftQuestions.length === 0) { alert('ટેસ્ટ સબમિટ કરવા માટે ઓછામાં ઓછો ૧ પ્રશ્ન ઉમેરો!'); return; }
+
+            const { error } = await supabaseClient
+                .from('tests')
+                .insert([{ title: title, pass_mark: passPct, questions_json: draftQuestions }]);
+
+            if (error) {
+                alert('ટેસ્ટ સેવ કરવામાં એરર: ' + error.message);
+            } else {
+                alert('ટેસ્ટ સફળતાપૂર્વક ક્લાઉડ ડેટાબેઝમાં પબ્લિશ થઈ ગયો!');
+                draftQuestions = [];
+                document.getElementById('new-test-title-input').value = '';
+                document.getElementById('new-test-pass-input').value = '';
+                renderDraftList();
+                showStudentView();
+            }
+        }
+
+        function renderAdminResultsTable() {
+            const tbody = document.getElementById('student-results-table-body');
+            tbody.innerHTML = '';
+
+            if(resultsDB.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">હજુ સુધી કોઈ પરિણામ ઉપલબ્ધ નથી.</td></tr>`;
+                return;
+            }
+
+            resultsDB.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="p-2.5">${r.date}</td>
+                    <td class="p-2.5 font-bold">${r.student}</td>
+                    <td class="p-2.5 text-blue-600">${r.testName}</td>
+                    <td class="p-2.5">${r.score}</td>
+                    <td class="p-2.5">${r.pct}%</td>
+                    <td class="p-2.5 font-bold">${r.grade}</td>
+                    <td class="p-2.5 font-bold ${r.status === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}">${r.status}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
