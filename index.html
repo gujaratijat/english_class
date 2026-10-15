@@ -12,11 +12,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- SheetJS for Excel/CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { font-family: 'Hind Vadodara', 'Inter', sans-serif; }
-        .correct-selected { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #15803d !important; font-weight: 600; }
-        .wrong-selected { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #b91c1c !important; font-weight: 600; }
-        .correct-highlight { background-color: #f0fdf4 !important; border-color: #86efac !important; color: #166534 !important; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
@@ -31,7 +30,7 @@
                 <p class="text-xs text-slate-500">Teacher: Chetan Soni | Online Test Management Portal</p>
             </div>
             <div class="flex gap-2">
-                <button onclick="showStudentView()" class="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-100">
+                <button onclick="router('student')" class="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-100">
                     <i class="fa-solid fa-user"></i> વિદ્યાર્થી પોર્ટલ
                 </button>
                 <button onclick="openTeacherAdmin()" class="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800">
@@ -45,24 +44,24 @@
 
         <!-- ================= STUDENT PORTAL ================= -->
         <div id="student-portal-view">
-            <!-- Select Test Modal / Screen -->
+            <!-- Select Test Screen -->
             <div id="test-select-screen" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-md">
-                <h2 class="text-xl font-bold text-slate-900 mb-2">ઉપલબ્ધ ટેસ્ટ સિલેક્ટ કરો (Select Test):</h2>
-                <p class="text-xs text-slate-500 mb-4">તમારે જે ટેસ્ટ આપવો હોય તેની સામે 'ટેસ્ટ શરૂ કરો' પર ક્લિક કરો.</p>
+                <h2 class="text-xl font-bold text-slate-900 mb-2">ઉપલબ્ધ ટેસ્ટ સિલેક્ટ કરો:</h2>
+                <p class="text-xs text-slate-500 mb-4">તમારે જે ટેસ્ટ આપવો હોય તેની સામે 'ટેસ્ટ શરૂ કરો' પર ક્લિક કરો (દરેક વિદ્યાર્થી ફક્ત ૧ જ વાર ટેસ્ટ આપી શકશે).</p>
                 <div id="available-tests-list" class="space-y-3">
                     <p class="text-xs text-slate-400">ટેસ્ટ લોડ થઈ રહ્યા છે...</p>
                 </div>
             </div>
 
-            <!-- Student Name Entry Modal -->
+            <!-- Student Name & Validation Modal -->
             <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                 <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
                     <h3 class="text-lg font-bold text-slate-900 mb-1" id="active-test-modal-title">ટેસ્ટ નામ</h3>
-                    <p class="text-xs text-slate-500 mb-4">ટેસ્ટ શરૂ કરવા માટે તમારું નામ દાખલ કરો:</p>
-                    <input type="text" id="student-entry-name" placeholder="તમારું પૂરૂં નામ લખો..." class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm outline-none mb-4 focus:ring-2 focus:ring-blue-500">
+                    <p class="text-xs text-slate-500 mb-4">ટેસ્ટ શરૂ કરવા માટે તમારું સાચું પૂરૂં નામ લખો:</p>
+                    <input type="text" id="student-entry-name" placeholder="તમારું પૂરૂં નામ..." class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm outline-none mb-4 focus:ring-2 focus:ring-blue-500">
                     <div class="flex gap-2">
                         <button onclick="closeStudentModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl">કેન્સલ</button>
-                        <button onclick="startStudentTest()" class="w-1/2 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl">શરૂ કરો</button>
+                        <button onclick="verifyAndStartStudentTest()" class="w-1/2 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl">ટેસ્ટ ચાલુ કરો</button>
                     </div>
                 </div>
             </div>
@@ -100,7 +99,7 @@
                 </div>
                 <div class="flex gap-3 justify-center">
                     <button onclick="downloadScoreJPG()" class="px-5 py-3 bg-blue-600 text-white font-bold rounded-xl text-xs"><i class="fa-solid fa-download"></i> સ્કોર કાર્ડ ડાઉનલોડ કરો</button>
-                    <button onclick="showStudentView()" class="px-5 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">હોમ સ્ક્રીન પર જાઓ</button>
+                    <button onclick="router('student')" class="px-5 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">હોમ સ્ક્રીન પર જાઓ</button>
                 </div>
             </div>
         </div>
@@ -110,29 +109,44 @@
             <div class="flex justify-between items-center bg-slate-900 text-white p-4 rounded-2xl">
                 <div>
                     <h2 class="font-bold text-base"><i class="fa-solid fa-user-shield text-blue-400"></i> Teacher Control Center</h2>
-                    <p class="text-xs text-slate-400">અહીંથી નવા ટેસ્ટ બનાવો અને વિદ્યાર્થીઓના રિઝલ્ટ જુઓ</p>
+                    <p class="text-xs text-slate-400">નવા ટેસ્ટ બનાવો, એક્સેલથી અપલોડ કરો અને રિઝલ્ટ મેનેજ કરો</p>
                 </div>
-                <button onclick="showStudentView()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700">લોગઆઉટ</button>
+                <button onclick="router('student')" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700">સ્ટુડન્ટ વ્યૂ પર જાઓ</button>
             </div>
 
             <!-- Dashboard Tabs -->
-            <div class="flex border-b border-slate-200 gap-4">
+            <div class="flex border-b border-slate-200 gap-4 flex-wrap">
                 <button onclick="switchAdminTab('test-builder')" id="tab-btn-builder" class="pb-2 text-sm font-bold border-b-2 border-blue-600 text-blue-600">નવો ટેસ્ટ બનાવો</button>
+                <button onclick="switchAdminTab('test-manager')" id="tab-btn-manager" class="pb-2 text-sm font-bold text-slate-500 hover:text-slate-800">ટેસ્ટ મેનેજમેન્ટ (Edit/Delete)</button>
                 <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="pb-2 text-sm font-bold text-slate-500 hover:text-slate-800">વિદ્યાર્થી રિઝલ્ટ ટ્રેકર</button>
             </div>
 
-            <!-- TAB 1: Create Test & Add Questions -->
+            <!-- TAB 1: Create Test & Excel Import -->
             <div id="admin-tab-builder" class="space-y-6">
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="font-bold text-slate-800 text-sm">૧. નવો ટેસ્ટ સેટઅપ કરો:</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <h3 class="font-bold text-slate-800 text-sm">૧. ટેસ્ટ માહિતી અને ડેડલાઇન સેટ કરો:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <input type="text" id="new-test-title-input" placeholder="દા.ત. English Chapter 1 Test" class="px-4 py-2.5 rounded-xl border text-sm outline-none">
                         <input type="number" id="new-test-pass-input" placeholder="પાસિંગ ટકાવારી (Default: 50)" class="px-4 py-2.5 rounded-xl border text-sm outline-none">
+                        <div>
+                            <label class="text-[10px] text-slate-500 block font-bold">ડેડલાઇન તારીખ અને સમય:</label>
+                            <input type="datetime-local" id="new-test-deadline-input" class="w-full px-3 py-2 rounded-xl border text-xs outline-none">
+                        </div>
                     </div>
                 </div>
 
+                <!-- Excel / CSV Question Upload Option -->
+                <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl space-y-3">
+                    <h3 class="font-bold text-emerald-900 text-sm"><i class="fa-solid fa-file-excel"></i> ઓપ્શન A: એક્સેલ ફાઇલ (Excel/CSV) થી પ્રશ્નો અપલોડ કરો</h3>
+                    <p class="text-xs text-emerald-700">ફાઇલ ફોર્મેટ: કૉલમ હેડર હોવા જોઈએ -> <b>q, correct, wrong1, wrong2</b></p>
+                    <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="text-xs file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
+                    <button onclick="handleExcelUpload()" class="px-4 py-2 bg-emerald-700 text-white font-bold rounded-xl text-xs block">
+                        એક્સેલમાંથી પ્રશ્નો ઉમેરો
+                    </button>
+                </div>
+
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="font-bold text-slate-800 text-sm">૨. પ્રશ્નો અને વિકલ્પો ઉમેરો:</h3>
+                    <h3 class="font-bold text-slate-800 text-sm">ઓપ્શન B: મેન્યુઅલ પ્રશ્નો અને વિકલ્પો ઉમેરો:</h3>
                     <textarea id="q-text-input" placeholder="પ્રશ્ન ટાઇપ કરો..." class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none h-20"></textarea>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <input type="text" id="q-correct-opt" placeholder="સાચો જવાબ (Correct Option)" class="px-4 py-2.5 rounded-xl border border-emerald-300 bg-emerald-50/50 text-sm outline-none">
@@ -146,7 +160,7 @@
 
                 <!-- Questions Draft Preview -->
                 <div class="bg-slate-100 p-4 rounded-2xl border border-slate-200">
-                    <h4 class="font-bold text-xs text-slate-600 uppercase mb-3">ઉમેરાયેલા પ્રશ્નોનું પ્રિવ્યૂ (<span id="draft-q-count">0</span>):</h4>
+                    <h4 class="font-bold text-xs text-slate-600 uppercase mb-3">উમેરાયેલા પ્રશ્નોનું પ્રિવ્યૂ (<span id="draft-q-count">0</span>):</h4>
                     <div id="draft-questions-list" class="space-y-2 text-xs"></div>
                     <button onclick="saveCompleteTest()" class="mt-4 w-full py-3 bg-emerald-600 text-white font-bold rounded-xl text-sm shadow-md">
                         <i class="fa-solid fa-floppy-disk"></i> આ આખો ટેસ્ટ ક્લાઉડમાં પબ્લિશ કરો
@@ -154,7 +168,17 @@
                 </div>
             </div>
 
-            <!-- TAB 2: Student Results Tracker -->
+            <!-- TAB 2: Test Manager (Edit / Delete / Share Link) -->
+            <div id="admin-tab-manager" class="hidden space-y-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 text-sm mb-3">જૂના ટેસ્ટ મેનેજ કરો (Manage Tests):</h3>
+                    <div id="admin-tests-manage-list" class="space-y-3">
+                        <p class="text-xs text-slate-400">ટેસ્ટ લોડ થઈ રહ્યા છે...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: Student Results Tracker -->
             <div id="admin-tab-records" class="hidden space-y-4">
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 overflow-x-auto">
                     <table class="w-full text-left text-xs">
@@ -188,64 +212,78 @@
 
         let testsDB = [];
         let resultsDB = [];
-        
         let draftQuestions = [];
-        let activeTestIndex = null;
+        let activeTestId = null;
         let activeStudentName = "";
         let runningQuizData = [];
         let studentAnswers = {};
+        let editingTestId = null;
 
         window.addEventListener('DOMContentLoaded', () => {
-            loadTestsFromSupabase();
+            loadTestsFromSupabase().then(() => {
+                handleUrlParams();
+            });
         });
 
-        // Fetch Tests from Supabase with Fallback Error Handling
-        async function loadTestsFromSupabase() {
-            try {
-                const { data, error } = await supabaseClient.from('tests').select('*');
-                if (!error && data) {
-                    testsDB = data.map(t => ({
-                        id: t.id,
-                        title: t.title,
-                        passMark: t.pass_mark,
-                        questions: t.questions_json
-                    }));
-                    renderStudentTestList();
-                } else {
-                    console.error('Supabase Error:', error);
-                    document.getElementById('available-tests-list').innerHTML = `
-                        <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800">
-                            <strong>ટેસ્ટ લોડ કરવામાં એરર:</strong> ${error ? error.message : 'Table not found'}<br>
-                            <span class="text-[10px] text-slate-500 mt-1 block">કૃપા કરીને તપાસો કે Supabase માં 'tests' અને 'results' નામના Tables બન્યા છે કે નહીં.</span>
-                        </div>`;
+        // URL Parameter Routing for Direct Test Link
+        function handleUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            const testIdParam = params.get('testId');
+            if(testIdParam) {
+                const foundIdx = testsDB.findIndex(t => t.id == testIdParam);
+                if(foundIdx !== -1) {
+                    openStudentEntryModal(foundIdx);
                 }
-            } catch (err) {
-                console.error('Network Error:', err);
-                document.getElementById('available-tests-list').innerHTML = `
-                    <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800">
-                        <strong>કનેક્ટિવિટી એરર!</strong> ઇન્ટરનેટ કનેક્શન અથવા Supabase URL/Key તપાસો.
-                    </div>`;
+            }
+        }
+
+        // Router View Controller
+        function router(view) {
+            if(view === 'student') {
+                document.getElementById('student-portal-view').classList.remove('hidden');
+                document.getElementById('teacher-dashboard-view').classList.add('hidden');
+                document.getElementById('test-select-screen').classList.remove('hidden');
+                document.getElementById('active-test-container').classList.add('hidden');
+                document.getElementById('student-result-card').classList.add('hidden');
+                loadTestsFromSupabase();
+            } else if(view === 'teacher') {
+                document.getElementById('student-portal-view').classList.add('hidden');
+                document.getElementById('teacher-dashboard-view').classList.remove('hidden');
+                loadResultsFromSupabase();
+                renderAdminTestsManagerList();
+            }
+        }
+
+        // Fetch Tests from Supabase
+        async function loadTestsFromSupabase() {
+            const { data, error } = await supabaseClient.from('tests').select('*');
+            if (!error && data) {
+                testsDB = data.map(t => ({
+                    id: t.id,
+                    title: t.title,
+                    passMark: t.pass_mark,
+                    deadline: t.deadline || null,
+                    questions: t.questions_json
+                }));
+                renderStudentTestList();
+                renderAdminTestsManagerList();
             }
         }
 
         // Fetch Results from Supabase
         async function loadResultsFromSupabase() {
-            try {
-                const { data, error } = await supabaseClient.from('results').select('*').order('created_at', { ascending: false });
-                if (!error && data) {
-                    resultsDB = data.map(r => ({
-                        date: new Date(r.created_at).toLocaleString(),
-                        student: r.student_name,
-                        testName: r.test_name,
-                        score: r.score,
-                        pct: r.percentage,
-                        grade: r.grade,
-                        status: r.status
-                    }));
-                    renderAdminResultsTable();
-                }
-            } catch(err) {
-                console.error('Results fetch error:', err);
+            const { data, error } = await supabaseClient.from('results').select('*').order('created_at', { ascending: false });
+            if (!error && data) {
+                resultsDB = data.map(r => ({
+                    date: new Date(r.created_at).toLocaleString(),
+                    student: r.student_name,
+                    testName: r.test_name,
+                    score: r.score,
+                    pct: r.percentage,
+                    grade: r.grade,
+                    status: r.status
+                }));
+                renderAdminResultsTable();
             }
         }
 
@@ -259,42 +297,49 @@
         }
 
         // ================= STUDENT PORTAL LOGIC =================
-        function showStudentView() {
-            document.getElementById('student-portal-view').classList.remove('hidden');
-            document.getElementById('teacher-dashboard-view').classList.add('hidden');
-            document.getElementById('test-select-screen').classList.remove('hidden');
-            document.getElementById('active-test-container').classList.add('hidden');
-            document.getElementById('student-result-card').classList.add('hidden');
-            loadTestsFromSupabase();
-        }
-
         function renderStudentTestList() {
             const listContainer = document.getElementById('available-tests-list');
             listContainer.innerHTML = '';
 
             if(testsDB.length === 0) {
-                listContainer.innerHTML = `<div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">હજુ સુધી કોઈ ટેસ્ટ ઉપલબ્ધ નથી. શિક્ષકનો સંપર્ક કરો.</div>`;
+                listContainer.innerHTML = `<div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">હજુ સુધી કોઈ ટેસ્ટ ઉપલબ્ધ નથી. શિક્ષકની લિંક અથવા સૂચનાની રાહ જુઓ.</div>`;
                 return;
             }
 
+            const now = new Date();
+
             testsDB.forEach((t, idx) => {
+                let isExpired = false;
+                let deadlineText = "";
+                if(t.deadline) {
+                    const deadlineDate = new Date(t.deadline);
+                    if(now > deadlineDate) {
+                        isExpired = true;
+                        deadlineText = `<span class="text-rose-600 font-bold block">ડેડલાઇન પૂર્ણ થઈ ગઈ છે (${deadlineDate.toLocaleString()})</span>`;
+                    } else {
+                        deadlineText = `<span class="text-slate-500 block">ડેડલાઇન: ${deadlineDate.toLocaleString()}</span>`;
+                    }
+                }
+
                 const card = document.createElement('div');
-                card.className = "flex justify-between items-center p-4 border border-slate-200 rounded-2xl bg-slate-50/50 hover:bg-slate-100 transition-all";
+                card.className = "flex justify-between items-center p-4 border border-slate-200 rounded-2xl bg-slate-50/50";
                 card.innerHTML = `
                     <div>
                         <h3 class="font-bold text-slate-900 text-sm">${t.title}</h3>
                         <p class="text-xs text-slate-500">કુલ પ્રશ્નો: ${t.questions.length} | પાસિંગ: ${t.passMark}%</p>
+                        ${deadlineText}
                     </div>
-                    <button onclick="openStudentEntryModal(${idx})" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs shadow-sm">
-                        ટેસ્ટ શરૂ કરો
-                    </button>
+                    <div>
+                        ${isExpired ? '<span class="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-200">બંધ થયેલ</span>' : 
+                        `<button onclick="openStudentEntryModal(${idx})" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs shadow-sm hover:bg-blue-700">ટેસ્ટ શરૂ કરો</button>`}
+                    </div>
                 `;
                 listContainer.appendChild(card);
             });
         }
 
         function openStudentEntryModal(index) {
-            activeTestIndex = index;
+            activeTestId = testsDB[index].id;
             document.getElementById('active-test-modal-title').innerText = testsDB[index].title;
             document.getElementById('student-name-modal').classList.remove('hidden');
         }
@@ -303,14 +348,28 @@
             document.getElementById('student-name-modal').classList.add('hidden');
         }
 
-        function startStudentTest() {
-            const name = document.getElementById('student-entry-name').value.trim();
-            if(!name) { alert('કૃપા કરીને પૂરું નામ લખો!'); return; }
+        // Verify Single Attempt Per Student per Test
+        async function verifyAndStartStudentTest() {
+            const nameInput = document.getElementById('student-entry-name').value.trim();
+            if(!nameInput) { alert('કૃપા કરીને પૂરું નામ લખો!'); return; }
 
-            activeStudentName = name;
+            activeStudentName = nameInput;
+
+            // Check Supabase results to ensure this student hasn't already taken this test
+            const targetTest = testsDB.find(t => t.id == activeTestId);
+            const { data, error } = await supabaseClient
+                .from('results')
+                .select('*')
+                .eq('student_name', activeStudentName)
+                .eq('test_name', targetTest.title);
+
+            if(!error && data && data.length > 0) {
+                alert(`નમસ્તે ${activeStudentName}, તમે આ ટેસ્ટ અગાઉ આપી ચૂક્યા છો! દરેક વિદ્યાર્થી ફક્ત ૧ જ વાર ટેસ્ટ આપી શકે છે.`);
+                return;
+            }
+
             closeStudentModal();
 
-            const targetTest = testsDB[activeTestIndex];
             document.getElementById('running-test-title').innerText = targetTest.title;
             document.getElementById('running-student-name').innerText = activeStudentName;
             document.getElementById('test-progress-counter').innerText = `0 / ${targetTest.questions.length}`;
@@ -374,14 +433,13 @@
 
             let score = 0;
             runningQuizData.forEach((q, idx) => {
-                if(studentAnswers[idx] === q.correctIndex) {
-                    score++;
-                }
+                if(studentAnswers[idx] === q.correctIndex) score++;
             });
 
             const total = runningQuizData.length;
             const percentage = Math.round((score / total) * 100);
-            const passPct = testsDB[activeTestIndex].passMark || 50;
+            const targetTest = testsDB.find(t => t.id == activeTestId);
+            const passPct = targetTest.passMark || 50;
             const status = percentage >= passPct ? "PASS" : "FAIL";
 
             let grade = "F";
@@ -393,24 +451,23 @@
             // Insert Result to Supabase
             await supabaseClient.from('results').insert([{
                 student_name: activeStudentName,
-                test_name: testsDB[activeTestIndex].title,
+                test_name: targetTest.title,
                 score: `${score} / ${total}`,
                 percentage: percentage,
                 grade: grade,
                 status: status
             }]);
 
-            // Show Result
             document.getElementById('active-test-container').classList.add('hidden');
             document.getElementById('student-result-card').classList.remove('hidden');
 
-            document.getElementById('res-test-name').innerText = testsDB[activeTestIndex].title;
+            document.getElementById('res-test-name').innerText = targetTest.title;
             document.getElementById('res-score').innerText = `${score}/${total}`;
             document.getElementById('res-pct').innerText = `${percentage}%`;
             document.getElementById('res-grade').innerText = grade;
             document.getElementById('res-status').innerText = status;
 
-            drawScoreCardCanvas(activeStudentName, testsDB[activeTestIndex].title, score, total, percentage, grade, status);
+            drawScoreCardCanvas(activeStudentName, targetTest.title, score, total, percentage, grade, status);
         }
 
         function drawScoreCardCanvas(name, testTitle, score, total, pct, grade, status) {
@@ -454,27 +511,82 @@
         function openTeacherAdmin() {
             const pin = prompt("ટીચર એક્સેસ માટે PIN દાખલ કરો (PIN: 1234):");
             if(pin === "1234") {
-                document.getElementById('student-portal-view').classList.add('hidden');
-                document.getElementById('teacher-dashboard-view').classList.remove('hidden');
-                loadResultsFromSupabase();
+                router('teacher');
             } else if(pin !== null) {
                 alert("ખોટો PIN!");
             }
         }
 
         function switchAdminTab(tab) {
+            document.getElementById('admin-tab-builder').classList.add('hidden');
+            document.getElementById('admin-tab-manager').classList.add('hidden');
+            document.getElementById('admin-tab-records').classList.add('hidden');
+
+            document.getElementById('tab-btn-builder').className = "pb-2 text-sm font-bold text-slate-500 hover:text-slate-800";
+            document.getElementById('tab-btn-manager').className = "pb-2 text-sm font-bold text-slate-500 hover:text-slate-800";
+            document.getElementById('tab-btn-records').className = "pb-2 text-sm font-bold text-slate-500 hover:text-slate-800";
+
             if(tab === 'test-builder') {
                 document.getElementById('admin-tab-builder').classList.remove('hidden');
-                document.getElementById('admin-tab-records').classList.add('hidden');
                 document.getElementById('tab-btn-builder').className = "pb-2 text-sm font-bold border-b-2 border-blue-600 text-blue-600";
-                document.getElementById('tab-btn-records').className = "pb-2 text-sm font-bold text-slate-500 hover:text-slate-800";
-            } else {
-                document.getElementById('admin-tab-builder').classList.add('hidden');
+            } else if(tab === 'test-manager') {
+                document.getElementById('admin-tab-manager').classList.remove('hidden');
+                document.getElementById('tab-btn-manager').className = "pb-2 text-sm font-bold border-b-2 border-blue-600 text-blue-600";
+                renderAdminTestsManagerList();
+            } else if(tab === 'student-records') {
                 document.getElementById('admin-tab-records').classList.remove('hidden');
-                document.getElementById('tab-btn-builder').className = "pb-2 text-sm font-bold text-slate-500 hover:text-slate-800";
                 document.getElementById('tab-btn-records').className = "pb-2 text-sm font-bold border-b-2 border-blue-600 text-blue-600";
                 loadResultsFromSupabase();
             }
+        }
+
+        // Excel / CSV File Upload Handler
+        function handleExcelUpload() {
+            const fileInput = document.getElementById('excel-file-input');
+            if(fileInput.files.length === 0) {
+                alert('કૃપા કરીને પહેલાં એક્સેલ/સીએસવી ફાઇલ સિલેક્ટ કરો!');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet);
+
+                    if(json.length === 0) {
+                        alert('ફાઇલ ખાલી છે!');
+                        return;
+                    }
+
+                    let addedCount = 0;
+                    json.forEach(row => {
+                        // Expected headers: q, correct, wrong1, wrong2
+                        const q = row.q || row.Q || row.question || row.Prashn;
+                        const correct = row.correct || row.Correct || row.SaachoJavab;
+                        const w1 = row.wrong1 || row.Wrong1 || row.Khoto1;
+                        const w2 = row.wrong2 || row.Wrong2 || row.Khoto2;
+
+                        if(q && correct && w1 && w2) {
+                            draftQuestions.push({ q: String(q), correct: String(correct), wrong1: String(w1), wrong2: String(w2) });
+                            addedCount++;
+                        }
+                    });
+
+                    alert(`સફળતાપૂર્વક ${addedCount} પ્રશ્નો એક્સેલમાંથી ઉમેરાઈ ગયા છે!`);
+                    fileInput.value = '';
+                    renderDraftList();
+                } catch (err) {
+                    console.error(err);
+                    alert('એક્સેલ રીડ કરવામાં એરર આવી. ફોર્મેટ તપાસો (q, correct, wrong1, wrong2).');
+                }
+            };
+            reader.readAsArrayBuffer(file);
         }
 
         function addQuestionToDraft() {
@@ -489,7 +601,6 @@
             }
 
             draftQuestions.push({ q, correct, wrong1: w1, wrong2: w2 });
-            
             document.getElementById('q-text-input').value = '';
             document.getElementById('q-correct-opt').value = '';
             document.getElementById('q-wrong-opt1').value = '';
@@ -525,23 +636,101 @@
         async function saveCompleteTest() {
             const title = document.getElementById('new-test-title-input').value.trim();
             const passPct = parseInt(document.getElementById('new-test-pass-input').value) || 50;
+            const deadline = document.getElementById('new-test-deadline-input').value;
 
             if(!title) { alert('કૃપા કરીને ટેસ્ટનું નામ લખો!'); return; }
-            if(draftQuestions.length === 0) { alert('ટેસ્ટ સબમિટ કરવા માટે ઓછામાં ઓછો ૧ પ્રશ્ન ઉમેરો!'); return; }
+            if(draftQuestions.length === 0) { alert('ઓછામાં ઓછો ૧ પ્રશ્ન હોવો જોઈએ!'); return; }
 
-            const { error } = await supabaseClient
-                .from('tests')
-                .insert([{ title: title, pass_mark: passPct, questions_json: draftQuestions }]);
+            if(editingTestId) {
+                // Update existing test
+                const { error } = await supabaseClient
+                    .from('tests')
+                    .update({ title: title, pass_mark: passPct, deadline: deadline, questions_json: draftQuestions })
+                    .eq('id', editingTestId);
 
-            if (error) {
-                alert('ટેસ્ટ સેવ કરવામાં એરર: ' + error.message);
+                if(error) alert('એરર: ' + error.message);
+                else {
+                    alert('ટેસ્ટ સફળતાપૂર્વક અપડેટ થઈ ગયો!');
+                    editingTestId = null;
+                }
             } else {
-                alert('ટેસ્ટ સફળતાપૂર્વક ક્લાઉડ ડેટાબેઝમાં પબ્લિશ થઈ ગયો!');
-                draftQuestions = [];
-                document.getElementById('new-test-title-input').value = '';
-                document.getElementById('new-test-pass-input').value = '';
-                renderDraftList();
-                showStudentView();
+                // Insert new test
+                const { error } = await supabaseClient
+                    .from('tests')
+                    .insert([{ title: title, pass_mark: passPct, deadline: deadline, questions_json: draftQuestions }]);
+
+                if (error) alert('એરર: ' + error.message);
+                else alert('નવો ટેસ્ટ સફળતાપૂર્વક પબ્લિશ થઈ ગયો!');
+            }
+
+            draftQuestions = [];
+            document.getElementById('new-test-title-input').value = '';
+            document.getElementById('new-test-pass-input').value = '';
+            document.getElementById('new-test-deadline-input').value = '';
+            renderDraftList();
+            router('teacher');
+        }
+
+        // Render Test Manager List (Edit / Delete / Share Link)
+        function renderAdminTestsManagerList() {
+            const container = document.getElementById('admin-tests-manage-list');
+            container.innerHTML = '';
+
+            if(testsDB.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400">કોઈ ટેસ્ટ ઉપલબ્ધ નથી.</p>`;
+                return;
+            }
+
+            testsDB.forEach(t => {
+                const el = document.createElement('div');
+                el.className = "p-4 bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-center";
+                
+                const currentUrl = window.location.href.split('?')[0];
+                const shareLink = `${currentUrl}?testId=${t.id}`;
+
+                el.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm">${t.title}</h4>
+                        <p class="text-[11px] text-slate-500">પ્રશ્નો: ${t.questions.length} | પાસિંગ: ${t.passMark}% | ડેડલાઇન: ${t.deadline ? new Date(t.deadline).toLocaleString() : 'કોઈ નહીં'}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="copyTestLink('${shareLink}')" class="px-3 py-1.5 bg-blue-50 text-blue-700 font-bold rounded-xl text-xs hover:bg-blue-100">લિંક કૉપિ કરો</button>
+                        <button onclick="editTest(${t.id})" class="px-3 py-1.5 bg-amber-50 text-amber-700 font-bold rounded-xl text-xs hover:bg-amber-100">એડિટ</button>
+                        <button onclick="deleteTest(${t.id})" class="px-3 py-1.5 bg-rose-50 text-rose-700 font-bold rounded-xl text-xs hover:bg-rose-100">ડિલીટ</button>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function copyTestLink(link) {
+            navigator.clipboard.writeText(link);
+            alert('વિદ્યાર્થીઓ માટેની ટેસ્ટ લિંક ક્લિપબોર્ડમાં કૉપિ થઈ ગઈ છે! હવે તમે WhatsApp પર મોકલી શકો છો.');
+        }
+
+        function editTest(id) {
+            const t = testsDB.find(x => x.id == id);
+            if(!t) return;
+
+            editingTestId = t.id;
+            document.getElementById('new-test-title-input').value = t.title;
+            document.getElementById('new-test-pass-input').value = t.passMark;
+            if(t.deadline) document.getElementById('new-test-deadline-input').value = t.deadline;
+            draftQuestions = [...t.questions];
+            renderDraftList();
+
+            switchAdminTab('test-builder');
+        }
+
+        async function deleteTest(id) {
+            if(confirm('શું તમે ખરેખર આ ટેસ્ટ ડિલીટ કરવા માંગો છો?')) {
+                const { error } = await supabaseClient.from('tests').delete().eq('id', id);
+                if(!error) {
+                    alert('ટેસ્ટ ડિલીટ થઈ ગયો!');
+                    loadTestsFromSupabase();
+                } else {
+                    alert('એરર: ' + error.message);
+                }
             }
         }
 
@@ -550,7 +739,7 @@
             tbody.innerHTML = '';
 
             if(resultsDB.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">હજુ સુધી કોઈ પરિણામ ઉપલબ્ધ નથી.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">પરિણામો ઉપલબ્ધ નથી.</td></tr>`;
                 return;
             }
 
