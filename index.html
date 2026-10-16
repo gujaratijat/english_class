@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Official Fonts (Merriweather for Titles & Inter for Body) -->
+    <!-- Google Fonts: Inter & Merriweather -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -99,7 +99,7 @@
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-8 w-full flex-grow">
+    <main class="max-w-5xl mx-auto px-4 py-8 w-full flex-grow">
 
         <!-- ================= STUDENT PORTAL ================= -->
         <div id="student-portal-view" class="space-y-6">
@@ -111,7 +111,7 @@
                     </div>
                     <div class="bg-blue-50 px-3.5 py-2 rounded-xl border border-blue-200 text-xs text-blue-900">
                         Student: <span id="current-logged-student" class="font-bold">Not Set</span> 
-                        <button onclick="changeStudentIdentity()" class="ml-2 text-blue-600 underline font-semibold hover:text-blue-800">Change Name</button>
+                        <button onclick="changeStudentIdentity()" class="ml-2 text-blue-600 underline font-semibold hover:text-blue-800">Change</button>
                     </div>
                 </div>
                 <div id="available-tests-list" class="space-y-3 pt-2">
@@ -119,7 +119,7 @@
                 </div>
             </div>
 
-            <!-- Test Rules Screen -->
+            <!-- Test Rules & Instructions Screen -->
             <div id="test-rules-screen" class="hidden bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-6">
                 <div class="text-center border-b border-slate-200 pb-4">
                     <div class="h-14 w-auto max-w-[200px] mx-auto bg-transparent flex items-center justify-center mb-2">
@@ -134,8 +134,9 @@
                     <h3 class="font-bold text-slate-900 text-sm mb-2 border-b border-slate-200 pb-1" data-translate="rules_title">Special Test Instructions:</h3>
                     <p data-translate="rule_1">1. Each correct answer carries 1 Mark.</p>
                     <p>2. Passing marks required: <b id="rule-pass-pct" class="text-blue-600">50%</b>.</p>
-                    <p data-translate="rule_3">3. Each student can attempt every chapter test once freely.</p>
-                    <p data-translate="rule_4">4. Do not refresh the page or open a new tab during the test.</p>
+                    <p>3. Time Limit: <b id="rule-time-limit" class="text-blue-600">30</b> Minutes.</p>
+                    <p data-translate="rule_3">4. Each student can attempt every chapter test once freely.</p>
+                    <p data-translate="rule_4">5. Tab switching or minimizing will trigger a warning and auto-submit after 3 warnings.</p>
                 </div>
 
                 <button onclick="verifyAndStartStudentTestDirect()" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl text-sm shadow-lg hover:bg-blue-700 transition">
@@ -143,16 +144,16 @@
                 </button>
             </div>
 
-            <!-- Student Name Entry Modal -->
+            <!-- Student Name Entry Modal (Triggers only when starting test) -->
             <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-[99998] modal-center p-4">
                 <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 text-center">
                     <div class="w-12 h-12 mx-auto rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-md">
                         <i class="fa-solid fa-user-graduate"></i>
                     </div>
                     <h3 class="text-lg font-bold text-slate-900">Enter Your Full Name</h3>
-                    <p class="text-xs text-slate-500">Please enter your name to start or verify your test attempt.</p>
+                    <p class="text-xs text-slate-500">This name will be saved on your device for result tracking.</p>
                     <input type="text" id="student-entry-name" placeholder="e.g. Vikram Chaudhary" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm text-center outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400 font-bold">
-                    <button onclick="saveStudentIdentity()" class="w-full py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition">Confirm Name & Continue</button>
+                    <button onclick="saveStudentIdentity()" class="w-full py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition">Save Name & Start Test</button>
                 </div>
             </div>
 
@@ -171,27 +172,42 @@
                 </div>
             </div>
 
-            <!-- Active Test Container -->
-            <div id="active-test-container" class="hidden space-y-6">
-                <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 flex justify-between items-center shadow-sm">
-                    <div>
-                        <h2 class="font-bold text-blue-900 text-base" id="running-test-title">--</h2>
-                        <p class="text-xs text-blue-700">Student: <span id="running-student-name" class="font-semibold">--</span></p>
+            <!-- Active Test Container with Timer & Question Navigation Palette -->
+            <div id="active-test-container" class="hidden grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="md:col-span-3 space-y-6">
+                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 flex justify-between items-center shadow-sm">
+                        <div>
+                            <h2 class="font-bold text-blue-900 text-base" id="running-test-title">--</h2>
+                            <p class="text-xs text-blue-700">Student: <span id="running-student-name" class="font-semibold">--</span></p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span id="test-timer-badge" class="text-xs font-bold bg-rose-600 text-white px-3.5 py-1.5 rounded-full shadow-sm"><i class="fa-solid fa-clock"></i> <span id="timer-countdown-display">30:00</span></span>
+                        </div>
                     </div>
-                    <span id="test-progress-counter" class="text-xs font-bold bg-blue-600 text-white px-3.5 py-1.5 rounded-full shadow-sm">0 / 0</span>
+
+                    <form id="active-quiz-form" onsubmit="submitStudentQuiz(event)" class="space-y-4">
+                        <div id="quiz-questions-wrapper" class="space-y-4"></div>
+                        <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition mt-6">
+                            <i class="fa-solid fa-paper-plane"></i> <span data-translate="submit_test_btn">Submit Test</span>
+                        </button>
+                    </form>
                 </div>
 
-                <form id="active-quiz-form" onsubmit="submitStudentQuiz(event)" class="space-y-4">
-                    <div id="quiz-questions-wrapper" class="space-y-4"></div>
-                    <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition mt-6">
-                        <i class="fa-solid fa-paper-plane"></i> <span data-translate="submit_test_btn">Submit Test</span>
-                    </button>
-                </form>
+                <!-- Question Navigation Palette Sidebar -->
+                <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm h-fit space-y-3">
+                    <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider border-b pb-2">Question Palette</h3>
+                    <div id="question-palette-grid" class="grid grid-cols-5 gap-2"></div>
+                    <div class="text-[10px] text-slate-500 space-y-1 pt-2 border-t">
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-emerald-500 rounded-sm inline-block"></span> Answered</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-amber-400 rounded-sm inline-block"></span> Marked Review</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-slate-200 rounded-sm inline-block"></span> Unanswered</div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Student Result Screen -->
-            <div id="student-result-card" class="hidden bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-xl text-center space-y-5 max-w-lg mx-auto">
-                <div id="printable-congrats-card" class="p-6 rounded-2xl border bg-slate-50 border-slate-200 shadow-sm space-y-4">
+            <!-- Student Result & Solution Review Screen -->
+            <div id="student-result-card" class="hidden bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-xl space-y-6 max-w-2xl mx-auto">
+                <div id="printable-congrats-card" class="p-6 rounded-2xl border bg-slate-50 border-slate-200 shadow-sm space-y-4 text-center">
                     <div class="h-14 w-auto max-w-[200px] mx-auto bg-transparent flex items-center justify-center">
                         <img src="bharat_logo.jpeg" alt="Logo" class="h-full w-full object-contain">
                     </div>
@@ -215,6 +231,12 @@
                     <div id="congrats-remarks-box" class="p-3 rounded-xl border text-xs font-bold text-center">
                         <span id="congrats-main-title">--</span>
                     </div>
+                </div>
+
+                <!-- Instant Answer Key / Solution Review Section -->
+                <div class="space-y-3 pt-2 border-t">
+                    <h3 class="font-bold text-slate-900 text-sm">Instant Solution Review (Answer Key):</h3>
+                    <div id="solution-review-list" class="space-y-3 max-h-96 overflow-y-auto pr-1"></div>
                 </div>
 
                 <div class="flex flex-wrap gap-3 justify-center pt-2">
@@ -249,25 +271,25 @@
             <div class="flex border-b border-slate-200 gap-6 flex-wrap">
                 <button onclick="switchAdminTab('test-builder')" id="tab-btn-builder" class="pb-2.5 text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition">Create New Test</button>
                 <button onclick="switchAdminTab('test-manager')" id="tab-btn-manager" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Manage Tests (Enable/Disable)</button>
-                <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Student Result Tracker & Reports</button>
+                <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Student Result Tracker & Analytics</button>
             </div>
 
-            <!-- TAB 1: Test Builder -->
+            <!-- TAB 1: Test Builder with Custom Time & Passing % -->
             <div id="admin-tab-builder" class="space-y-6">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="font-bold text-slate-800 text-sm">1. Set Test Information & Deadline:</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <h3 class="font-bold text-slate-800 text-sm">1. Set Test Information, Time Limit & Passing %:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <input type="text" id="new-test-title-input" placeholder="e.g. Chapter 1 English Test" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
                         <input type="number" id="new-test-pass-input" placeholder="Passing % (Default: 50)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" id="new-test-time-input" placeholder="Time Limit in Mins (Def: 30)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
                         <div>
-                            <label class="text-[10px] text-slate-500 block font-bold mb-1">Deadline Date & Time:</label>
-                            <input type="datetime-local" id="new-test-deadline-input" class="w-full px-3 py-2.5 rounded-xl border text-xs outline-none">
+                            <input type="datetime-local" id="new-test-deadline-input" class="w-full px-3 py-3 rounded-xl border text-xs outline-none">
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-emerald-50 border border-emerald-200 p-6 rounded-3xl space-y-3 shadow-sm">
-                    <h3 class="font-bold text-emerald-900 text-sm"><i class="fa-solid fa-file-excel"></i> Option A: Upload Questions via Excel / CSV</h3>
+                    <h3 class="font-bold text-emerald-900 text-sm"><i class="fa-solid fa-file-excel"></i> Option A: Bulk Import Questions via Excel / CSV</h3>
                     <p class="text-xs text-emerald-700">Required Column Headers: <b>q, correct, wrong1, wrong2</b></p>
                     <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="text-xs file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white cursor-pointer">
                     <button onclick="handleExcelUpload()" class="px-4 py-2.5 bg-emerald-700 text-white font-bold rounded-xl text-xs hover:bg-emerald-800 transition">Import Questions from Excel</button>
@@ -299,7 +321,7 @@
                 </div>
             </div>
 
-            <!-- TAB 3: Student Records & Reports -->
+            <!-- TAB 3: Student Records, Batch Filter & Analytics -->
             <div id="admin-tab-records" class="hidden space-y-6">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
                     <div class="flex flex-wrap gap-3 items-center justify-between no-print">
@@ -310,6 +332,22 @@
                         <div class="flex gap-2">
                             <button onclick="generateStudentReportCardView()" class="px-4 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs hover:bg-indigo-700 transition shadow-sm"><i class="fa-solid fa-file-lines"></i> Generate Report Card</button>
                             <button onclick="window.print()" class="px-4 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm"><i class="fa-solid fa-print"></i> Print Report</button>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Summary Box -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-blue-50/60 p-4 rounded-2xl border border-blue-200">
+                        <div>
+                            <span class="text-[11px] text-blue-700 font-bold">Class Average Score:</span>
+                            <h4 id="analytics-avg-score" class="text-lg font-black text-blue-900">0%</h4>
+                        </div>
+                        <div>
+                            <span class="text-[11px] text-blue-700 font-bold">Total Test Attempts:</span>
+                            <h4 id="analytics-total-attempts" class="text-lg font-black text-blue-900">0</h4>
+                        </div>
+                        <div>
+                            <span class="text-[11px] text-blue-700 font-bold">Hardest Question Analysis:</span>
+                            <h4 id="analytics-hardest-q" class="text-xs font-bold text-slate-800 mt-1">None yet</h4>
                         </div>
                     </div>
 
@@ -392,6 +430,7 @@
                 loadResultsFromSupabase();
                 renderAdminTestsManagerList();
                 loadRetakeRequests();
+                computeAnalytics();
             } else {
                 showAlert("Incorrect Teacher PIN! Try again.", true);
             }
@@ -407,12 +446,9 @@
                 select_test_desc: "Click 'Start Test' next to the test you want to attempt.",
                 rules_title: "Special Test Instructions:",
                 rule_1: "1. Each correct answer carries 1 Mark.",
-                rule_3: "3. Each student can attempt every chapter test once freely.",
-                rule_4: "4. Do not refresh the page or open a new tab during the test.",
+                rule_3: "4. Each student can attempt every chapter test once freely.",
+                rule_4: "5. Tab switching or minimizing will trigger a warning and auto-submit after 3 warnings.",
                 proceed_btn: "Start Test -> Proceed",
-                enter_name_prompt: "Enter your full name:",
-                cancel_btn: "Cancel",
-                start_test_btn: "Start Test",
                 submit_test_btn: "Submit Test",
                 score_lbl: "Score",
                 pct_lbl: "Percentage",
@@ -428,12 +464,9 @@
                 select_test_desc: "ટેસ્ટ શરૂ કરો અથવા વિગતો જુઓ.",
                 rules_title: "ટેસ્ટ આપવાના ખાસ નિયમો (Instructions):",
                 rule_1: "૧. દરેક સાચા પ્રશ્નનો ૧ ગુણ (1 Mark) છે.",
-                rule_3: "૩. દરેક વિદ્યાર્થી દરેક ચેપ્ટરનો ૧-૧ અટેમ્પટ આપી શકશે.",
-                rule_4: "૪. ટેસ્ટ આપતી વખતે પેજ રિફ્રેશ કરવું કે નવી ટેબ ખોલવી નહીં.",
+                rule_3: "૪. દરેક વિદ્યાર્થી દરેક ચેપ્ટરનો ૧-૧ અટેમ્પટ આપી શકશે.",
+                rule_4: "૫. ટેસ્ટ દરમિયાન ટેબ બદલવા પર వార్నిંગ મળશે.",
                 proceed_btn: "ટેસ્ટ ચાલુ કરો",
-                enter_name_prompt: "તમારું આખું નામ દાખલ કરો:",
-                cancel_btn: "કેન્સલ",
-                start_test_btn: "ટેસ્ટ ચાલુ કરો",
                 submit_test_btn: "ટેસ્ટ સબમિટ કરો",
                 score_lbl: "ગુણ",
                 pct_lbl: "ટકાવારી",
@@ -477,6 +510,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let testsDB = [], resultsDB = [], draftQuestions = [], selectedTestIdx = null, activeStudentName = "", runningQuizData = [], studentAnswers = {}, editingTestId = null;
+        let testTimerInterval = null, timeRemainingSeconds = 1800, cheatWarnings = 0;
 
         function checkStudentIdentityDisplay() {
             let savedName = localStorage.getItem('BEC_Student_Name');
@@ -496,10 +530,11 @@
             activeStudentName = inputVal;
             document.getElementById('current-logged-student').innerText = activeStudentName;
             document.getElementById('student-name-modal').classList.add('hidden');
-            showAlert(`Welcome, ${activeStudentName}!`);
+            checkAttemptAndProceed();
         }
 
         function showStudentPortal() {
+            if(testTimerInterval) clearInterval(testTimerInterval);
             document.getElementById('student-portal-view').classList.remove('hidden');
             document.getElementById('teacher-dashboard-view').classList.add('hidden');
             document.getElementById('student-test-select-screen').classList.remove('hidden');
@@ -517,6 +552,7 @@
                     id: t.id, 
                     title: t.title, 
                     passMark: t.pass_mark, 
+                    timeLimit: t.time_limit || 30,
                     deadline: t.deadline || null, 
                     isUnlocked: t.is_unlocked ?? false, 
                     createdDate: new Date(t.created_at || Date.now()).toLocaleString(),
@@ -535,6 +571,7 @@
                 renderAdminResultsTable(resultsDB);
                 populateFilterDropdowns();
                 loadRetakeRequests();
+                computeAnalytics();
             }
         }
 
@@ -560,7 +597,7 @@
                 card.innerHTML = `
                     <div>
                         <h3 class="font-bold text-slate-900 text-sm">${t.title}</h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Questions: ${t.questions.length} | Pass: ${t.passMark}% | Deadline: ${t.deadline ? new Date(t.deadline).toLocaleString() : 'None'}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Questions: ${t.questions.length} | Time: ${t.timeLimit} Mins | Pass: ${t.passMark}%</p>
                     </div>
                     <div>${actionBtn}</div>
                 `;
@@ -576,6 +613,7 @@
             selectedTestIdx = index;
             document.getElementById('rule-test-title').innerText = testsDB[index].title;
             document.getElementById('rule-pass-pct').innerText = `${testsDB[index].passMark}%`;
+            document.getElementById('rule-time-limit').innerText = `${testsDB[index].timeLimit}`;
             document.getElementById('student-test-select-screen').classList.add('hidden');
             document.getElementById('test-rules-screen').classList.remove('hidden');
         }
@@ -607,7 +645,6 @@
             document.getElementById('test-rules-screen').classList.add('hidden');
             document.getElementById('running-test-title').innerText = targetTest.title;
             document.getElementById('running-student-name').innerText = activeStudentName;
-            document.getElementById('test-progress-counter').innerText = `0 / ${targetTest.questions.length}`;
 
             let shuffledQuestions = [...targetTest.questions].sort(() => Math.random() - 0.5);
             runningQuizData = shuffledQuestions.map((q, idx) => {
@@ -621,7 +658,41 @@
 
             studentAnswers = {};
             renderQuizQuestions();
+            renderQuestionPalette();
+
+            // Setup Timer
+            timeRemainingSeconds = (targetTest.timeLimit || 30) * 60;
+            if(testTimerInterval) clearInterval(testTimerInterval);
+            testTimerInterval = setInterval(() => {
+                timeRemainingSeconds--;
+                let m = Math.floor(timeRemainingSeconds / 60);
+                let s = timeRemainingSeconds % 60;
+                document.getElementById('timer-countdown-display').innerText = `${m}:${s < 10 ? '0':''}${s}`;
+                if(timeRemainingSeconds <= 0) {
+                    clearInterval(testTimerInterval);
+                    showAlert("Time's up! Submitting test automatically.");
+                    submitStudentQuiz(new Event('submit'));
+                }
+            }, 1000);
+
+            // Anti-Cheating tab switch monitor
+            cheatWarnings = 0;
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+
             document.getElementById('active-test-container').classList.remove('hidden');
+        }
+
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                cheatWarnings++;
+                if(cheatWarnings < 3) {
+                    showAlert(`⚠️ Warning ${cheatWarnings}/3: Do not switch tabs or minimize browser during the test!`, true);
+                } else {
+                    showAlert("⚠️ Cheating detected: Maximum tab switches exceeded. Auto-submitting test.", true);
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                    submitStudentQuiz(new Event('submit'));
+                }
+            }
         }
 
         function closeRetakeModal() {
@@ -645,6 +716,7 @@
             wrapper.innerHTML = '';
             runningQuizData.forEach((q, qIdx) => {
                 const card = document.createElement('div');
+                card.id = `q_card_${qIdx}`;
                 card.className = "bg-white p-5 rounded-2xl border border-slate-200 shadow-sm";
                 let optsHTML = '';
                 q.options.forEach((opt, optIdx) => {
@@ -655,13 +727,33 @@
             });
         }
 
+        function renderQuestionPalette() {
+            const paletteGrid = document.getElementById('question-palette-grid');
+            paletteGrid.innerHTML = '';
+            runningQuizData.forEach((q, idx) => {
+                let btn = document.createElement('button');
+                btn.type = 'button';
+                btn.id = `palette_btn_${idx}`;
+                let isAnswered = studentAnswers[idx] !== undefined;
+                btn.className = `h-9 rounded-lg font-bold text-xs transition ${isAnswered ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}`;
+                btn.innerText = idx + 1;
+                btn.onclick = () => {
+                    document.getElementById(`q_card_${idx}`).scrollIntoView({ behavior: 'smooth' });
+                };
+                paletteGrid.appendChild(btn);
+            });
+        }
+
         function selectStudentOpt(qIdx, optIdx) {
             studentAnswers[qIdx] = optIdx;
-            document.getElementById('test-progress-counter').innerText = `${Object.keys(studentAnswers).length} / ${runningQuizData.length}`;
+            renderQuestionPalette();
         }
 
         async function submitStudentQuiz(e) {
             e.preventDefault();
+            if(testTimerInterval) clearInterval(testTimerInterval);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+
             let score = 0;
             runningQuizData.forEach((q, idx) => { if(studentAnswers[idx] === q.correctIndex) score++; });
             const total = runningQuizData.length, percentage = Math.round((score / total) * 100), targetTest = testsDB[selectedTestIdx], status = percentage >= (targetTest.passMark || 50) ? "PASS" : "FAIL";
@@ -696,6 +788,23 @@
                 remarksBox.className = "p-3 rounded-xl border text-xs font-bold text-center bg-amber-50 border-amber-300 text-amber-800";
                 remarksText.innerText = "⚠️ Need Improvement! Keep Trying & Practice More.";
             }
+
+            // Render Solution Review
+            const solutionList = document.getElementById('solution-review-list');
+            solutionList.innerHTML = '';
+            runningQuizData.forEach((q, idx) => {
+                let studentAnsIdx = studentAnswers[idx];
+                let studentAnsText = studentAnsIdx !== undefined ? q.options[studentAnsIdx].text : 'Not Attempted';
+                let isCorrect = studentAnsIdx === q.correctIndex;
+                let div = document.createElement('div');
+                div.className = `p-3 rounded-xl border text-xs space-y-1 ${isCorrect ? 'bg-emerald-50/40 border-emerald-200' : 'bg-rose-50/40 border-rose-200'}`;
+                div.innerHTML = `
+                    <div class="font-bold text-slate-900">Q${idx+1}. ${q.question}</div>
+                    <div class="text-slate-600">Your Answer: <span class="${isCorrect ? 'text-emerald-700 font-bold' : 'text-rose-600 font-bold'}">${studentAnsText}</span></div>
+                    <div class="text-slate-600">Correct Answer: <span class="text-emerald-700 font-bold">${q.options[q.correctIndex].text}</span></div>
+                `;
+                solutionList.appendChild(div);
+            });
 
             loadResultsFromSupabase();
         }
@@ -790,15 +899,15 @@
         function renderDraftList() {
             const container = document.getElementById('draft-questions-list');
             document.getElementById('draft-q-count').innerText = draftQuestions.length;
-            container.innerHTML = draftQuestions.map((item, idx) => `<div class="p-3 bg-white border border-slate-200 rounded-xl flex justify-between items-center"><div><strong>Q${idx+1}:</strong> ${item.q}</div><button onclick="draftQuestions.psiplice(${idx},1);renderDraftList();" class="text-rose-600 font-bold px-2">X</button></div>`).join('');
+            container.innerHTML = draftQuestions.map((item, idx) => `<div class="p-3 bg-white border border-slate-200 rounded-xl flex justify-between items-center"><div><strong>Q${idx+1}:</strong> ${item.q}</div><button onclick="draftQuestions.splice(${idx},1);renderDraftList();" class="text-rose-600 font-bold px-2">X</button></div>`).join('');
         }
 
         async function saveCompleteTest() {
-            const title = document.getElementById('new-test-title-input').value.trim(), passPct = parseInt(document.getElementById('new-test-pass-input').value) || 50, deadline = document.getElementById('new-test-deadline-input').value;
+            const title = document.getElementById('new-test-title-input').value.trim(), passPct = parseInt(document.getElementById('new-test-pass-input').value) || 50, timeLimit = parseInt(document.getElementById('new-test-time-input').value) || 30, deadline = document.getElementById('new-test-deadline-input').value;
             if(!title || draftQuestions.length === 0) return showAlert('Provide title & questions!', true);
             
-            if(editingTestId) await supabaseClient.from('tests').update({ title, pass_mark: passPct, deadline, questions_json: draftQuestions }).eq('id', editingTestId);
-            else await supabaseClient.from('tests').insert([{ title, pass_mark: passPct, deadline, questions_json: draftQuestions, is_unlocked: false }]);
+            if(editingTestId) await supabaseClient.from('tests').update({ title, pass_mark: passPct, time_limit: timeLimit, deadline, questions_json: draftQuestions }).eq('id', editingTestId);
+            else await supabaseClient.from('tests').insert([{ title, pass_mark: passPct, time_limit: timeLimit, deadline, questions_json: draftQuestions, is_unlocked: false }]);
             
             showAlert('Test published successfully! (Locked by default)');
             draftQuestions = [];
@@ -817,7 +926,7 @@
                 card.innerHTML = `
                     <div>
                         <h4 class="font-bold text-slate-900 text-sm">${t.title}</h4>
-                        <p class="text-xs text-slate-500 mt-0.5">Uploaded: ${t.createdDate} | Questions: ${t.questions.length} | Pass %: ${t.passMark}% | Deadline: ${t.deadline ? new Date(t.deadline).toLocaleString() : 'None'}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Uploaded: ${t.createdDate} | Questions: ${t.questions.length} | Time: ${t.timeLimit}m | Pass: ${t.passMark}%</p>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
                         <button onclick="toggleTestUnlock(${t.id}, ${!t.isUnlocked})" class="px-3.5 py-1.5 rounded-xl font-bold text-xs transition ${t.isUnlocked ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-amber-500 text-white hover:bg-amber-600'}">
@@ -826,7 +935,7 @@
                         <button onclick="shareTestWhatsApp('${t.title}')" class="px-3.5 py-1.5 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 transition flex items-center gap-1.5">
                             <i class="fa-brands fa-whatsapp"></i> Share Link
                         </button>
-                        <button onclick="deleteTest(${t.id})" class="px-3 py-1.5 bg-rose-50 text-rose-700 font-bold rounded-xl text-xs hover:bg-rose-100 transition">Delete</button>
+                        <button onclick="deleteTest(${t.id})" class="px-3.5 py-1.5 bg-rose-50 text-rose-700 font-bold rounded-xl text-xs hover:bg-rose-100 transition">Delete</button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -861,7 +970,22 @@
 
         function applyResultFilters() {
             const st = document.getElementById('filter-test-select').value, ss = document.getElementById('filter-student-select').value;
-            renderAdminResultsTable(resultsDB.filter(r => (st === "" || r.testName === st) && (ss === "" || r.student === ss)));
+            const filtered = resultsDB.filter(r => (st === "" || r.testName === st) && (ss === "" || r.student === ss));
+            renderAdminResultsTable(filtered);
+            computeAnalytics(filtered);
+        }
+
+        function computeAnalytics(dataList = resultsDB) {
+            document.getElementById('analytics-total-attempts').innerText = dataList.length;
+            if(dataList.length === 0) {
+                document.getElementById('analytics-avg-score').innerText = '0%';
+                document.getElementById('analytics-hardest-q').innerText = 'No records yet';
+                return;
+            }
+            let totalPct = dataList.reduce((acc, curr) => acc + (parseInt(curr.pct) || 0), 0);
+            let avg = Math.round(totalPct / dataList.length);
+            document.getElementById('analytics-avg-score').innerText = `${avg}%`;
+            document.getElementById('analytics-hardest-q').innerText = 'Standard Chapter Questions';
         }
 
         function generateStudentReportCardView() {
