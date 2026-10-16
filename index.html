@@ -8,9 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Inter & Merriweather -->
-    <!-- Gujarati Google Font: Noto Sans Gujarati -->
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Noto Sans Gujarati, Inter, Cambria -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- SheetJS & html2canvas -->
@@ -18,7 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { 
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             user-select: none;
             -webkit-user-select: none;
             background-color: #f8fafc;
@@ -26,7 +25,11 @@
             font-size: 14px;
         }
         .official-title {
-            font-family: 'Merriweather', serif;
+            font-family: 'Cambria', Georgia, serif;
+            font-weight: 700;
+        }
+        :lang(gu), [lang="gu"] {
+            font-family: 'Noto Sans Gujarati', -apple-system, BlinkMacSystemFont, sans-serif !important;
         }
         .modal-center {
             display: flex;
@@ -100,7 +103,7 @@
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-4 py-8 w-full flex-grow">
+    <main class="max-w-4xl mx-auto px-4 py-8 w-full flex-grow">
 
         <!-- ================= STUDENT PORTAL ================= -->
         <div id="student-portal-view" class="space-y-6">
@@ -112,7 +115,7 @@
                     </div>
                     <div class="bg-blue-50 px-3.5 py-2 rounded-xl border border-blue-200 text-xs text-blue-900">
                         Student: <span id="current-logged-student" class="font-bold">Not Set</span> 
-                        <button onclick="changeStudentIdentity()" class="ml-2 text-blue-600 underline font-semibold hover:text-blue-800">Change</button>
+                        <button onclick="changeStudentIdentity()" class="ml-2 text-blue-600 underline font-semibold hover:text-blue-800">Change Name</button>
                     </div>
                 </div>
                 <div id="available-tests-list" class="space-y-3 pt-2">
@@ -145,7 +148,7 @@
                 </button>
             </div>
 
-            <!-- Student Name Entry Modal (Triggers only when starting test) -->
+            <!-- Student Name Entry Modal -->
             <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-[99998] modal-center p-4">
                 <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 text-center">
                     <div class="w-12 h-12 mx-auto rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-md">
@@ -173,42 +176,31 @@
                 </div>
             </div>
 
-            <!-- Active Test Container with Timer & Question Navigation Palette -->
-            <div id="active-test-container" class="hidden grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="md:col-span-3 space-y-6">
-                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 flex justify-between items-center shadow-sm">
-                        <div>
-                            <h2 class="font-bold text-blue-900 text-base" id="running-test-title">--</h2>
-                            <p class="text-xs text-blue-700">Student: <span id="running-student-name" class="font-semibold">--</span></p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span id="test-timer-badge" class="text-xs font-bold bg-rose-600 text-white px-3.5 py-1.5 rounded-full shadow-sm"><i class="fa-solid fa-clock"></i> <span id="timer-countdown-display">30:00</span></span>
-                        </div>
+            <!-- Active Test Container with Timer Countdown -->
+            <div id="active-test-container" class="hidden space-y-6">
+                <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 flex justify-between items-center shadow-sm sticky top-16 z-30">
+                    <div>
+                        <h2 class="font-bold text-blue-900 text-base" id="running-test-title">--</h2>
+                        <p class="text-xs text-blue-700">Student: <span id="running-student-name" class="font-semibold">--</span></p>
                     </div>
-
-                    <form id="active-quiz-form" onsubmit="submitStudentQuiz(event)" class="space-y-4">
-                        <div id="quiz-questions-wrapper" class="space-y-4"></div>
-                        <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition mt-6">
-                            <i class="fa-solid fa-paper-plane"></i> <span data-translate="submit_test_btn">Submit Test</span>
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Question Navigation Palette Sidebar -->
-                <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm h-fit space-y-3">
-                    <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider border-b pb-2">Question Palette</h3>
-                    <div id="question-palette-grid" class="grid grid-cols-5 gap-2"></div>
-                    <div class="text-[10px] text-slate-500 space-y-1 pt-2 border-t">
-                        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-emerald-500 rounded-sm inline-block"></span> Answered</div>
-                        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-amber-400 rounded-sm inline-block"></span> Marked Review</div>
-                        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-slate-200 rounded-sm inline-block"></span> Unanswered</div>
+                    <div class="flex items-center gap-3">
+                        <span id="test-progress-counter" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full border border-blue-200">0 / 0 Answered</span>
+                        <span id="test-timer-badge" class="text-xs font-bold bg-rose-600 text-white px-3.5 py-1.5 rounded-full shadow-sm"><i class="fa-solid fa-clock"></i> <span id="timer-countdown-display">30:00</span></span>
                     </div>
                 </div>
+
+                <form id="active-quiz-form" onsubmit="submitStudentQuiz(event)" class="space-y-4">
+                    <div id="quiz-questions-wrapper" class="space-y-4"></div>
+                    <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition mt-6">
+                        <i class="fa-solid fa-paper-plane"></i> <span data-translate="submit_test_btn">Submit Test</span>
+                    </button>
+                </form>
             </div>
 
             <!-- Student Result & Solution Review Screen -->
-            <div id="student-result-card" class="hidden bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-xl space-y-6 max-w-2xl mx-auto">
-                <div id="printable-congrats-card" class="p-6 rounded-2xl border bg-slate-50 border-slate-200 shadow-sm space-y-4 text-center">
+            <div id="student-result-card" class="hidden space-y-6 max-w-xl mx-auto">
+                <!-- Well-Aligned Report Card Frame (Exact Portion for Sharing) -->
+                <div id="printable-congrats-card" class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl space-y-4 text-center">
                     <div class="h-14 w-auto max-w-[200px] mx-auto bg-transparent flex items-center justify-center">
                         <img src="bharat_logo.jpeg" alt="Logo" class="h-full w-full object-contain">
                     </div>
@@ -217,9 +209,9 @@
                         <p class="text-[11px] text-slate-500 font-medium">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                     </div>
                     <div class="border-t border-slate-200 pt-3">
-                        <span class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1 rounded-full uppercase tracking-wider">Test Report Card</span>
+                        <span class="text-xs font-bold bg-blue-100 text-blue-800 px-3.5 py-1 rounded-full uppercase tracking-wider">Test Report Card</span>
                     </div>
-                    <div class="bg-white p-3 rounded-xl border border-slate-200 text-left space-y-1">
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-left space-y-1">
                         <p class="text-xs text-slate-600">Student Name: <b id="res-student-name" class="text-slate-900 font-bold">--</b></p>
                         <p class="text-xs text-slate-600">Chapter / Test: <b id="res-test-name" class="text-blue-700 font-bold">--</b></p>
                     </div>
@@ -234,17 +226,20 @@
                     </div>
                 </div>
 
-                <!-- Instant Answer Key / Solution Review Section -->
-                <div class="space-y-3 pt-2 border-t">
-                    <h3 class="font-bold text-slate-900 text-sm">Instant Solution Review (Answer Key):</h3>
-                    <div id="solution-review-list" class="space-y-3 max-h-96 overflow-y-auto pr-1"></div>
-                </div>
-
-                <div class="flex flex-wrap gap-3 justify-center pt-2">
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap gap-3 justify-center">
                     <button onclick="shareResultAsJPGWhatsApp()" class="px-5 py-3 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 transition flex items-center gap-2 shadow-sm">
-                        <i class="fa-brands fa-whatsapp text-sm"></i> Share Result JPG on WhatsApp
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Share Report Card JPG
                     </button>
                     <button onclick="showStudentPortal()" class="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition" data-translate="home_btn">Go to Home Screen</button>
+                </div>
+
+                <!-- Solution Review Section (Shows Only Incorrect/Mistaken Questions) -->
+                <div id="incorrect-solutions-container" class="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg space-y-3">
+                    <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 border-b pb-2">
+                        <i class="fa-solid fa-circle-xmark text-rose-500"></i> Incorrect Questions Analysis (Answer Key)
+                    </h3>
+                    <div id="solution-review-list" class="space-y-3"></div>
                 </div>
             </div>
         </div>
@@ -275,7 +270,7 @@
                 <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Student Result Tracker & Analytics</button>
             </div>
 
-            <!-- TAB 1: Test Builder with Custom Time & Passing % -->
+            <!-- TAB 1: Test Builder -->
             <div id="admin-tab-builder" class="space-y-6">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
                     <h3 class="font-bold text-slate-800 text-sm">1. Set Test Information, Time Limit & Passing %:</h3>
@@ -322,7 +317,7 @@
                 </div>
             </div>
 
-            <!-- TAB 3: Student Records, Batch Filter & Analytics -->
+            <!-- TAB 3: Student Records & Reports -->
             <div id="admin-tab-records" class="hidden space-y-6">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
                     <div class="flex flex-wrap gap-3 items-center justify-between no-print">
@@ -333,22 +328,6 @@
                         <div class="flex gap-2">
                             <button onclick="generateStudentReportCardView()" class="px-4 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs hover:bg-indigo-700 transition shadow-sm"><i class="fa-solid fa-file-lines"></i> Generate Report Card</button>
                             <button onclick="window.print()" class="px-4 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm"><i class="fa-solid fa-print"></i> Print Report</button>
-                        </div>
-                    </div>
-
-                    <!-- Analytics Summary Box -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-blue-50/60 p-4 rounded-2xl border border-blue-200">
-                        <div>
-                            <span class="text-[11px] text-blue-700 font-bold">Class Average Score:</span>
-                            <h4 id="analytics-avg-score" class="text-lg font-black text-blue-900">0%</h4>
-                        </div>
-                        <div>
-                            <span class="text-[11px] text-blue-700 font-bold">Total Test Attempts:</span>
-                            <h4 id="analytics-total-attempts" class="text-lg font-black text-blue-900">0</h4>
-                        </div>
-                        <div>
-                            <span class="text-[11px] text-blue-700 font-bold">Hardest Question Analysis:</span>
-                            <h4 id="analytics-hardest-q" class="text-xs font-bold text-slate-800 mt-1">None yet</h4>
                         </div>
                     </div>
 
@@ -431,7 +410,6 @@
                 loadResultsFromSupabase();
                 renderAdminTestsManagerList();
                 loadRetakeRequests();
-                computeAnalytics();
             } else {
                 showAlert("Incorrect Teacher PIN! Try again.", true);
             }
@@ -466,7 +444,7 @@
                 rules_title: "ટેસ્ટ આપવાના ખાસ નિયમો (Instructions):",
                 rule_1: "૧. દરેક સાચા પ્રશ્નનો ૧ ગુણ (1 Mark) છે.",
                 rule_3: "૪. દરેક વિદ્યાર્થી દરેક ચેપ્ટરનો ૧-૧ અટેમ્પટ આપી શકશે.",
-                rule_4: "૫. ટેસ્ટ દરમિયાન ટેબ બદલવા પર వార్నిંગ મળશે.",
+                rule_4: "૫. ટેસ્ટ દરમિયાન ટેબ બદલવા પર વાર્નિંગ મળશે.",
                 proceed_btn: "ટેસ્ટ ચાલુ કરો",
                 submit_test_btn: "ટેસ્ટ સબમિટ કરો",
                 score_lbl: "ગુણ",
@@ -572,7 +550,6 @@
                 renderAdminResultsTable(resultsDB);
                 populateFilterDropdowns();
                 loadRetakeRequests();
-                computeAnalytics();
             }
         }
 
@@ -659,7 +636,7 @@
 
             studentAnswers = {};
             renderQuizQuestions();
-            renderQuestionPalette();
+            updateProgressDisplay();
 
             // Setup Timer
             timeRemainingSeconds = (targetTest.timeLimit || 30) * 60;
@@ -672,7 +649,7 @@
                 if(timeRemainingSeconds <= 0) {
                     clearInterval(testTimerInterval);
                     showAlert("Time's up! Submitting test automatically.");
-                    submitStudentQuiz(new Event('submit'));
+                    forceSubmitQuiz();
                 }
             }, 1000);
 
@@ -691,7 +668,7 @@
                 } else {
                     showAlert("⚠️ Cheating detected: Maximum tab switches exceeded. Auto-submitting test.", true);
                     document.removeEventListener('visibilitychange', handleVisibilityChange);
-                    submitStudentQuiz(new Event('submit'));
+                    forceSubmitQuiz();
                 }
             }
         }
@@ -728,30 +705,39 @@
             });
         }
 
-        function renderQuestionPalette() {
-            const paletteGrid = document.getElementById('question-palette-grid');
-            paletteGrid.innerHTML = '';
-            runningQuizData.forEach((q, idx) => {
-                let btn = document.createElement('button');
-                btn.type = 'button';
-                btn.id = `palette_btn_${idx}`;
-                let isAnswered = studentAnswers[idx] !== undefined;
-                btn.className = `h-9 rounded-lg font-bold text-xs transition ${isAnswered ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}`;
-                btn.innerText = idx + 1;
-                btn.onclick = () => {
-                    document.getElementById(`q_card_${idx}`).scrollIntoView({ behavior: 'smooth' });
-                };
-                paletteGrid.appendChild(btn);
-            });
-        }
-
         function selectStudentOpt(qIdx, optIdx) {
             studentAnswers[qIdx] = optIdx;
-            renderQuestionPalette();
+            updateProgressDisplay();
         }
 
-        async function submitStudentQuiz(e) {
+        function updateProgressDisplay() {
+            const answeredCount = Object.keys(studentAnswers).length;
+            document.getElementById('test-progress-counter').innerText = `${answeredCount} / ${runningQuizData.length} Answered`;
+        }
+
+        function submitStudentQuiz(e) {
             e.preventDefault();
+            const totalQuestions = runningQuizData.length;
+            const answeredQuestions = Object.keys(studentAnswers).length;
+            const remaining = totalQuestions - answeredQuestions;
+
+            if (remaining > 0) {
+                if (remaining >= 3) {
+                    showAlert("ઘણા જવાબો સિલેક્ટ કરવાના બાકી છે! કૃપા કરીને બધા જ પ્રશ્નોના જવાબો આપો.", true);
+                } else {
+                    let unansList = [];
+                    runningQuizData.forEach((q, idx) => {
+                        if (studentAnswers[idx] === undefined) unansList.push(idx + 1);
+                    });
+                    showAlert(`પ્રશ્ન નંબર ${unansList.join(', ')} નો જવાબ આપવાનો બાકી છે!`, true);
+                }
+                return;
+            }
+
+            forceSubmitQuiz();
+        }
+
+        async function forceSubmitQuiz() {
             if(testTimerInterval) clearInterval(testTimerInterval);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
 
@@ -790,30 +776,44 @@
                 remarksText.innerText = "⚠️ Need Improvement! Keep Trying & Practice More.";
             }
 
-            // Render Solution Review
+            // Solution Review (Only showing incorrect/wrongly answered questions)
             const solutionList = document.getElementById('solution-review-list');
+            const solutionContainer = document.getElementById('incorrect-solutions-container');
             solutionList.innerHTML = '';
+            
+            let incorrectCount = 0;
             runningQuizData.forEach((q, idx) => {
                 let studentAnsIdx = studentAnswers[idx];
-                let studentAnsText = studentAnsIdx !== undefined ? q.options[studentAnsIdx].text : 'Not Attempted';
                 let isCorrect = studentAnsIdx === q.correctIndex;
-                let div = document.createElement('div');
-                div.className = `p-3 rounded-xl border text-xs space-y-1 ${isCorrect ? 'bg-emerald-50/40 border-emerald-200' : 'bg-rose-50/40 border-rose-200'}`;
-                div.innerHTML = `
-                    <div class="font-bold text-slate-900">Q${idx+1}. ${q.question}</div>
-                    <div class="text-slate-600">Your Answer: <span class="${isCorrect ? 'text-emerald-700 font-bold' : 'text-rose-600 font-bold'}">${studentAnsText}</span></div>
-                    <div class="text-slate-600">Correct Answer: <span class="text-emerald-700 font-bold">${q.options[q.correctIndex].text}</span></div>
-                `;
-                solutionList.appendChild(div);
+
+                if (!isCorrect) {
+                    incorrectCount++;
+                    let studentAnsText = studentAnsIdx !== undefined ? q.options[studentAnsIdx].text : 'Not Attempted';
+                    let div = document.createElement('div');
+                    div.className = "p-3.5 rounded-xl border border-rose-200 bg-rose-50/40 text-xs space-y-1";
+                    div.innerHTML = `
+                        <div class="font-bold text-slate-900">Q${idx+1}. ${q.question}</div>
+                        <div class="text-rose-600">Your Answer: <span class="font-bold">${studentAnsText}</span></div>
+                        <div class="text-emerald-700">Correct Answer: <span class="font-bold">${q.options[q.correctIndex].text}</span></div>
+                    `;
+                    solutionList.appendChild(div);
+                }
             });
+
+            if(incorrectCount === 0) {
+                solutionContainer.classList.add('hidden');
+            } else {
+                solutionContainer.classList.remove('hidden');
+            }
 
             loadResultsFromSupabase();
         }
 
         function shareResultAsJPGWhatsApp() {
+            // Renders and downloads ONLY the neatly aligned Report Card frame
             html2canvas(document.getElementById('printable-congrats-card'), { backgroundColor: '#ffffff', scale: 2 }).then(canvas => {
                 canvas.toBlob(blob => {
-                    const file = new File([blob], "result-card.jpg", { type: "image/jpeg" });
+                    const file = new File([blob], `${activeStudentName}-result.jpg`, { type: "image/jpeg" });
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         navigator.share({ files: [file], title: 'Test Result Card', text: `Bharat Education Center Result for ${activeStudentName}` });
                     } else {
@@ -821,7 +821,7 @@
                         link.download = `${activeStudentName}-result.jpg`;
                         link.href = canvas.toDataURL('image/jpeg');
                         link.click();
-                        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`*BHARAT EDUCATION CENTER Result*\nStudent: ${activeStudentName}\nScore:${document.getElementById('res-score').innerText}`)}`, '_blank');
+                        showAlert('Report Card Image Downloaded!');
                     }
                 }, 'image/jpeg');
             });
@@ -933,8 +933,8 @@
                         <button onclick="toggleTestUnlock(${t.id}, ${!t.isUnlocked})" class="px-3.5 py-1.5 rounded-xl font-bold text-xs transition ${t.isUnlocked ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-amber-500 text-white hover:bg-amber-600'}">
                             ${t.isUnlocked ? '<i class="fa-solid fa-lock-open"></i> Unlocked' : '<i class="fa-solid fa-lock"></i> Locked'}
                         </button>
-                        <button onclick="shareTestWhatsApp('${t.title}')" class="px-3.5 py-1.5 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 transition flex items-center gap-1.5">
-                            <i class="fa-brands fa-whatsapp"></i> Share Link
+                        <button onclick="copyTestLinkToClipboard('${t.title}')" class="px-3.5 py-1.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-copy"></i> Copy Test Link
                         </button>
                         <button onclick="deleteTest(${t.id})" class="px-3.5 py-1.5 bg-rose-50 text-rose-700 font-bold rounded-xl text-xs hover:bg-rose-100 transition">Delete</button>
                     </div>
@@ -943,9 +943,13 @@
             });
         }
 
-        function shareTestWhatsApp(testTitle) {
-            let msg = `*BHARAT EDUCATION CENTER*\nTest Available: *${testTitle}*\nPortal Link: ${window.location.href.split('?')[0]}`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+        function copyTestLinkToClipboard(testTitle) {
+            const link = window.location.href.split('?')[0] + `?test=${encodeURIComponent(testTitle)}&mode=student`;
+            navigator.clipboard.writeText(link).then(() => {
+                showAlert('Link Copied to Clipboard!');
+            }).catch(() => {
+                showAlert('Failed to copy link automatically.', true);
+            });
         }
 
         async function toggleTestUnlock(testId, newState) {
@@ -971,22 +975,7 @@
 
         function applyResultFilters() {
             const st = document.getElementById('filter-test-select').value, ss = document.getElementById('filter-student-select').value;
-            const filtered = resultsDB.filter(r => (st === "" || r.testName === st) && (ss === "" || r.student === ss));
-            renderAdminResultsTable(filtered);
-            computeAnalytics(filtered);
-        }
-
-        function computeAnalytics(dataList = resultsDB) {
-            document.getElementById('analytics-total-attempts').innerText = dataList.length;
-            if(dataList.length === 0) {
-                document.getElementById('analytics-avg-score').innerText = '0%';
-                document.getElementById('analytics-hardest-q').innerText = 'No records yet';
-                return;
-            }
-            let totalPct = dataList.reduce((acc, curr) => acc + (parseInt(curr.pct) || 0), 0);
-            let avg = Math.round(totalPct / dataList.length);
-            document.getElementById('analytics-avg-score').innerText = `${avg}%`;
-            document.getElementById('analytics-hardest-q').innerText = 'Standard Chapter Questions';
+            renderAdminResultsTable(resultsDB.filter(r => (st === "" || r.testName === st) && (ss === "" || r.student === ss)));
         }
 
         function generateStudentReportCardView() {
