@@ -16,12 +16,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { font-family: 'Hind Vadodara', 'Inter', sans-serif; }
+        @media print {
+            body * { visibility: hidden; }
+            #printable-result-section, #printable-result-section * { visibility: visible; }
+            #printable-result-section { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
     <!-- Navigation Header -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <header id="main-header" class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
             <div>
                 <h1 class="text-lg font-bold text-blue-700 flex items-center gap-2">
@@ -29,7 +35,7 @@
                 </h1>
                 <p class="text-xs text-slate-500">Teacher: Chetan Soni | Online Test Management Portal</p>
             </div>
-            <div class="flex gap-2">
+            <div id="header-nav-buttons" class="flex gap-2">
                 <button onclick="router('student')" class="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-100">
                     <i class="fa-solid fa-user"></i> વિદ્યાર્થી પોર્ટલ
                 </button>
@@ -47,13 +53,13 @@
             <!-- Select Test Screen -->
             <div id="test-select-screen" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-md">
                 <h2 class="text-xl font-bold text-slate-900 mb-2">ઉપલબ્ધ ટેસ્ટ સિલેક્ટ કરો:</h2>
-                <p class="text-xs text-slate-500 mb-4">તમારે જે ટેસ્ટ આપવો હોય તેની સામે 'ટેસ્ટ શરૂ કરો' પર ક્લિક કરો (દરેક વિદ્યાર્થી ફક્ત ૧ જ વાર ટેસ્ટ આપી શકશે).</p>
+                <p class="text-xs text-slate-500 mb-4">તમારે જે ટેસ્ટ આપવો હોય તેની સામે 'ટેસ્ટ શરૂ કરો' પર ક્લિક કરો.</p>
                 <div id="available-tests-list" class="space-y-3">
                     <p class="text-xs text-slate-400">ટેસ્ટ લોડ થઈ રહ્યા છે...</p>
                 </div>
             </div>
 
-            <!-- Student Name & Validation Modal -->
+            <!-- Student Name Entry Modal -->
             <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                 <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
                     <h3 class="text-lg font-bold text-slate-900 mb-1" id="active-test-modal-title">ટેસ્ટ નામ</h3>
@@ -71,7 +77,7 @@
                 <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 flex justify-between items-center">
                     <div>
                         <h2 class="font-bold text-blue-900 text-base" id="running-test-title">--</h2>
-                        <p class="text-xs text-blue-700">વિદ્યાર્થી: <span id="running-student-name" class="font-semibold">--</span></p>
+                        <p class="text-xs text-blue-700">વિદ્યાર્થી: <span id="running-student-name" class="font-semibold">--</span> | <span id="running-attempt-badge" class="font-bold text-indigo-700">Attempt 1</span></p>
                     </div>
                     <span id="test-progress-counter" class="text-xs font-bold bg-blue-600 text-white px-3 py-1 rounded-full">0 / 0</span>
                 </div>
@@ -137,8 +143,8 @@
 
                 <!-- Excel / CSV Question Upload Option -->
                 <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl space-y-3">
-                    <h3 class="font-bold text-emerald-900 text-sm"><i class="fa-solid fa-file-excel"></i> ઓપ્શન A: એક્સેલ ફાઇલ (Excel/CSV) થી પ્રશ્નો અપલોડ કરો</h3>
-                    <p class="text-xs text-emerald-700">ફાઇલ ફોર્મેટ: કૉલમ હેડર હોવા જોઈએ -> <b>q, correct, wrong1, wrong2</b></p>
+                    <h3 class="font-bold text-emerald-900 text-sm"><i class="fa-solid fa-file-excel"></i> ઓપ્શન A: એક્સેલ/સીએસવી (Excel/CSV) ફાઇલથી ઉમેરો</h3>
+                    <p class="text-xs text-emerald-700">ફાઇલ ફોર્મેટ: <b>q, correct, wrong1, wrong2</b> (કોઈ પણ ક્રમમાં કૉલમ હોઈ શકે)</p>
                     <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="text-xs file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
                     <button onclick="handleExcelUpload()" class="px-4 py-2 bg-emerald-700 text-white font-bold rounded-xl text-xs block">
                         એક્સેલમાંથી પ્રશ્નો ઉમેરો
@@ -146,7 +152,7 @@
                 </div>
 
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="font-bold text-slate-800 text-sm">ઓપ્શન B: મેન્યુઅલ પ્રશ્નો અને વિકલ્પો ઉમેરો:</h3>
+                    <h3 class="font-bold text-slate-800 text-sm">ઓપ્શન B: મેન્યુઅલ પ્રશ્નો ઉમેરો:</h3>
                     <textarea id="q-text-input" placeholder="પ્રશ્ન ટાઇપ કરો..." class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none h-20"></textarea>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <input type="text" id="q-correct-opt" placeholder="સાચો જવાબ (Correct Option)" class="px-4 py-2.5 rounded-xl border border-emerald-300 bg-emerald-50/50 text-sm outline-none">
@@ -160,43 +166,72 @@
 
                 <!-- Questions Draft Preview -->
                 <div class="bg-slate-100 p-4 rounded-2xl border border-slate-200">
-                    <h4 class="font-bold text-xs text-slate-600 uppercase mb-3">উમેરાયેલા પ્રશ્નોનું પ્રિવ્યૂ (<span id="draft-q-count">0</span>):</h4>
+                    <h4 class="font-bold text-xs text-slate-600 uppercase mb-3">ઉમેરાયેલા પ્રશ્નોનું પ્રિવ્યૂ (<span id="draft-q-count">0</span>):</h4>
                     <div id="draft-questions-list" class="space-y-2 text-xs"></div>
                     <button onclick="saveCompleteTest()" class="mt-4 w-full py-3 bg-emerald-600 text-white font-bold rounded-xl text-sm shadow-md">
-                        <i class="fa-solid fa-floppy-disk"></i> આ આખો ટેસ્ટ ક્લાઉડમાં પબ્લિશ કરો
+                        <i class="fa-solid fa-floppy-disk"></i> ટેસ્ટ પબ્લિશ કરો
                     </button>
                 </div>
             </div>
 
-            <!-- TAB 2: Test Manager (Edit / Delete / Share Link) -->
+            <!-- TAB 2: Test Manager -->
             <div id="admin-tab-manager" class="hidden space-y-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-800 text-sm mb-3">જૂના ટેસ્ટ મેનેજ કરો (Manage Tests):</h3>
-                    <div id="admin-tests-manage-list" class="space-y-3">
-                        <p class="text-xs text-slate-400">ટેસ્ટ લોડ થઈ રહ્યા છે...</p>
-                    </div>
+                    <h3 class="font-bold text-slate-800 text-sm mb-3">જૂના ટેસ્ટ મેનેજ કરો:</h3>
+                    <div id="admin-tests-manage-list" class="space-y-3"></div>
                 </div>
             </div>
 
-            <!-- TAB 3: Student Results Tracker -->
+            <!-- TAB 3: Student Results Tracker & Filters -->
             <div id="admin-tab-records" class="hidden space-y-4">
-                <div class="bg-white p-4 rounded-2xl border border-slate-200 overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="bg-slate-100 border-b">
-                                <th class="p-2.5 font-bold">તારીખ</th>
-                                <th class="p-2.5 font-bold">વિદ્યાર્થી</th>
-                                <th class="p-2.5 font-bold">ટેસ્ટનું નામ</th>
-                                <th class="p-2.5 font-bold">ગુણ</th>
-                                <th class="p-2.5 font-bold">ટકા</th>
-                                <th class="p-2.5 font-bold">ગ્રેડ</th>
-                                <th class="p-2.5 font-bold">સ્ટેટસ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="student-results-table-body">
-                            <tr><td colspan="7" class="p-4 text-center text-slate-400">પરિણામો લોડ થઈ રહ્યા છે...</td></tr>
-                        </tbody>
-                    </table>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex flex-wrap gap-3 items-center justify-between no-print">
+                        <div class="flex gap-2 flex-wrap">
+                            <div>
+                                <label class="text-[10px] text-slate-400 font-bold block">ટેસ્ટ / ચેપ્ટર ફિલ્ટર:</label>
+                                <select id="filter-test-select" onchange="applyResultFilters()" class="px-3 py-1.5 border rounded-xl text-xs outline-none bg-slate-50">
+                                    <option value="">બધા ચેપ્ટર</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 font-bold block">વિદ્યાર્થી ફિલ્ટર:</label>
+                                <select id="filter-student-select" onchange="applyResultFilters()" class="px-3 py-1.5 border rounded-xl text-xs outline-none bg-slate-50">
+                                    <option value="">બધા વિદ્યાર્થીઓ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs shadow-sm hover:bg-blue-700">
+                            <i class="fa-solid fa-print"></i> રીઝલ્ટ રિપોર્ટ પ્રિન્ટ કરો
+                        </button>
+                    </div>
+
+                    <!-- Printable Section Wrapper -->
+                    <div id="printable-result-section">
+                        <div class="text-center mb-4 border-b pb-3">
+                            <h2 class="text-xl font-bold text-blue-900">BHARAT EDUCATION CENTER</h2>
+                            <p class="text-xs text-slate-600">Teacher: Chetan Soni | Student Performance Report</p>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-100 border-b">
+                                        <th class="p-2.5 font-bold border-b">તારીખ</th>
+                                        <th class="p-2.5 font-bold border-b">વિદ્યાર્થીનું નામ</th>
+                                        <th class="p-2.5 font-bold border-b">ચેપ્ટર / ટેસ્ટ</th>
+                                        <th class="p-2.5 font-bold border-b">પ્રયાસ (Attempt)</th>
+                                        <th class="p-2.5 font-bold border-b">ગુણ</th>
+                                        <th class="p-2.5 font-bold border-b">ટકા</th>
+                                        <th class="p-2.5 font-bold border-b">સ્ટેટસ</th>
+                                        <th class="p-2.5 font-bold border-b no-print">એક્શન</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="student-results-table-body">
+                                    <tr><td colspan="8" class="p-4 text-center text-slate-400">પરિણામો લોડ થઈ રહ્યા છે...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -204,7 +239,6 @@
     </main>
 
     <script>
-        // ================= SUPABASE CONFIGURATION =================
         const SUPABASE_URL = 'https://fixnefvoznegothpmehu.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpeG5lZnZvem5lZ290aHBtZWh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwOTU0MzQsImV4cCI6MjEwNzY3MTQzNH0.zjydOx0wP9KFY1KiP2iaNiis_rGQ-bLPGKleUsXIiFI';
         
@@ -217,6 +251,7 @@
         let activeStudentName = "";
         let runningQuizData = [];
         let studentAnswers = {};
+        let currentAttemptNumber = 1;
         let editingTestId = null;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -225,11 +260,12 @@
             });
         });
 
-        // URL Parameter Routing for Direct Test Link
         function handleUrlParams() {
             const params = new URLSearchParams(window.location.search);
             const testIdParam = params.get('testId');
             if(testIdParam) {
+                // Hide teacher UI elements completely for student link
+                document.getElementById('header-nav-buttons').classList.add('hidden');
                 const foundIdx = testsDB.findIndex(t => t.id == testIdParam);
                 if(foundIdx !== -1) {
                     openStudentEntryModal(foundIdx);
@@ -237,7 +273,6 @@
             }
         }
 
-        // Router View Controller
         function router(view) {
             if(view === 'student') {
                 document.getElementById('student-portal-view').classList.remove('hidden');
@@ -254,7 +289,6 @@
             }
         }
 
-        // Fetch Tests from Supabase
         async function loadTestsFromSupabase() {
             const { data, error } = await supabaseClient.from('tests').select('*');
             if (!error && data) {
@@ -267,23 +301,27 @@
                 }));
                 renderStudentTestList();
                 renderAdminTestsManagerList();
+                populateFilterDropdowns();
             }
         }
 
-        // Fetch Results from Supabase
         async function loadResultsFromSupabase() {
             const { data, error } = await supabaseClient.from('results').select('*').order('created_at', { ascending: false });
             if (!error && data) {
                 resultsDB = data.map(r => ({
+                    id: r.id,
                     date: new Date(r.created_at).toLocaleString(),
                     student: r.student_name,
                     testName: r.test_name,
                     score: r.score,
                     pct: r.percentage,
                     grade: r.grade,
-                    status: r.status
+                    status: r.status,
+                    attempt: r.attempt || 'Attempt 1',
+                    allowRetake: r.allow_retake || false
                 }));
-                renderAdminResultsTable();
+                renderAdminResultsTable(resultsDB);
+                populateFilterDropdowns();
             }
         }
 
@@ -302,7 +340,7 @@
             listContainer.innerHTML = '';
 
             if(testsDB.length === 0) {
-                listContainer.innerHTML = `<div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">હજુ સુધી કોઈ ટેસ્ટ ઉપલબ્ધ નથી. શિક્ષકની લિંક અથવા સૂચનાની રાહ જુઓ.</div>`;
+                listContainer.innerHTML = `<div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">હજુ સુધી કોઈ ટેસ્ટ ઉપલબ્ધ નથી.</div>`;
                 return;
             }
 
@@ -330,8 +368,8 @@
                         ${deadlineText}
                     </div>
                     <div>
-                        ${isExpired ? '<span class="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-200">બંધ થયેલ</span>' : 
-                        `<button onclick="openStudentEntryModal(${idx})" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs shadow-sm hover:bg-blue-700">ટેસ્ટ શરૂ કરો</button>`}
+                        ${isExpired ? '<span class="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-200">મેદાદ પૂર્ણ</span>' : 
+                        `<button onclick="openStudentEntryModal(${idx})" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700">ટેસ્ટ શરૂ કરો</button>`}
                     </div>
                 `;
                 listContainer.appendChild(card);
@@ -348,15 +386,14 @@
             document.getElementById('student-name-modal').classList.add('hidden');
         }
 
-        // Verify Single Attempt Per Student per Test
         async function verifyAndStartStudentTest() {
             const nameInput = document.getElementById('student-entry-name').value.trim();
             if(!nameInput) { alert('કૃપા કરીને પૂરું નામ લખો!'); return; }
 
             activeStudentName = nameInput;
-
-            // Check Supabase results to ensure this student hasn't already taken this test
             const targetTest = testsDB.find(t => t.id == activeTestId);
+
+            // Fetch prior attempts for this student & test
             const { data, error } = await supabaseClient
                 .from('results')
                 .select('*')
@@ -364,14 +401,21 @@
                 .eq('test_name', targetTest.title);
 
             if(!error && data && data.length > 0) {
-                alert(`નમસ્તે ${activeStudentName}, તમે આ ટેસ્ટ અગાઉ આપી ચૂક્યા છો! દરેક વિદ્યાર્થી ફક્ત ૧ જ વાર ટેસ્ટ આપી શકે છે.`);
-                return;
+                const hasRetakePermission = data.some(r => r.allow_retake === true);
+                if(!hasRetakePermission) {
+                    alert(`નમસ્તે ${activeStudentName}, તમે આ ટેસ્ટ અગાઉ આપી ચૂક્યા છો (${data.length} trial/s). શિક્ષકની મંજૂરી વિના ફરીથી ટેસ્ટ આપી શકાશે નહીં.`);
+                    return;
+                }
+                currentAttemptNumber = data.length + 1;
+            } else {
+                currentAttemptNumber = 1;
             }
 
             closeStudentModal();
 
             document.getElementById('running-test-title').innerText = targetTest.title;
             document.getElementById('running-student-name').innerText = activeStudentName;
+            document.getElementById('running-attempt-badge').innerText = `Trial ${currentAttemptNumber}`;
             document.getElementById('test-progress-counter').innerText = `0 / ${targetTest.questions.length}`;
 
             runningQuizData = targetTest.questions.map((q, idx) => {
@@ -448,20 +492,27 @@
             else if(percentage >= 60) grade = "B";
             else if(percentage >= 50) grade = "C";
 
-            // Insert Result to Supabase
+            const attemptLabel = `Trial ${currentAttemptNumber}`;
+
+            // Reset allow_retake flag for previous attempts if any
+            await supabaseClient.from('results').update({ allow_retake: false }).eq('student_name', activeStudentName).eq('test_name', targetTest.title);
+
+            // Insert new Result into Supabase
             await supabaseClient.from('results').insert([{
                 student_name: activeStudentName,
                 test_name: targetTest.title,
                 score: `${score} / ${total}`,
                 percentage: percentage,
                 grade: grade,
-                status: status
+                status: status,
+                attempt: attemptLabel,
+                allow_retake: false
             }]);
 
             document.getElementById('active-test-container').classList.add('hidden');
             document.getElementById('student-result-card').classList.remove('hidden');
 
-            document.getElementById('res-test-name').innerText = targetTest.title;
+            document.getElementById('res-test-name').innerText = `${targetTest.title} (${attemptLabel})`;
             document.getElementById('res-score').innerText = `${score}/${total}`;
             document.getElementById('res-pct').innerText = `${percentage}%`;
             document.getElementById('res-grade').innerText = grade;
@@ -540,11 +591,11 @@
             }
         }
 
-        // Excel / CSV File Upload Handler
+        // Robust Excel / CSV File Upload Handler
         function handleExcelUpload() {
             const fileInput = document.getElementById('excel-file-input');
             if(fileInput.files.length === 0) {
-                alert('કૃપા કરીને પહેલાં એક્સેલ/સીએસવી ફાઇલ સિલેક્ટ કરો!');
+                alert('કૃપા કરીને પહેલાં એક્સેલ અથવા સીએસવી ફાઇલ સિલેક્ટ કરો!');
                 return;
             }
 
@@ -557,33 +608,54 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-                    const json = XLSX.utils.sheet_to_json(worksheet);
+                    const rawJson = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-                    if(json.length === 0) {
-                        alert('ફાઇલ ખાલી છે!');
+                    if(rawJson.length === 0) {
+                        alert('આ ફાઇલમાં કોઈ ડેટા નથી!');
                         return;
                     }
 
                     let addedCount = 0;
-                    json.forEach(row => {
-                        // Expected headers: q, correct, wrong1, wrong2
-                        const q = row.q || row.Q || row.question || row.Prashn;
-                        const correct = row.correct || row.Correct || row.SaachoJavab;
-                        const w1 = row.wrong1 || row.Wrong1 || row.Khoto1;
-                        const w2 = row.wrong2 || row.Wrong2 || row.Khoto2;
+                    rawJson.forEach(row => {
+                        let q = "", correct = "", w1 = "", w2 = "";
+                        
+                        // Flexible key matching
+                        Object.keys(row).forEach(key => {
+                            const cleanKey = key.trim().toLowerCase();
+                            const val = String(row[key]).trim();
+                            if(['q', 'question', 'prashn', 'પ્રશ્ન'].includes(cleanKey)) q = val;
+                            else if(['correct', 'saacho', 'answer', 'સાચો'].includes(cleanKey)) correct = val;
+                            else if(['wrong1', 'khoto1', 'option1', 'ખોટો1'].includes(cleanKey)) w1 = val;
+                            else if(['wrong2', 'khoto2', 'option2', 'ખોટો2'].includes(cleanKey)) w2 = val;
+                        });
+
+                        // Fallback by index position if keys are missing
+                        if(!q || !correct || !w1 || !w2) {
+                            const values = Object.values(row);
+                            if(values.length >= 4) {
+                                q = q || String(values[0]).trim();
+                                correct = correct || String(values[1]).trim();
+                                w1 = w1 || String(values[2]).trim();
+                                w2 = w2 || String(values[3]).trim();
+                            }
+                        }
 
                         if(q && correct && w1 && w2) {
-                            draftQuestions.push({ q: String(q), correct: String(correct), wrong1: String(w1), wrong2: String(w2) });
+                            draftQuestions.push({ q, correct, wrong1: w1, wrong2: w2 });
                             addedCount++;
                         }
                     });
 
-                    alert(`સફળતાપૂર્વક ${addedCount} પ્રશ્નો એક્સેલમાંથી ઉમેરાઈ ગયા છે!`);
-                    fileInput.value = '';
-                    renderDraftList();
+                    if(addedCount > 0) {
+                        alert(`સફળતાપૂર્વક ${addedCount} પ્રશ્નો ઉમેરાઈ ગયા!`);
+                        fileInput.value = '';
+                        renderDraftList();
+                    } else {
+                        alert('પ્રશ્નો રીડ થઈ શક્યા નથી. ફાઇલની પહેલી રો માં: q, correct, wrong1, wrong2 હોવું જરૂરી છે.');
+                    }
                 } catch (err) {
                     console.error(err);
-                    alert('એક્સેલ રીડ કરવામાં એરર આવી. ફોર્મેટ તપાસો (q, correct, wrong1, wrong2).');
+                    alert('ફાઇલ ઓપન કરવામાં એરર! કૃપા કરીને પ્રમાણિત Excel અથવા CSV ફાઇલ વાપરો.');
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -642,7 +714,6 @@
             if(draftQuestions.length === 0) { alert('ઓછામાં ઓછો ૧ પ્રશ્ન હોવો જોઈએ!'); return; }
 
             if(editingTestId) {
-                // Update existing test
                 const { error } = await supabaseClient
                     .from('tests')
                     .update({ title: title, pass_mark: passPct, deadline: deadline, questions_json: draftQuestions })
@@ -650,11 +721,10 @@
 
                 if(error) alert('એરર: ' + error.message);
                 else {
-                    alert('ટેસ્ટ સફળતાપૂર્વક અપડેટ થઈ ગયો!');
+                    alert('ટેસ્ટ પબ્લિશ/અપડેટ થઈ ગયો!');
                     editingTestId = null;
                 }
             } else {
-                // Insert new test
                 const { error } = await supabaseClient
                     .from('tests')
                     .insert([{ title: title, pass_mark: passPct, deadline: deadline, questions_json: draftQuestions }]);
@@ -671,7 +741,6 @@
             router('teacher');
         }
 
-        // Render Test Manager List (Edit / Delete / Share Link)
         function renderAdminTestsManagerList() {
             const container = document.getElementById('admin-tests-manage-list');
             container.innerHTML = '';
@@ -683,7 +752,7 @@
 
             testsDB.forEach(t => {
                 const el = document.createElement('div');
-                el.className = "p-4 bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-center";
+                el.className = "p-4 bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-center flex-wrap gap-2";
                 
                 const currentUrl = window.location.href.split('?')[0];
                 const shareLink = `${currentUrl}?testId=${t.id}`;
@@ -705,7 +774,7 @@
 
         function copyTestLink(link) {
             navigator.clipboard.writeText(link);
-            alert('વિદ્યાર્થીઓ માટેની ટેસ્ટ લિંક ક્લિપબોર્ડમાં કૉપિ થઈ ગઈ છે! હવે તમે WhatsApp પર મોકલી શકો છો.');
+            alert('વિદ્યાર્થીઓ માટેની ટેસ્ટ લિંક ક્લિપબોર્ડમાં કૉપિ થઈ ગઈ છે!');
         }
 
         function editTest(id) {
@@ -734,29 +803,96 @@
             }
         }
 
-        function renderAdminResultsTable() {
+        // Dropdown Filters Population
+        function populateFilterDropdowns() {
+            const testSelect = document.getElementById('filter-test-select');
+            const studentSelect = document.getElementById('filter-student-select');
+
+            const currentTestVal = testSelect.value;
+            const currentStudentVal = studentSelect.value;
+
+            testSelect.innerHTML = '<option value="">બધા ચેપ્ટર</option>';
+            studentSelect.innerHTML = '<option value="">બધા વિદ્યાર્થીઓ</option>';
+
+            const testTitles = [...new Set(resultsDB.map(r => r.testName))];
+            const studentNames = [...new Set(resultsDB.map(r => r.student))];
+
+            testTitles.forEach(t => {
+                testSelect.innerHTML += `<option value="${t}">${t}</option>`;
+            });
+
+            studentNames.forEach(s => {
+                studentSelect.innerHTML += `<option value="${s}">${s}</option>`;
+            });
+
+            testSelect.value = currentTestVal;
+            studentSelect.value = currentStudentVal;
+        }
+
+        function applyResultFilters() {
+            const selectedTest = document.getElementById('filter-test-select').value;
+            const selectedStudent = document.getElementById('filter-student-select').value;
+
+            let filtered = resultsDB.filter(r => {
+                const matchesTest = selectedTest === "" || r.testName === selectedTest;
+                const matchesStudent = selectedStudent === "" || r.student === selectedStudent;
+                return matchesTest && matchesStudent;
+            });
+
+            renderAdminResultsTable(filtered);
+        }
+
+        function renderAdminResultsTable(dataList) {
             const tbody = document.getElementById('student-results-table-body');
             tbody.innerHTML = '';
 
-            if(resultsDB.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">પરિણામો ઉપલબ્ધ નથી.</td></tr>`;
+            if(dataList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">કોઈ પરિણામ ઉપલબ્ધ નથી.</td></tr>`;
                 return;
             }
 
-            resultsDB.forEach(r => {
+            dataList.forEach(r => {
                 const tr = document.createElement('tr');
                 tr.className = "border-b hover:bg-slate-50";
                 tr.innerHTML = `
-                    <td class="p-2.5">${r.date}</td>
-                    <td class="p-2.5 font-bold">${r.student}</td>
-                    <td class="p-2.5 text-blue-600">${r.testName}</td>
-                    <td class="p-2.5">${r.score}</td>
-                    <td class="p-2.5">${r.pct}%</td>
-                    <td class="p-2.5 font-bold">${r.grade}</td>
-                    <td class="p-2.5 font-bold ${r.status === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}">${r.status}</td>
+                    <td class="p-2.5 border-b">${r.date}</td>
+                    <td class="p-2.5 font-bold border-b">${r.student}</td>
+                    <td class="p-2.5 text-blue-600 border-b">${r.testName}</td>
+                    <td class="p-2.5 border-b font-semibold text-slate-700">${r.attempt}</td>
+                    <td class="p-2.5 border-b">${r.score}</td>
+                    <td class="p-2.5 border-b">${r.pct}%</td>
+                    <td class="p-2.5 font-bold border-b ${r.status === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}">${r.status}</td>
+                    <td class="p-2.5 border-b no-print flex gap-1">
+                        <button onclick="allowRetakeForStudent(${r.id})" class="px-2 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-bold rounded-lg hover:bg-indigo-100" title="Retake allow કરો">Retake</button>
+                        <button onclick="deleteSingleResult(${r.id})" class="px-2 py-1 bg-rose-50 text-rose-700 text-[10px] font-bold rounded-lg hover:bg-rose-100" title="રીઝલ્ટ ડિલીટ કરો">Delete</button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        async function allowRetakeForStudent(id) {
+            if(confirm('શું તમે આ વિદ્યાર્થીને ટેસ્ટ ફરીથી આપવાની (Retake) મંજૂરી આપવા માંગો છો?')) {
+                const { error } = await supabaseClient.from('results').update({ allow_retake: true }).eq('id', id);
+                if(!error) {
+                    alert('Retake મંજૂરી આપી દેવાઈ છે! હવે આ વિદ્યાર્થી ફરીવાર ટેસ્ટ આપી શકશે.');
+                    loadResultsFromSupabase();
+                } else {
+                    alert('એરર: ' + error.message);
+                }
+            }
+        }
+
+        async function deleteSingleResult(id) {
+            if(confirm('શું તમે આ રીઝલ્ટ રેકોર્ડ ડિલીટ કરવા માંગો છો?')) {
+                const { error } = await supabaseClient.from('results').delete().eq('id', id);
+                if(!error) {
+                    alert('રીઝલ્ટ રેકોર્ડ ડિલીટ થઈ ગયો!');
+                    loadResultsFromSupabase();
+                } else {
+                    alert('એરર: ' + error.message);
+                }
+            }
         }
     </script>
 </body>
