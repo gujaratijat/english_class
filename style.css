@@ -1,16 +1,19 @@
-
-:lang(gu), [lang="gu"] {
+body { 
+    font-family: 'Inter', system-ui, sans-serif;
+    user-select: none;
+    background-color: #f8fafc;
+    color: #1e293b;
+    font-size: 14px;
+}
+.official-title {
+    font-family: 'Cambria', Georgia, serif;
+    font-weight: 700;
+}
+:lang(gu), [lang="gu"], .official-title {
     font-family: 'Noto Sans Gujarati', sans-serif !important;
 }
-<style>
-    /* Lys 050 Font setup athva Bold System Font setup */
-    @font-face {
-        font-family: 'Lys 050';
-        src: local('Lys 050'), local('Shruti');
-    }
-
-    :lang(gu), [lang="gu"] {
-        font-family: 'Lys 050', 'Noto Sans Gujarati', 'Shruti', sans-serif !important;
-        font-weight: 700 !important; /* Bold dekhav mate */
-    }
-</style>
+@media print {
+    body * { visibility: hidden; }
+    #printable-congrats-card, #printable-congrats-card * { visibility: visible; }
+    #printable-congrats-card { position: absolute; left: 0; top: 0; width: 100%; color: #000; }
+}
