@@ -2,3 +2,15 @@
 :lang(gu), [lang="gu"] {
     font-family: 'Noto Sans Gujarati', sans-serif !important;
 }
+<style>
+    /* Lys 050 Font setup athva Bold System Font setup */
+    @font-face {
+        font-family: 'Lys 050';
+        src: local('Lys 050'), local('Shruti');
+    }
+
+    :lang(gu), [lang="gu"] {
+        font-family: 'Lys 050', 'Noto Sans Gujarati', 'Shruti', sans-serif !important;
+        font-weight: 700 !important; /* Bold dekhav mate */
+    }
+</style>
