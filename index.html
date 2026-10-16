@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Inter, Noto Sans Gujarati -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@600;700;800&display=swap" rel="stylesheet">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -124,7 +124,7 @@
                 </div>
             </div>
 
-            <!-- Test Rules & Instructions Screen -->
+            <!-- Test Rules Screen -->
             <div id="test-rules-screen" class="hidden bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-6">
                 <div class="text-center border-b border-slate-200 pb-4">
                     <div class="h-14 w-auto max-w-[200px] mx-auto bg-transparent flex items-center justify-center mb-2">
@@ -149,7 +149,7 @@
                 </button>
             </div>
 
-            <!-- Student Name Entry Modal -->
+            <!-- Student Name Modal -->
             <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-[99998] modal-center p-4">
                 <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 text-center">
                     <div class="w-12 h-12 mx-auto rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-md">
@@ -177,7 +177,7 @@
                 </div>
             </div>
 
-            <!-- Active Test Container with Timer Countdown -->
+            <!-- Active Test Container -->
             <div id="active-test-container" class="hidden space-y-6">
                 <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 flex justify-between items-center shadow-sm sticky top-16 z-30">
                     <div>
@@ -198,12 +198,9 @@
                 </form>
             </div>
 
-            <!-- Student Result & Solution Review Screen -->
+            <!-- Student Result Screen -->
             <div id="student-result-card" class="hidden space-y-6 max-w-xl mx-auto">
-                <!-- Certificate / Medal Styled Report Card Frame -->
                 <div id="printable-congrats-card" class="bg-gradient-to-b from-slate-50 via-white to-blue-50/30 p-6 md:p-8 rounded-3xl border-2 border-blue-200 shadow-2xl space-y-5 text-center relative overflow-hidden">
-                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-100/50 rounded-full blur-2xl pointer-events-none"></div>
-                    
                     <div class="flex justify-between items-center border-b border-slate-200 pb-4 gap-2 flex-wrap">
                         <div class="h-12 w-auto max-w-[150px] bg-transparent flex items-center justify-center">
                             <img src="bharat_logo.jpeg" alt="Logo" class="h-full w-full object-contain">
@@ -247,7 +244,6 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
                 <div class="flex flex-wrap gap-3 justify-center">
                     <button onclick="shareResultAsJPGWhatsApp()" class="px-5 py-3 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 transition flex items-center gap-2 shadow-md">
                         <i class="fa-brands fa-whatsapp text-sm"></i> Share Certificate JPG
@@ -255,7 +251,6 @@
                     <button onclick="showStudentPortal()" class="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Go to Home Screen</button>
                 </div>
 
-                <!-- Solution Review Section (Incorrect Questions Answer Key) -->
                 <div id="incorrect-solutions-container" class="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg space-y-3">
                     <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 border-b pb-2">
                         <i class="fa-solid fa-circle-xmark text-rose-500"></i> Incorrect Questions Analysis (Answer Key)
@@ -275,10 +270,9 @@
                 <button onclick="showStudentPortal()" class="text-xs bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl border border-slate-700 transition font-medium">Logout / Exit</button>
             </div>
 
-            <!-- Realtime Retake Request Center -->
+            <!-- Retake Request Center -->
             <div class="bg-amber-50 border border-amber-300 p-6 rounded-3xl space-y-4 shadow-sm">
                 <h3 class="font-bold text-amber-900 text-sm flex items-center gap-2"><i class="fa-solid fa-bell text-amber-600"></i> Student Re-Test Requests (Notification Center)</h3>
-                <p class="text-xs text-amber-800">Pending re-test requests from students will appear here:</p>
                 <div id="retake-requests-list" class="space-y-2 text-xs">
                     <p class="text-slate-500 italic">No pending requests.</p>
                 </div>
@@ -295,15 +289,15 @@
             <div id="admin-tab-builder" class="space-y-6">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
                     <div class="flex justify-between items-center">
-                        <h3 id="builder-mode-title" class="font-bold text-slate-800 text-sm">1. Set Test Information, Time Limit & Passing %:</h3>
+                        <h3 id="builder-mode-title" class="font-bold text-slate-800 text-sm">1. Set Test Information (Time Limit & Deadline optional):</h3>
                         <button id="cancel-edit-btn" onclick="resetTestBuilder()" class="hidden text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-lg font-bold">Cancel Edit</button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <input type="text" id="new-test-title-input" placeholder="e.g. Chapter 1 English Test" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
                         <input type="number" id="new-test-pass-input" placeholder="Passing % (Default: 50)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                        <input type="number" id="new-test-time-input" placeholder="Time Limit in Mins (Blank = Unlimited)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" id="new-test-time-input" placeholder="Time Limit Mins (Empty = No Limit)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
                         <div>
-                            <input type="datetime-local" id="new-test-deadline-input" class="w-full px-3 py-3 rounded-xl border text-xs outline-none" title="Deadline (Optional)">
+                            <input type="datetime-local" id="new-test-deadline-input" class="w-full px-3 py-3 rounded-xl border text-xs outline-none">
                         </div>
                     </div>
                 </div>
@@ -341,9 +335,9 @@
                 </div>
             </div>
 
-            <!-- TAB 3: Student Records & Failed Student Analysis Dropdown -->
+            <!-- TAB 3: Records & Failed Analysis -->
             <div id="admin-tab-records" class="hidden space-y-6">
-                <!-- Failed Students & Weakness Dropdown Section -->
+                <!-- Failed Students Expandable Section -->
                 <div class="bg-rose-50 border border-rose-200 p-6 rounded-3xl space-y-4 shadow-sm">
                     <h3 class="font-bold text-rose-900 text-sm flex items-center gap-2">
                         <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Failed Students & Weakness Analysis (Expandable Dropdowns)
@@ -445,7 +439,6 @@
                 loadResultsFromSupabase();
                 renderAdminTestsManagerList();
                 loadRetakeRequests();
-                renderFailedStudentsAccordion();
             } else {
                 showAlert("Incorrect Teacher PIN! Try again.", true);
             }
@@ -641,7 +634,6 @@
             renderQuizQuestions();
             updateProgressDisplay();
 
-            // Setup Timer if timeLimit is provided
             if (targetTest.timeLimit && targetTest.timeLimit > 0) {
                 timeRemainingSeconds = targetTest.timeLimit * 60;
                 if(testTimerInterval) clearInterval(testTimerInterval);
@@ -776,14 +768,13 @@
             }]);
 
             if(insertErr) {
-                showAlert("Error submitting result to database. Check RLS policies!", true);
+                showAlert("Error submitting result to database. Check Supabase RLS Policy!", true);
                 return;
             }
 
             document.getElementById('active-test-container').classList.add('hidden');
             document.getElementById('student-result-card').classList.remove('hidden');
             
-            // Populate Certificate / Report Card Details
             document.getElementById('res-test-name').innerText = targetTest.title;
             document.getElementById('res-student-name').innerText = activeStudentName;
             document.getElementById('res-timestamp').innerText = submissionTimestamp;
@@ -814,7 +805,6 @@
                 remarksText.innerText = "⚠️ Need Improvement! Keep Trying & Practice More to Pass.";
             }
 
-            // Solution Review (Incorrect questions below card)
             const solutionList = document.getElementById('solution-review-list');
             const solutionContainer = document.getElementById('incorrect-solutions-container');
             solutionList.innerHTML = '';
@@ -887,8 +877,8 @@
                 <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-amber-300 gap-2 flex-wrap">
                     <span>Student: <b class="text-slate-900">${r.student_name}</b> | Chapter: <b class="text-blue-700">${r.test_name}</b></span>
                     <div class="flex gap-2">
-                        <button onclick="approveRetakeReq('${r.id}', '${r.student_name}', '${r.test_name}')" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-bold text-xs hover:bg-emerald-700 transition">Allow</button>
-                        <button onclick="denyRetakeReq('${r.id}')" class="px-3.5 py-1.5 bg-rose-600 text-white rounded-lg font-bold text-xs hover:bg-rose-700 transition">Deny / Ignore</button>
+                        <button onclick="approveRetakeReq(${r.id}, '${r.student_name}', '${r.test_name}')" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-bold text-xs hover:bg-emerald-700 transition">Allow</button>
+                        <button onclick="denyRetakeReq(${r.id})" class="px-3.5 py-1.5 bg-rose-600 text-white rounded-lg font-bold text-xs hover:bg-rose-700 transition">Deny / Ignore</button>
                     </div>
                 </div>
             `).join('');
@@ -896,7 +886,7 @@
 
         async function approveRetakeReq(reqId, student, test) {
             await supabaseClient.from('results').update({ allow_retake: true }).eq('student_name', student).eq('test_name', test);
-            await supabaseClient.from('retake_requests').update({ status: 'approved' }).eq('id', reqId);
+            await supabaseClient.from('retake_requests').delete().eq('id', reqId);
             showAlert(`Granted retake permission for ${student}!`);
             loadRetakeRequests();
             loadResultsFromSupabase();
@@ -932,7 +922,7 @@
                         </div>
                     `).join('');
                 } else {
-                    wrongItemsHTML = `<p class="text-xs text-slate-500 italic">Detailed wrong answer logs not available for this record.</p>`;
+                    wrongItemsHTML = `<p class="text-xs text-slate-500 italic">Detailed wrong answer logs not available for this legacy record. (Will appear for new submissions).</p>`;
                 }
 
                 return `
@@ -952,7 +942,7 @@
                             <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wide mb-2">Incorrectly Answered Questions (For Re-teaching):</h4>
                             ${wrongItemsHTML}
                             <div class="flex justify-end pt-2">
-                                <button onclick="deleteSingleResult(${res.id})" class="px-3 py-1.5 bg-rose-600 text-white rounded-xl text-xs font-bold hover:bg-rose-700 transition">Delete Record</button>
+                                <button onclick="deleteSingleResult(${res.id})" class="px-3.5 py-1.5 bg-rose-600 text-white rounded-xl text-xs font-bold hover:bg-rose-700 transition">Delete Record</button>
                             </div>
                         </div>
                     </div>
@@ -1028,7 +1018,7 @@
             document.getElementById('new-test-deadline-input').value = '';
             draftQuestions = [];
             renderDraftList();
-            document.getElementById('builder-mode-title').innerText = "1. Set Test Information, Time Limit & Passing %:";
+            document.getElementById('builder-mode-title').innerText = "1. Set Test Information (Time Limit & Deadline optional):";
             document.getElementById('cancel-edit-btn').classList.add('hidden');
         }
 
@@ -1178,11 +1168,19 @@
 
         function renderAdminResultsTable(dataList) {
             const tbody = document.getElementById('student-results-table-body');
-            tbody.innerHTML = dataList.map(r => `<tr class="border-b hover:bg-slate-50"><td class="p-3 text-slate-600">${r.date}</td><td class="p-3 font-bold">${r.student}</td><td class="p-3 text-blue-600">${r.testName}</td><td class="p-3">${r.score} (#${r.attempt || 1})</td><td class="p-3">${r.pct}%</td><td class="p-3 font-bold ${r.status === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}">${r.status}</td><td class="p-3 no-print"><button onclick="deleteSingleResult(${r.id})" class="px-2.5 py-1 bg-rose-50 text-rose-700 text-[11px] font-bold rounded-lg">Delete</button></td></tr>`).join('');
+            tbody.innerHTML = dataList.map(r => `<tr class="border-b hover:bg-slate-50"><td class="p-3 text-slate-600">${r.date}</td><td class="p-3 font-bold">${r.student}</td><td class="p-3 text-blue-600">${r.testName}</td><td class="p-3">${r.score} (#${r.attempt || 1})</td><td class="p-3">${r.pct}%</td><td class="p-3 font-bold ${r.status === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}">${r.status}</td><td class="p-3 no-print"><button onclick="deleteSingleResult(${r.id})" class="px-2.5 py-1 bg-rose-50 text-rose-700 text-[11px] font-bold rounded-lg hover:bg-rose-100">Delete</button></td></tr>`).join('');
         }
 
         async function deleteSingleResult(id) {
-            if(confirm('Delete record?')) { await supabaseClient.from('results').delete().eq('id', id); loadResultsFromSupabase(); }
+            if(confirm('Are you sure you want to delete this record?')) { 
+                const { error } = await supabaseClient.from('results').delete().eq('id', id); 
+                if(error) {
+                    showAlert('Error deleting record! Check Supabase policies.', true);
+                } else {
+                    showAlert('Record deleted successfully!');
+                    loadResultsFromSupabase();
+                }
+            }
         }
     </script>
 </body>
