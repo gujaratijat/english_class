@@ -2,37 +2,58 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bharat Education Center - Online Test Portal</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gujarati:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Gujarati:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- SheetJS & html2canvas -->
+    <!-- SheetJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         body { 
-            font-family: 'Inter', 'Noto Sans Gujarati', system-ui, -apple-system, sans-serif;
+            font-family: 'Plus Jakarta Sans', 'Noto Sans Gujarati', system-ui, -apple-system, sans-serif;
             user-select: none;
             -webkit-user-select: none;
-            background-color: #f8fafc;
+            background: linear-gradient(180deg, #edf4ff 0%, #f4f8ff 40%, #f8fafc 100%);
             color: #1e293b;
             font-size: 14px;
+            min-height: 100vh;
         }
         .official-title {
-            font-family: 'Cambria', Georgia, serif;
-            font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
         }
         .modal-center {
             display: flex;
             align-items: center;
             justify-content: center;
         }
+        /* Soft Card Theme like Reference UI */
+        .glass-card {
+            background: #ffffff;
+            border: 1px solid #e2ebd8;
+            box-shadow: 0 10px 25px -5px rgba(18, 56, 117, 0.05);
+            border-radius: 24px;
+        }
+        .soft-blue-card {
+            background: linear-gradient(135deg, #eef5ff 0%, #e0edff 100%);
+            border: 1px solid #cce0ff;
+        }
+        .soft-amber-card {
+            background: linear-gradient(135deg, #fff9ee 0%, #fff1d6 100%);
+            border: 1px solid #ffe3b3;
+        }
+        .soft-green-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 1px solid #bbf7d0;
+        }
+
         /* Strict Clean Print Styling */
         @media print {
             body { background: white !important; color: black !important; }
@@ -52,100 +73,117 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- Foreground Custom Alert Popup Modal -->
+    <!-- Foreground Custom Alert Popup Modal with 'X' Close -->
     <div id="custom-alert-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99999] modal-center p-4">
-        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4">
-            <div id="alert-icon-wrapper" class="w-12 h-12 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 text-center space-y-4 relative">
+            <button onclick="closeCustomAlert()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center font-bold text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="alert-icon-wrapper" class="w-12 h-12 mx-auto rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl mt-2">
                 <i class="fa-solid fa-circle-info"></i>
             </div>
-            <p id="custom-alert-text" class="text-sm font-semibold text-slate-800">--</p>
-            <button onclick="closeCustomAlert()" class="w-full py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition">OK</button>
+            <p id="custom-alert-text" class="text-sm font-semibold text-slate-800 leading-relaxed px-2">--</p>
+            <button onclick="closeCustomAlert()" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition">OK / Close</button>
         </div>
     </div>
 
-    <!-- Custom Confirmation Modal -->
+    <!-- Custom Confirmation Modal with 'X' Close -->
     <div id="custom-confirm-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99999] modal-center p-4">
-        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4">
-            <div class="w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xl">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 text-center space-y-4 relative">
+            <button onclick="closeCustomConfirm()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center font-bold text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl mt-2">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <p id="custom-confirm-text" class="text-sm font-semibold text-slate-800">--</p>
             <div class="flex gap-2">
-                <button id="confirm-cancel-btn" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition" data-translate="cancel">રદ કરો</button>
-                <button id="confirm-ok-btn" class="w-1/2 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition" data-translate="submit_anyway">Submit Anyway</button>
+                <button id="confirm-cancel-btn" onclick="closeCustomConfirm()" class="w-1/2 py-3 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition" data-translate="cancel">રદ કરો</button>
+                <button id="confirm-ok-btn" class="w-1/2 py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition" data-translate="submit_anyway">Submit Anyway</button>
             </div>
         </div>
     </div>
 
-    <!-- Teacher Login Modal UI -->
+    <!-- Teacher Login Modal UI with Numeric Keyboard & 'X' Close -->
     <div id="teacher-login-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99999] modal-center p-4">
-        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4">
-            <div class="w-12 h-12 mx-auto rounded-2xl bg-slate-100 text-slate-800 flex items-center justify-center text-lg shadow-sm border">
+        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl border border-slate-100 text-center space-y-4 relative">
+            <button onclick="closeTeacherLoginModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center font-bold text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg shadow-sm border border-blue-100">
                 <i class="fa-solid fa-lock"></i>
             </div>
             <div>
                 <h3 class="text-base font-bold text-slate-900" data-translate="teacher_login">Teacher Login</h3>
                 <p class="text-xs text-slate-500 mt-1" data-translate="enter_pin">Please Enter Login PIN:</p>
             </div>
-            <input type="password" id="teacher-pin-input" placeholder="Enter PIN" class="w-full text-center px-4 py-3 rounded-xl border border-slate-300 text-base font-bold tracking-widest outline-none focus:ring-2 focus:ring-blue-600">
+            <!-- inputmode="numeric" & pattern="[0-9]*" opens numeric keypad on mobiles -->
+            <input type="password" id="teacher-pin-input" inputmode="numeric" pattern="[0-9]*" placeholder="Enter PIN" class="w-full text-center px-4 py-3 rounded-2xl border border-slate-300 text-lg font-bold tracking-widest outline-none focus:ring-2 focus:ring-blue-600 bg-slate-50">
             <div class="flex gap-2 pt-1">
-                <button onclick="closeTeacherLoginModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition" data-translate="cancel">Cancel</button>
-                <button onclick="verifyTeacherPin()" class="w-1/2 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition" data-translate="login">Login</button>
+                <button onclick="closeTeacherLoginModal()" class="w-1/2 py-3 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition" data-translate="cancel">Cancel</button>
+                <button onclick="verifyTeacherPin()" class="w-1/2 py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition" data-translate="login">Login</button>
             </div>
         </div>
     </div>
 
-    <!-- Navigation Header -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm no-print">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="h-12 w-auto max-w-[180px] bg-transparent flex items-center justify-center">
-                    <img src="bharat_logo.jpeg" alt="Bharat Logo" class="h-full w-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-xs font-bold text-blue-900\'>BHARAT CENTER</span>';">
+    <!-- Header Navigation (Non-wrapping title & responsive right action buttons) -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 shadow-sm no-print">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            
+            <!-- Header Left: Logo & Non-Wrapping Titles -->
+            <div class="flex items-center gap-3 shrink-0">
+                <!-- SVG Fallback Logo for Mobile & Desktop -->
+                <div class="h-11 w-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                    <img src="bharat_logo.jpeg" alt="Logo" class="h-full w-full object-contain rounded-2xl" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <i class="fa-solid fa-graduation-cap text-lg hidden"></i>
                 </div>
-                <div>
-                    <h1 class="official-title text-xl md:text-2xl font-black text-blue-900 tracking-tight">Bharat Education Center</h1>
-                    <p class="text-xs text-slate-500 font-medium">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
+                <div class="whitespace-nowrap">
+                    <h1 class="official-title text-base sm:text-lg font-black text-blue-950 tracking-tight whitespace-nowrap">Bharat Education Center</h1>
+                    <p class="text-[11px] text-slate-500 font-medium whitespace-nowrap">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                 </div>
             </div>
             
-            <div class="flex items-center gap-3 shrink-0">
-                <button id="nav-student-btn" onclick="showStudentPortal()" class="px-3.5 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-100 transition shadow-sm">
-                    <i class="fa-solid fa-user"></i> <span data-translate="student_portal">Student Portal</span>
+            <!-- Header Right: Responsive Wrapped Buttons -->
+            <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+                <button id="nav-student-btn" onclick="showStudentPortal()" class="px-3 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-100 transition border border-blue-100 shadow-sm whitespace-nowrap">
+                    <i class="fa-solid fa-user"></i> <span data-translate="student_portal">Student</span>
                 </button>
-                <button id="nav-teacher-btn" onclick="openTeacherLoginModal()" class="px-3.5 py-2 bg-slate-100 text-slate-800 text-xs font-bold rounded-xl hover:bg-slate-200 transition shadow-sm border border-slate-200">
-                    <i class="fa-solid fa-lock"></i> <span data-translate="teacher_dashboard">Teacher Dashboard</span>
+                <button id="nav-teacher-btn" onclick="openTeacherLoginModal()" class="px-3 py-2 bg-slate-100 text-slate-800 text-xs font-bold rounded-xl hover:bg-slate-200 transition border border-slate-200 shadow-sm whitespace-nowrap">
+                    <i class="fa-solid fa-lock"></i> <span data-translate="teacher_dashboard">Teacher</span>
                 </button>
                 <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
-                    <button onclick="setLanguage('en')" id="lang-en-btn" class="px-3 py-1 text-xs font-bold rounded-lg transition">English</button>
-                    <button onclick="setLanguage('gu')" id="lang-gu-btn" class="px-3 py-1 text-xs font-bold rounded-lg transition">ગુજરાતી</button>
+                    <button onclick="setLanguage('en')" id="lang-en-btn" class="px-2.5 py-1 text-[11px] font-bold rounded-lg transition">EN</button>
+                    <button onclick="setLanguage('gu')" id="lang-gu-btn" class="px-2.5 py-1 text-[11px] font-bold rounded-lg transition">GJ</button>
                 </div>
             </div>
+
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-4 py-8 w-full flex-grow">
+    <main class="max-w-5xl mx-auto px-4 py-6 w-full flex-grow">
 
         <!-- ================= STUDENT PORTAL ================= -->
         <div id="student-portal-view" class="space-y-6">
-            <div id="student-test-select-screen" class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-4">
+            <div id="student-test-select-screen" class="glass-card p-5 sm:p-7 space-y-4">
                 <div class="flex justify-between items-center flex-wrap gap-3">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-950" data-translate="select_test">Select Available Test:</h2>
+                        <h2 class="text-lg font-extrabold text-slate-900" data-translate="select_test">Select Available Test:</h2>
                         <p class="text-xs text-slate-500" data-translate="select_test_desc">Click 'Start Test' or view your completed score and retry status below.</p>
                     </div>
-                    <div class="bg-blue-50 px-3.5 py-2 rounded-xl border border-blue-200 text-xs text-blue-900">
-                        <span data-translate="student_label">Student</span>: <span id="current-logged-student" class="font-bold">Not Set</span> 
-                        <button onclick="changeStudentIdentity()" class="ml-2 text-blue-600 underline font-semibold hover:text-blue-800" data-translate="change_name">Change Name</button>
+                    <div class="bg-blue-50/80 px-3.5 py-2 rounded-2xl border border-blue-200/60 text-xs text-blue-900 flex items-center gap-2">
+                        <span><span data-translate="student_label">Student</span>: <b id="current-logged-student" class="text-slate-900">Not Set</b></span> 
+                        <button onclick="changeStudentIdentity()" class="ml-1 text-blue-600 underline font-semibold hover:text-blue-800" data-translate="change_name">Change</button>
                     </div>
                 </div>
+
                 <div id="available-tests-list" class="space-y-3 pt-2">
                     <p class="text-xs text-slate-400" data-translate="loading_tests">Loading tests...</p>
                 </div>
             </div>
 
             <!-- Test Rules Screen -->
-            <div id="test-rules-screen" class="hidden bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-6">
-                <div class="text-center border-b border-slate-200 pb-4">
+            <div id="test-rules-screen" class="hidden glass-card p-6 md:p-8 space-y-6">
+                <div class="text-center border-b border-slate-100 pb-4">
                     <h2 class="official-title text-xl font-bold text-blue-900">BHARAT EDUCATION CENTER</h2>
                     <p class="text-xs text-slate-500 mt-0.5">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                     <div class="mt-3 inline-block bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-xs font-bold" id="rule-test-title">--</div>
@@ -156,38 +194,40 @@
                     <p data-translate="rule_1">1. Each correct answer carries 1 Mark.</p>
                     <p>2. <span data-translate="rule_2_prefix">Passing marks required:</span> <b id="rule-pass-pct" class="text-blue-600">50%</b>.</p>
                     <p>3. <span data-translate="rule_3_prefix">Time Limit:</span> <b id="rule-time-limit" class="text-blue-600">Unlimited</b>.</p>
-                    <p data-translate="rule_4">4. Each student can attempt every chapter test once freely.</p>
-                    <p data-translate="rule_5">5. Tab switching or minimizing will trigger a warning and auto-submit after 3 warnings.</p>
+                    <p data-translate="rule_4">4. Registered students can attempt tests.</p>
                 </div>
 
-                <button onclick="verifyAndStartStudentTestDirect()" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl text-sm shadow-lg hover:bg-blue-700 transition" data-translate="start_test_btn">
-                    Start Test -> Proceed
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="showStudentPortal()" class="w-1/3 py-3.5 bg-slate-100 text-slate-600 font-bold rounded-2xl text-xs hover:bg-slate-200 transition" data-translate="cancel">Cancel</button>
+                    <button onclick="verifyAndStartStudentTestDirect()" class="w-2/3 py-3.5 bg-blue-600 text-white font-bold rounded-2xl text-xs shadow-lg hover:bg-blue-700 transition" data-translate="start_test_btn">Start Test -> Proceed</button>
+                </div>
             </div>
 
-            <!-- Student Name Modal -->
+            <!-- Student Name Modal with Close Button -->
             <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99998] modal-center p-4">
-                <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 text-center">
-                    <div class="w-12 h-12 mx-auto rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-md">
+                <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 text-center relative">
+                    <button onclick="document.getElementById('student-name-modal').classList.add('hidden')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center font-bold text-sm">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-md mt-2">
                         <i class="fa-solid fa-user-graduate"></i>
                     </div>
                     <h3 class="text-lg font-bold text-slate-900" data-translate="modal_enter_name">Enter Your Registered Name</h3>
                     <p class="text-xs text-slate-500" data-translate="modal_name_desc">Name must match the Student Master list added by your teacher.</p>
-                    <input type="text" id="student-entry-name" placeholder="e.g. Vikram Chaudhary" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm text-center outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400 font-bold">
-                    <button onclick="saveStudentIdentity()" class="w-full py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition" data-translate="modal_verify_btn">Verify Name & Start Test</button>
+                    <input type="text" id="student-entry-name" placeholder="e.g. Vikram Chaudhary" class="w-full px-4 py-3 rounded-2xl border border-slate-300 text-sm text-center outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400 font-bold bg-slate-50">
+                    <button onclick="saveStudentIdentity()" class="w-full py-3.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition" data-translate="modal_verify_btn">Verify Name & Start Test</button>
                 </div>
             </div>
 
             <!-- Active Test Container -->
             <div id="active-test-container" class="hidden space-y-6">
-                <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 flex justify-between items-center shadow-sm sticky top-16 z-30">
+                <div class="bg-blue-600 text-white p-4 rounded-2xl flex justify-between items-center shadow-lg sticky top-16 z-30">
                     <div>
-                        <h2 class="font-bold text-blue-900 text-base" id="running-test-title">--</h2>
-                        <p class="text-xs text-blue-700"><span data-translate="student_label">Student</span>: <span id="running-student-name" class="font-semibold">--</span></p>
+                        <h2 class="font-bold text-sm sm:text-base" id="running-test-title">--</h2>
+                        <p class="text-xs text-blue-100"><span data-translate="student_label">Student</span>: <span id="running-student-name" class="font-semibold">--</span></p>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <span id="test-progress-counter" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full border border-blue-200">0 / 0 Answered</span>
-                        <span id="test-timer-badge" class="text-xs font-bold bg-rose-600 text-white px-3.5 py-1.5 rounded-full shadow-sm"><i class="fa-solid fa-clock"></i> <span id="timer-countdown-display">Unlimited</span></span>
+                    <div class="flex items-center gap-2">
+                        <span id="test-progress-counter" class="text-[11px] font-bold bg-blue-700/80 text-white px-3 py-1.5 rounded-xl border border-blue-500">0 / 0</span>
                     </div>
                 </div>
 
@@ -201,25 +241,25 @@
 
             <!-- Student Result Screen -->
             <div id="student-result-card" class="hidden space-y-6 max-w-xl mx-auto">
-                <div id="printable-congrats-card" class="bg-white p-8 rounded-3xl border border-slate-200 shadow-2xl space-y-6 text-slate-800 w-full max-w-[600px] mx-auto">
-                    <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+                <div id="printable-congrats-card" class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xl space-y-6 text-slate-800 w-full max-w-[600px] mx-auto">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-4">
                         <div class="h-10 w-auto max-w-[120px] flex items-center justify-center">
                             <img src="bharat_logo.jpeg" alt="Logo" class="h-full w-full object-contain">
                         </div>
                         <div class="text-right">
-                            <span class="text-xs font-black uppercase tracking-wider text-slate-400 block" data-translate="official_cert">OFFICIAL CERTIFICATE</span>
-                            <span id="res-medal-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold mt-1">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block" data-translate="official_cert">OFFICIAL CERTIFICATE</span>
+                            <span id="res-medal-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold mt-1 bg-blue-50 text-blue-700 border border-blue-200">
                                 <i id="res-medal-icon" class="fa-solid fa-award"></i> <span id="res-medal-text">VERIFIED TEST RESULT</span>
                             </span>
                         </div>
                     </div>
 
                     <div class="text-center space-y-1">
-                        <h2 class="official-title text-2xl font-black text-blue-900 tracking-tight">BHARAT EDUCATION CENTER</h2>
+                        <h2 class="official-title text-xl font-black text-blue-950 tracking-tight">BHARAT EDUCATION CENTER</h2>
                         <p class="text-xs text-slate-500 font-medium">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                     </div>
 
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 text-xs">
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2 text-xs">
                         <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
                             <span class="text-slate-500 font-semibold" data-translate="table_student">Student Name:</span>
                             <b id="res-student-name" class="text-slate-900 font-bold text-sm">--</b>
@@ -234,10 +274,10 @@
                         </div>
                     </div>
 
-                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-2xl border border-blue-100 flex items-center justify-between">
+                    <div class="soft-blue-card p-5 rounded-2xl flex items-center justify-between">
                         <div class="text-left space-y-1">
-                            <span class="text-[11px] font-black uppercase tracking-wider text-blue-800" data-translate="overall_score">Overall Score Achieved</span>
-                            <div class="text-3xl font-black text-blue-900" id="res-score">0 / 0</div>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-blue-800" data-translate="overall_score">Overall Score Achieved</span>
+                            <div class="text-3xl font-black text-blue-950" id="res-score">0 / 0</div>
                         </div>
                         <div class="text-right">
                             <span class="text-xs font-bold text-slate-500 block" data-translate="percentage_label">Percentage</span>
@@ -279,37 +319,37 @@
 
         <!-- ================= TEACHER ADMIN DASHBOARD ================= -->
         <div id="teacher-dashboard-view" class="hidden space-y-6">
-            <div class="flex justify-between items-center bg-white border border-slate-200 p-5 rounded-3xl shadow-sm flex-wrap gap-4">
+            <div class="flex justify-between items-center glass-card p-5 flex-wrap gap-4">
                 <div>
                     <h2 class="official-title font-bold text-base flex items-center gap-2 text-slate-900"><i class="fa-solid fa-user-shield text-blue-600"></i> <span data-translate="teacher_control">Teacher Control Center (Admin Panel)</span></h2>
                     <p class="text-xs text-slate-500" data-translate="teacher_subtitle">Manage Students Master, Categories, Tests & Reports</p>
                 </div>
-                <button onclick="logoutTeacher()" class="text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 px-4 py-2 rounded-xl transition font-bold" data-translate="logout">Logout / Exit</button>
+                <button onclick="logoutTeacher()" class="text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 px-4 py-2.5 rounded-xl transition font-bold" data-translate="logout">Logout / Exit</button>
             </div>
 
-            <!-- Admin Navigation Tabs - Evenly Spaced -->
-            <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
-                <button onclick="switchAdminTab('student-master')" id="tab-btn-master" class="py-2.5 px-3 text-xs font-bold rounded-xl bg-blue-600 text-white transition shadow-sm" data-translate="tab_student_master">Students Master</button>
-                <button onclick="switchAdminTab('test-builder')" id="tab-btn-builder" class="py-2.5 px-3 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition" data-translate="tab_builder">Create / Edit Test</button>
-                <button onclick="switchAdminTab('test-manager')" id="tab-btn-manager" class="py-2.5 px-3 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition" data-translate="tab_manager">Manage Tests</button>
-                <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="py-2.5 px-3 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition" data-translate="tab_records">Student Results</button>
+            <!-- Mobile Touch Optimized Navigation Tabs -->
+            <div class="bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-1.5 text-center">
+                <button onclick="switchAdminTab('student-master')" id="tab-btn-master" class="py-3 px-2 text-xs font-bold rounded-xl bg-blue-600 text-white transition shadow-sm" data-translate="tab_student_master">Students Master</button>
+                <button onclick="switchAdminTab('test-builder')" id="tab-btn-builder" class="py-3 px-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition" data-translate="tab_builder">Create / Edit Test</button>
+                <button onclick="switchAdminTab('test-manager')" id="tab-btn-manager" class="py-3 px-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition" data-translate="tab_manager">Manage Tests</button>
+                <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="py-3 px-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition" data-translate="tab_records">Student Results</button>
             </div>
 
-            <!-- TAB 0: Student Master Management (With Edit & Category Support) -->
+            <!-- TAB 0: Student Master Management -->
             <div id="admin-tab-master" class="space-y-6">
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                <div class="glass-card p-5 md:p-6 space-y-4">
                     <h3 class="font-bold text-slate-800 text-sm" id="student-form-title" data-translate="add_student_title">Add New Student to Master List:</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <input type="text" id="new-master-student-input" placeholder="Student Full Name" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold">
-                        <input type="text" id="new-master-student-category" placeholder="Category / Batch (e.g. Std 10)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                        <input type="text" id="new-master-student-input" placeholder="Student Full Name" class="px-4 py-3 rounded-2xl border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold bg-slate-50">
+                        <input type="text" id="new-master-student-category" placeholder="Category / Batch (e.g. Std 10)" class="px-4 py-3 rounded-2xl border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold bg-slate-50">
                         <div class="flex gap-2">
-                            <button id="save-student-btn" onclick="addStudentToMaster()" class="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm" data-translate="add_student_btn"><i class="fa-solid fa-user-plus"></i> Add Student</button>
-                            <button id="cancel-student-edit-btn" onclick="resetStudentForm()" class="hidden px-4 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs hover:bg-slate-200 transition" data-translate="cancel">Cancel</button>
+                            <button id="save-student-btn" onclick="addStudentToMaster()" class="flex-1 py-3 bg-blue-600 text-white font-bold rounded-2xl text-xs hover:bg-blue-700 transition shadow-sm" data-translate="add_student_btn"><i class="fa-solid fa-user-plus"></i> Add Student</button>
+                            <button id="cancel-student-edit-btn" onclick="resetStudentForm()" class="hidden px-4 py-3 bg-slate-100 text-slate-600 font-bold rounded-2xl text-xs hover:bg-slate-200 transition" data-translate="cancel">Cancel</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3">
+                <div class="glass-card p-5 md:p-6 space-y-3">
                     <h3 class="font-bold text-slate-800 text-sm"><span data-translate="registered_list">Registered Students Master List</span> (<span id="master-student-count">0</span>):</h3>
                     <div id="master-students-list" class="space-y-2 text-xs">
                         <p class="text-slate-400" data-translate="loading_master">Loading master students...</p>
@@ -319,47 +359,47 @@
 
             <!-- TAB 1: Test Builder -->
             <div id="admin-tab-builder" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                <div class="glass-card p-5 md:p-6 space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 id="builder-mode-title" class="font-bold text-slate-800 text-sm" data-translate="test_info_title">1. Set Test Information:</h3>
                         <button id="cancel-edit-btn" onclick="resetTestBuilder()" class="hidden text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-lg font-bold" data-translate="cancel_edit">Cancel Edit</button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                        <input type="text" id="new-test-title-input" placeholder="e.g. Chapter 1 Test" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                        <input type="number" id="new-test-pass-input" placeholder="Passing % (Default: 50)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                        <input type="number" id="new-test-time-input" placeholder="Time Limit Mins (Empty = No Limit)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                        <input type="datetime-local" id="new-test-deadline-input" class="w-full px-3 py-3 rounded-xl border text-xs outline-none">
+                        <input type="text" id="new-test-title-input" placeholder="e.g. Chapter 1 Test" class="px-4 py-3 rounded-2xl border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+                        <input type="number" id="new-test-pass-input" placeholder="Passing % (Default: 50)" class="px-4 py-3 rounded-2xl border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+                        <input type="number" id="new-test-time-input" placeholder="Time Limit Mins (Empty = Unlimited)" class="px-4 py-3 rounded-2xl border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+                        <input type="datetime-local" id="new-test-deadline-input" class="w-full px-3 py-3 rounded-2xl border border-slate-200 text-xs outline-none bg-slate-50">
                     </div>
                 </div>
 
-                <div class="bg-emerald-50 border border-emerald-200 p-6 rounded-3xl space-y-3 shadow-sm">
+                <div class="soft-green-card p-5 md:p-6 rounded-3xl space-y-3">
                     <h3 class="font-bold text-emerald-900 text-sm"><i class="fa-solid fa-file-excel"></i> <span data-translate="excel_import_title">Option A: Bulk Import Questions via Excel / CSV</span></h3>
                     <p class="text-xs text-emerald-700" data-translate="excel_headers">Required Column Headers: <b>q, correct, wrong1, wrong2</b></p>
                     <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="text-xs file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white cursor-pointer">
                     <button onclick="handleExcelUpload()" class="px-4 py-2.5 bg-emerald-700 text-white font-bold rounded-xl text-xs hover:bg-emerald-800 transition" data-translate="excel_import_btn">Import Questions from Excel</button>
                 </div>
 
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                <div class="glass-card p-5 md:p-6 space-y-4">
                     <h3 class="font-bold text-slate-800 text-sm" data-translate="manual_q_title">Option B: Add Questions Manually:</h3>
-                    <textarea id="q-text-input" placeholder="Type question here..." class="w-full px-4 py-3 rounded-xl border text-sm outline-none h-24 focus:ring-2 focus:ring-blue-500"></textarea>
+                    <textarea id="q-text-input" placeholder="Type question here..." class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm outline-none h-24 focus:ring-2 focus:ring-blue-500 bg-slate-50"></textarea>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <input type="text" id="q-correct-opt" placeholder="Correct Answer Option" class="px-4 py-3 rounded-xl border border-emerald-300 bg-emerald-50/50 text-sm outline-none">
-                        <input type="text" id="q-wrong-opt1" placeholder="Wrong Option 1" class="px-4 py-3 rounded-xl border text-sm outline-none">
-                        <input type="text" id="q-wrong-opt2" placeholder="Wrong Option 2" class="px-4 py-3 rounded-xl border text-sm outline-none">
+                        <input type="text" id="q-correct-opt" placeholder="Correct Answer Option" class="px-4 py-3 rounded-2xl border border-emerald-300 bg-emerald-50/50 text-sm outline-none">
+                        <input type="text" id="q-wrong-opt1" placeholder="Wrong Option 1" class="px-4 py-3 rounded-2xl border border-slate-200 text-sm outline-none bg-slate-50">
+                        <input type="text" id="q-wrong-opt2" placeholder="Wrong Option 2" class="px-4 py-3 rounded-2xl border border-slate-200 text-sm outline-none bg-slate-50">
                     </div>
-                    <button onclick="addQuestionToDraft()" class="px-4 py-2.5 bg-slate-900 text-white font-bold rounded-xl text-xs hover:bg-slate-800 transition" data-translate="add_q_btn"><i class="fa-solid fa-plus"></i> Add Question to Draft</button>
+                    <button onclick="addQuestionToDraft()" class="px-4 py-3 bg-slate-900 text-white font-bold rounded-2xl text-xs hover:bg-slate-800 transition" data-translate="add_q_btn"><i class="fa-solid fa-plus"></i> Add Question to Draft</button>
                 </div>
 
                 <div class="bg-slate-100 p-5 rounded-3xl border border-slate-200 shadow-sm">
                     <h4 class="font-bold text-xs text-slate-600 uppercase mb-3"><span data-translate="draft_preview">Draft Questions Preview</span> (<span id="draft-q-count">0</span>):</h4>
                     <div id="draft-questions-list" class="space-y-2 text-xs"></div>
-                    <button onclick="saveCompleteTest()" class="mt-4 w-full py-3.5 bg-emerald-600 text-white font-bold rounded-xl text-sm shadow-md hover:bg-emerald-700 transition" data-translate="publish_test_btn"><i class="fa-solid fa-cloud-arrow-up"></i> Publish Test to Cloud Database</button>
+                    <button onclick="saveCompleteTest()" class="mt-4 w-full py-4 bg-emerald-600 text-white font-bold rounded-2xl text-sm shadow-md hover:bg-emerald-700 transition" data-translate="publish_test_btn"><i class="fa-solid fa-cloud-arrow-up"></i> Publish Test to Cloud Database</button>
                 </div>
             </div>
 
             <!-- TAB 2: Test Manager -->
             <div id="admin-tab-manager" class="hidden space-y-4">
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                <div class="glass-card p-5 md:p-6 space-y-4">
                     <h3 class="font-bold text-slate-800 text-sm" data-translate="manage_tests_title">Manage Uploaded Tests:</h3>
                     <div id="admin-tests-manage-list" class="space-y-3"></div>
                 </div>
@@ -367,7 +407,7 @@
 
             <!-- TAB 3: Records -->
             <div id="admin-tab-records" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
+                <div class="glass-card p-5 md:p-6 space-y-5">
                     <div class="flex flex-wrap gap-3 items-center justify-between no-print">
                         <div class="flex gap-3 flex-wrap">
                             <select id="filter-test-select" onchange="applyResultFilters()" class="px-3 py-2 border rounded-xl text-xs bg-slate-50"><option value="">All Chapters</option></select>
@@ -429,8 +469,7 @@
                 rule_1: "1. Each correct answer carries 1 Mark.",
                 rule_2_prefix: "Passing marks required:",
                 rule_3_prefix: "Time Limit:",
-                rule_4: "4. Each student can attempt every chapter test once freely.",
-                rule_5: "5. Tab switching or minimizing will trigger a warning and auto-submit after 3 warnings.",
+                rule_4: "4. Registered students can attempt tests.",
                 start_test_btn: "Start Test -> Proceed",
                 modal_enter_name: "Enter Your Registered Name",
                 modal_name_desc: "Name must match the Student Master list added by your teacher.",
@@ -486,8 +525,8 @@
                 enter_pin: "કૃપા કરીને લૉગિન પિન દાખલ કરો:",
                 cancel: "રદ કરો",
                 login: "લૉગિન કરો",
-                student_portal: "વિદ્યાર્થી પોર્ટલ",
-                teacher_dashboard: "શિક્ષક ડેશબોર્ડ",
+                student_portal: "વિદ્યાર્થી",
+                teacher_dashboard: "શિક્ષક",
                 select_test: "ઉપલબ્ધ ટેસ્ટ પસંદ કરો:",
                 select_test_desc: "ટેસ્ટ આપવા માટે 'Start Test' પર ક્લિક કરો અથવા તમારું સ્કોરકાર્ડ જુઓ.",
                 student_label: "વિદ્યાર્થી",
@@ -497,8 +536,7 @@
                 rule_1: "૧. દરેક સાચા જવાબના ૧ ગુણ રહેશે.",
                 rule_2_prefix: "પાસ થવા માટે જરૂરી ગુણ:",
                 rule_3_prefix: "સમય મર્યાદા:",
-                rule_4: "૪. દરેક વિદ્યાર્થી દરેક ચેપ્ટર ટેસ્ટ આપી શકે છે.",
-                rule_5: "૫. ટેસ્ટ દરમિયાન ટૅબ બદલવા પર ઓટો-સબમિટ થઈ જશે.",
+                rule_4: "૪. ફક્ત રજિસ્ટર્ડ વિદ્યાર્થીઓ જ ટેસ્ટ આપી શકે છે.",
                 start_test_btn: "ટેસ્ટ શરૂ કરો -> આગળ વધો",
                 modal_enter_name: "તમારું રજિસ્ટર્ડ નામ દાખલ કરો",
                 modal_name_desc: "નામ શિક્ષક દ્વારા ઉમેરાયેલ સ્ટુડન્ટ માસ્ટર લિસ્ટ સાથે મેચ થવું જોઈએ.",
@@ -555,8 +593,8 @@
 
         function setLanguage(lang) {
             currentLang = lang;
-            document.getElementById('lang-en-btn').className = lang === 'en' ? "px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition" : "px-3 py-1 text-xs font-bold rounded-lg text-slate-600 transition";
-            document.getElementById('lang-gu-btn').className = lang === 'gu' ? "px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition" : "px-3 py-1 text-xs font-bold rounded-lg text-slate-600 transition";
+            document.getElementById('lang-en-btn').className = lang === 'en' ? "px-2.5 py-1 text-[11px] font-bold rounded-lg bg-blue-600 text-white transition" : "px-2.5 py-1 text-[11px] font-bold rounded-lg text-slate-600 transition";
+            document.getElementById('lang-gu-btn').className = lang === 'gu' ? "px-2.5 py-1 text-[11px] font-bold rounded-lg bg-blue-600 text-white transition" : "px-2.5 py-1 text-[11px] font-bold rounded-lg text-slate-600 transition";
             document.documentElement.lang = lang;
 
             const elements = document.querySelectorAll('[data-translate]');
@@ -578,7 +616,6 @@
             document.getElementById('custom-confirm-text').innerText = msg;
             const confirmModal = document.getElementById('custom-confirm-modal');
             const okBtn = document.getElementById('confirm-ok-btn');
-            const cancelBtn = document.getElementById('confirm-cancel-btn');
 
             confirmModal.classList.remove('hidden');
 
@@ -586,14 +623,14 @@
                 confirmModal.classList.add('hidden');
                 onConfirm();
             };
-            cancelBtn.onclick = function() {
-                confirmModal.classList.add('hidden');
-            };
         }
+        function closeCustomConfirm() { document.getElementById('custom-confirm-modal').classList.add('hidden'); }
 
         function openTeacherLoginModal() {
-            document.getElementById('teacher-pin-input').value = '';
+            const input = document.getElementById('teacher-pin-input');
+            input.value = '';
             document.getElementById('teacher-login-modal').classList.remove('hidden');
+            setTimeout(() => input.focus(), 150);
         }
         function closeTeacherLoginModal() { document.getElementById('teacher-login-modal').classList.add('hidden'); }
 
@@ -604,7 +641,7 @@
                 closeTeacherLoginModal();
                 showTeacherDashboard();
             } else {
-                showAlert("Incorrect PIN!");
+                showAlert("પિન ખોટો છે! સાચો પિન દાખલ કરો.");
             }
         }
 
@@ -641,7 +678,7 @@
 
         async function saveStudentIdentity() {
             const inputVal = document.getElementById('student-entry-name').value.trim();
-            if(!inputVal) { showAlert('Please enter your full name!'); return; }
+            if(!inputVal) { showAlert('કૃપા કરીને તમારું પૂરું નામ દાખલ કરો!'); return; }
 
             const { data, error } = await supabaseClient.from('students_master').select('*').ilike('student_name', inputVal);
             if (error || !data || data.length === 0) {
@@ -699,28 +736,33 @@
 
             testsDB.forEach((t, idx) => {
                 let isExpired = t.deadline && now > new Date(t.deadline);
-                const attempt = resultsDB.find(r => r.student === activeStudentName && r.testName === t.title);
+                const attempts = resultsDB.filter(r => r.student === activeStudentName && r.testName === t.title);
+                const latestAttempt = attempts[0];
                 let actionBtn = "";
 
                 if(isExpired) {
                     actionBtn = `<span class="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-200">Closed (Expired)</span>`;
                 } else if(!t.isUnlocked) {
                     actionBtn = `<button onclick="showAlert('આ ટેસ્ટ શિક્ષક દ્વારા લૉક કરેલ છે.')" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition shadow-sm"><i class="fa-solid fa-lock"></i> Locked</button>`;
-                } else if(attempt) {
+                } else if(latestAttempt) {
                     actionBtn = `
-                        <div class="flex items-center gap-3 flex-wrap">
+                        <div class="flex items-center gap-3 flex-wrap justify-end">
                             <div class="text-right">
-                                <span class="text-[11px] font-bold text-emerald-600 block">Completed ✓ (${attempt.score})</span>
-                                <span class="text-[10px] text-slate-500">Score: ${attempt.pct}% | ${attempt.status}</span>
+                                <span class="text-[11px] font-bold text-emerald-600 block">Completed ✓ (${latestAttempt.score})</span>
+                                <span class="text-[10px] text-slate-500">Score: ${latestAttempt.pct}% | ${latestAttempt.status}</span>
+                                <span class="text-[9px] text-slate-400 block">${latestAttempt.date}</span>
                             </div>
+                            <button onclick="openRulesScreen(${idx})" class="px-3 py-1.5 bg-blue-50 text-blue-700 font-bold rounded-xl text-xs hover:bg-blue-100 transition border border-blue-200">
+                                <i class="fa-solid fa-rotate-right"></i> Retry
+                            </button>
                         </div>
                     `;
                 } else {
-                    actionBtn = `<button onclick="openRulesScreen(${idx})" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm">Start Test</button>`;
+                    actionBtn = `<button onclick="openRulesScreen(${idx})" class="px-4 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm">Start Test</button>`;
                 }
 
                 container.innerHTML += `
-                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-center flex-wrap gap-3">
+                    <div class="p-4 bg-slate-50/70 border border-slate-200/80 rounded-2xl flex justify-between items-center flex-wrap gap-3">
                         <div>
                             <h4 class="font-bold text-slate-900 text-sm">${t.title}</h4>
                             <p class="text-xs text-slate-500">Questions: ${t.questions.length} | Passing: ${t.passMark}%</p>
@@ -755,13 +797,19 @@
             studentAnswers = {};
             const wrapper = document.getElementById('quiz-questions-wrapper');
             wrapper.innerHTML = runningQuizData.map((q, qIdx) => `
-                <div class="p-4 bg-white border border-slate-200 rounded-2xl space-y-2">
+                <div class="p-4 bg-white border border-slate-200 rounded-2xl space-y-2 shadow-sm">
                     <p class="font-bold text-xs text-slate-900">Q${qIdx+1}. ${q.question}</p>
-                    ${q.options.map((o, oIdx) => `<label class="block p-2.5 bg-slate-50 border rounded-xl text-xs cursor-pointer hover:bg-slate-100"><input type="radio" name="q_${qIdx}" value="${oIdx}" onchange="studentAnswers[${qIdx}]=${oIdx}"> ${o.text}</label>`).join('')}
+                    ${q.options.map((o, oIdx) => `<label class="block p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs cursor-pointer hover:bg-blue-50/50 transition"><input type="radio" name="q_${qIdx}" value="${oIdx}" onchange="studentAnswers[${qIdx}]=${oIdx}; updateTestProgress();"> ${o.text}</label>`).join('')}
                 </div>
             `).join('');
 
+            updateTestProgress();
             document.getElementById('active-test-container').classList.remove('hidden');
+        }
+
+        function updateTestProgress() {
+            const answered = Object.keys(studentAnswers).length;
+            document.getElementById('test-progress-counter').innerText = `${answered} / ${runningQuizData.length} Answered`;
         }
 
         function submitStudentQuiz(e) {
@@ -801,8 +849,10 @@
             const status = pct >= t.passMark ? "PASS" : "FAIL";
             const grade = pct >= 90 ? "A+" : pct >= 75 ? "A" : pct >= 50 ? "C" : "F";
 
+            const prevAttempts = resultsDB.filter(r => r.student === activeStudentName && r.testName === t.title).length;
+
             await supabaseClient.from('results').insert([{
-                student_name: activeStudentName, test_name: t.title, score: `${score} / ${total}`, percentage: pct, grade: grade, status: status, attempt: 1, allow_retake: false, wrong_answers_json: wrongDetailsList
+                student_name: activeStudentName, test_name: t.title, score: `${score} / ${total}`, percentage: pct, grade: grade, status: status, attempt: prevAttempts + 1, allow_retake: true, wrong_answers_json: wrongDetailsList
             }]);
 
             document.getElementById('active-test-container').classList.add('hidden');
@@ -813,14 +863,15 @@
             document.getElementById('res-pct').innerText = `${pct}%`;
             document.getElementById('res-grade').innerText = grade;
             document.getElementById('res-status').innerText = status;
-            document.getElementById('congrats-remarks-box').className = status === 'PASS' ? "p-3.5 rounded-2xl text-center text-xs font-bold bg-emerald-50 text-emerald-800" : "p-3.5 rounded-2xl text-center text-xs font-bold bg-amber-50 text-amber-800";
+            document.getElementById('res-timestamp').innerText = new Date().toLocaleString();
+            document.getElementById('congrats-remarks-box').className = status === 'PASS' ? "p-3.5 rounded-2xl text-center text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200" : "p-3.5 rounded-2xl text-center text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200";
             document.getElementById('congrats-remarks-box').innerText = status === 'PASS' ? "🎉 Successfully Passed!" : "⚠️ Needs Improvement.";
 
             const solutionList = document.getElementById('solution-review-list');
             solutionList.innerHTML = '';
             wrongDetailsList.forEach(item => {
                 solutionList.innerHTML += `
-                    <div class="p-3.5 rounded-xl border border-rose-200 bg-rose-50/40 text-xs space-y-1">
+                    <div class="p-3.5 rounded-2xl border border-rose-200 bg-rose-50/40 text-xs space-y-1">
                         <div class="font-bold text-slate-900">Q ${item.qNumber}. ${item.question}</div>
                         <div class="text-rose-600">Your Answer: <span class="font-bold">${item.studentAnswer}</span></div>
                         <div class="text-emerald-700">Correct Answer: <span class="font-bold">${item.correctAnswer}</span></div>
@@ -841,8 +892,7 @@
 
             const text = `🎓 *BHARAT EDUCATION CENTER* 🎓\n-----------------------------------\n📊 *Official Test Result Report*\n\n👤 *Student Name:* ${student}\n📘 *Chapter/Test:* ${test}\n🎯 *Score Obtained:* ${score}\n📈 *Percentage:* ${pct}\n🏅 *Grade:* ${grade}\n⚡ *Status:* ${status}\n\n-----------------------------------\n*Teacher:* Chetan Soni | 📱 +91 99986 42506`;
             
-            const encodedText = encodeURIComponent(text);
-            window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         async function addStudentToMaster() {
@@ -893,10 +943,10 @@
             const container = document.getElementById('master-students-list');
             document.getElementById('master-student-count').innerText = masterStudentsDB.length;
             container.innerHTML = masterStudentsDB.map(s => `
-                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center">
+                <div class="p-3 bg-slate-50/80 border border-slate-200/80 rounded-2xl flex justify-between items-center">
                     <div>
                         <b class="text-slate-900">${s.student_name}</b>
-                        <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 rounded-md text-[10px] font-bold">${s.category || 'General'}</span>
+                        <span class="ml-2 px-2.5 py-0.5 bg-blue-100 text-blue-800 rounded-md text-[10px] font-bold">${s.category || 'General'}</span>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="editStudentMaster(${s.id}, '${s.student_name}', '${s.category || ''}')" class="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold rounded-lg text-xs hover:bg-indigo-100">Edit</button>
@@ -910,11 +960,11 @@
             ['master','builder','manager','records'].forEach(t => {
                 document.getElementById(`admin-tab-${t}`).classList.add('hidden');
                 const btn = document.getElementById(`tab-btn-${t}`);
-                if(btn) btn.className = "py-2.5 px-3 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition";
+                if(btn) btn.className = "py-3 px-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition";
             });
 
             document.getElementById(`admin-tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${tab}`).className = "py-2.5 px-3 text-xs font-bold rounded-xl bg-blue-600 text-white transition shadow-sm";
+            document.getElementById(`tab-btn-${tab}`).className = "py-3 px-2 text-xs font-bold rounded-xl bg-blue-600 text-white transition shadow-sm";
         }
 
         function handleExcelUpload() {
@@ -992,9 +1042,9 @@
                         <p class="text-[11px] text-slate-500">Pass: ${t.passMark}%</p>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="editTest(${t.id})" class="px-3 py-1 bg-indigo-600 text-white rounded-lg font-bold">Edit</button>
-                        <button onclick="toggleTestLock(${t.id}, ${!t.isUnlocked})" class="px-3 py-1 ${t.isUnlocked ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'} rounded-lg font-bold">${t.isUnlocked ? 'Unlocked' : 'Locked'}</button>
-                        <button onclick="deleteTest(${t.id})" class="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg font-bold">Delete</button>
+                        <button onclick="editTest(${t.id})" class="px-3 py-1 bg-indigo-600 text-white rounded-lg font-bold text-xs">Edit</button>
+                        <button onclick="toggleTestLock(${t.id}, ${!t.isUnlocked})" class="px-3 py-1 ${t.isUnlocked ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'} rounded-lg font-bold text-xs">${t.isUnlocked ? 'Unlocked' : 'Locked'}</button>
+                        <button onclick="deleteTest(${t.id})" class="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg font-bold text-xs">Delete</button>
                     </div>
                 </div>
             `).join('');
