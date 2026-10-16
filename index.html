@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="gu">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Literata & Rubik -->
-    <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Official Fonts (Merriweather for Titles & Inter for Body) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- SheetJS & html2canvas -->
@@ -17,11 +17,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { 
-            font-family: 'Literata', 'Rubik', sans-serif;
+            font-family: 'Inter', sans-serif;
             user-select: none;
             -webkit-user-select: none;
             background-color: #f8fafc;
             color: #1e293b;
+            font-size: 14px;
+        }
+        .official-title {
+            font-family: 'Merriweather', serif;
         }
         .modal-center {
             display: flex;
@@ -75,22 +79,22 @@
                     <img src="bharat_logo.jpeg" alt="Bharat Logo" class="h-full w-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-xs font-bold text-blue-900\'>BHARAT CENTER</span>';">
                 </div>
                 <div>
-                    <!-- Title font size: Change 'text-xl' to 'text-lg', 'text-xl', or 'text-2xl' as needed -->
-                    <h1 class="text-xl font-black text-blue-900 tracking-tight" id="main-site-title" data-translate="site_title">ભારત એજ્યુકેશન સેન્ટર</h1>
-                    <p class="text-[11px] text-slate-500">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
+                    <!-- Larger Official Title Font -->
+                    <h1 class="official-title text-xl md:text-2xl font-black text-blue-900 tracking-tight" id="main-site-title" data-translate="site_title">Bharat Education Center</h1>
+                    <p class="text-xs text-slate-500 font-medium">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                 </div>
             </div>
             
             <div class="flex items-center gap-3 shrink-0">
                 <button id="nav-student-btn" onclick="showStudentPortal()" class="px-3.5 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-100 transition shadow-sm">
-                    <i class="fa-solid fa-user"></i> <span data-translate="student_portal">વિદ્યાર્થી પોર્ટલ</span>
+                    <i class="fa-solid fa-user"></i> <span data-translate="student_portal">Student Portal</span>
                 </button>
                 <button id="nav-teacher-btn" onclick="openTeacherLoginModal()" class="px-3.5 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-sm">
-                    <i class="fa-solid fa-lock"></i> <span data-translate="teacher_dashboard">ટીચર ડેશબોર્ડ</span>
+                    <i class="fa-solid fa-lock"></i> <span data-translate="teacher_dashboard">Teacher Dashboard</span>
                 </button>
                 <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
-                    <button onclick="setLanguage('gu')" id="lang-gu-btn" class="px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition">ગુજરાતી</button>
-                    <button onclick="setLanguage('en')" id="lang-en-btn" class="px-3 py-1 text-xs font-bold rounded-lg text-slate-600 transition">English</button>
+                    <button onclick="setLanguage('en')" id="lang-en-btn" class="px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition">English</button>
+                    <button onclick="setLanguage('gu')" id="lang-gu-btn" class="px-3 py-1 text-xs font-bold rounded-lg text-slate-600 transition">ગુજરાતી</button>
                 </div>
             </div>
         </div>
@@ -101,10 +105,10 @@
         <!-- ================= STUDENT PORTAL ================= -->
         <div id="student-portal-view" class="space-y-6">
             <div id="student-test-select-screen" class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-4">
-                <h2 class="text-xl font-bold text-slate-900" data-translate="select_test">ઉપલબ્ધ ટેસ્ટ સિલેક્ટ કરો:</h2>
-                <p class="text-xs text-slate-500" data-translate="select_test_desc">તમારે જે ટેસ્ટ આપવો હોય તેની સામે 'ટેસ્ટ શરૂ કરો' પર ક્લિક કરો.</p>
+                <h2 class="text-xl font-bold text-slate-900" data-translate="select_test">Select Available Test:</h2>
+                <p class="text-xs text-slate-500" data-translate="select_test_desc">Click 'Start Test' next to the test you want to attempt.</p>
                 <div id="available-tests-list" class="space-y-3 pt-2">
-                    <p class="text-xs text-slate-400">ટેસ્ટ લોડ થઈ રહ્યા છે...</p>
+                    <p class="text-xs text-slate-400">Loading active tests...</p>
                 </div>
             </div>
 
@@ -114,30 +118,30 @@
                     <div class="h-14 w-auto max-w-[200px] mx-auto bg-transparent flex items-center justify-center mb-2">
                         <img src="bharat_logo.jpeg" alt="Bharat Logo" class="h-full w-full object-contain">
                     </div>
-                    <h2 class="text-xl font-bold text-blue-900" data-translate="site_title">BHARAT EDUCATION CENTER</h2>
+                    <h2 class="official-title text-xl font-bold text-blue-900" data-translate="site_title">BHARAT EDUCATION CENTER</h2>
                     <p class="text-xs text-slate-500 mt-0.5">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                     <div class="mt-3 inline-block bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-xs font-bold" id="rule-test-title">--</div>
                 </div>
 
                 <div class="space-y-3 text-xs text-slate-700 bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                    <h3 class="font-bold text-slate-900 text-sm mb-2 border-b border-slate-200 pb-1" data-translate="rules_title">ટેસ્ટ આપવાના ખાસ નિયમો (Instructions):</h3>
-                    <p data-translate="rule_1">૧. દરેક સાચા પ્રશ્નનો ૧ ગુણ (1 Mark) છે.</p>
-                    <p>૨. પાસ થવા માટે ઓછામાં ઓછા <b id="rule-pass-pct" class="text-blue-600">50%</b> ગુણ લાવવા જરૂરી છે.</p>
-                    <p data-translate="rule_3">૩. દરેક વિદ્યાર્થી દરેક ચેપ્ટરનો ૧-૧ અટેમ્પટ આપી શકશે.</p>
-                    <p data-translate="rule_4">૪. ટેસ્ટ આપતી વખતે પેજ રિફ્રેશ કરવું કે નવી ટેબ ખોલવી નહીં.</p>
+                    <h3 class="font-bold text-slate-900 text-sm mb-2 border-b border-slate-200 pb-1" data-translate="rules_title">Special Test Instructions:</h3>
+                    <p data-translate="rule_1">1. Each correct answer carries 1 Mark.</p>
+                    <p>2. Passing marks required: <b id="rule-pass-pct" class="text-blue-600">50%</b>.</p>
+                    <p data-translate="rule_3">3. Each student can attempt every chapter test once freely.</p>
+                    <p data-translate="rule_4">4. Do not refresh the page or open a new tab during the test.</p>
                 </div>
 
                 <button onclick="proceedToStudentNameModal()" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl text-sm shadow-lg hover:bg-blue-700 transition">
-                    <span data-translate="proceed_btn">હું નિયમો સમજ્યો છું -> આગળ વધો</span>
+                    <span data-translate="proceed_btn">I understand the rules -> Proceed</span>
                 </button>
             </div>
 
             <!-- Student Name Entry & Retake Modal -->
             <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-[99998] modal-center p-4">
                 <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4">
-                    <h3 class="text-lg font-bold text-slate-900" id="active-test-modal-title">ટેસ્ટ નામ</h3>
-                    <p class="text-xs text-slate-500" data-translate="enter_name_prompt">તમારું આખું નામ દાખલ કરો:</p>
-                    <input type="text" id="student-entry-name" placeholder="દખલ તરીકે / e.g. Vikram Chaudhary" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400">
+                    <h3 class="text-lg font-bold text-slate-900" id="active-test-modal-title">Test Name</h3>
+                    <p class="text-xs text-slate-500" data-translate="enter_name_prompt">Enter your full name:</p>
+                    <input type="text" id="student-entry-name" placeholder="e.g. Vikram Chaudhary" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400">
                     
                     <div id="modal-retake-notice" class="hidden p-3.5 bg-amber-50 border border-amber-300 rounded-xl space-y-2">
                         <p id="modal-retake-msg" class="text-xs text-amber-900 font-medium"></p>
@@ -147,8 +151,8 @@
                     </div>
 
                     <div class="flex gap-2 pt-2" id="modal-actions-bar">
-                        <button onclick="closeStudentModal()" class="w-1/2 py-3 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition" data-translate="cancel_btn">કેન્સલ</button>
-                        <button onclick="verifyAndStartStudentTest()" class="w-1/2 py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition" data-translate="start_test_btn">ટેસ્ટ ચાલુ કરો</button>
+                        <button onclick="closeStudentModal()" class="w-1/2 py-3 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition" data-translate="cancel_btn">Cancel</button>
+                        <button onclick="verifyAndStartStudentTest()" class="w-1/2 py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition" data-translate="start_test_btn">Start Test</button>
                     </div>
                 </div>
             </div>
@@ -166,7 +170,7 @@
                 <form id="active-quiz-form" onsubmit="submitStudentQuiz(event)" class="space-y-4">
                     <div id="quiz-questions-wrapper" class="space-y-4"></div>
                     <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition mt-6">
-                        <i class="fa-solid fa-paper-plane"></i> <span data-translate="submit_test_btn">ટેસ્ટ સબમિટ કરો</span>
+                        <i class="fa-solid fa-paper-plane"></i> <span data-translate="submit_test_btn">Submit Test</span>
                     </button>
                 </form>
             </div>
@@ -178,7 +182,7 @@
                         <img src="bharat_logo.jpeg" alt="Logo" class="h-full w-full object-contain">
                     </div>
                     <div>
-                        <h2 class="text-lg font-black text-blue-900 tracking-tight">BHARAT EDUCATION CENTER</h2>
+                        <h2 class="official-title text-lg font-black text-blue-900 tracking-tight">BHARAT EDUCATION CENTER</h2>
                         <p class="text-[11px] text-slate-500 font-medium">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                     </div>
                     <div class="border-t border-slate-200 pt-3">
@@ -189,10 +193,10 @@
                         <p class="text-xs text-slate-600">Chapter / Test: <b id="res-test-name" class="text-blue-700 font-bold">--</b></p>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 pt-1">
-                        <div class="bg-white p-3 rounded-xl border border-slate-200"><span class="text-[10px] text-slate-400 block font-bold" data-translate="score_lbl">ગુણ</span><span id="res-score" class="text-base font-black text-blue-600">0</span></div>
-                        <div class="bg-white p-3 rounded-xl border border-slate-200"><span class="text-[10px] text-slate-400 block font-bold" data-translate="pct_lbl">ટકાવારી</span><span id="res-pct" class="text-base font-black text-emerald-600">0%</span></div>
-                        <div class="bg-white p-3 rounded-xl border border-slate-200"><span class="text-[10px] text-slate-400 block font-bold" data-translate="grade_lbl">ગ્રેડ</span><span id="res-grade" class="text-base font-black text-indigo-600">A</span></div>
-                        <div class="bg-white p-3 rounded-xl border border-slate-200"><span class="text-[10px] text-slate-400 block font-bold" data-translate="status_lbl">સ્ટેટસ</span><span id="res-status" class="text-base font-black">PASS</span></div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200"><span class="text-[10px] text-slate-400 block font-bold" data-translate="score_lbl">Score</span><span id="res-score" class="text-base font-black text-blue-600">0</span></div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200"><span class="text-[10px] text-slate-400 block font-bold" data-translate="pct_lbl">Percentage</span><span id="res-pct" class="text-base font-black text-emerald-600">0%</span></div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200"><span class="text-[10px] text-slate-400 block font-bold" data-translate="grade_lbl">Grade</span><span id="res-grade" class="text-base font-black text-indigo-600">A</span></div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200"><span class="text-[10px] text-slate-400 block font-bold" data-translate="status_lbl">Status</span><span id="res-status" class="text-base font-black">PASS</span></div>
                     </div>
                     <div id="congrats-remarks-box" class="p-3 rounded-xl border text-xs font-bold text-center">
                         <span id="congrats-main-title">--</span>
@@ -201,9 +205,9 @@
 
                 <div class="flex flex-wrap gap-3 justify-center pt-2">
                     <button onclick="shareResultAsJPGWhatsApp()" class="px-5 py-3 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 transition flex items-center gap-2 shadow-sm">
-                        <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp પર JPG ફોટો શેર કરો
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Share Result JPG on WhatsApp
                     </button>
-                    <button onclick="showStudentPortal()" class="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition" data-translate="home_btn">હોમ સ્ક્રીન પર જાઓ</button>
+                    <button onclick="showStudentPortal()" class="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition" data-translate="home_btn">Go to Home Screen</button>
                 </div>
             </div>
         </div>
@@ -212,8 +216,8 @@
         <div id="teacher-dashboard-view" class="hidden space-y-6">
             <div class="flex justify-between items-center bg-slate-900 text-white p-5 rounded-3xl shadow-lg flex-wrap gap-4">
                 <div>
-                    <h2 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-user-shield text-blue-400"></i> Teacher Control Center (Admin Panel)</h2>
-                    <p class="text-xs text-slate-400">Manage Tests, Retake Requests & Reports</p>
+                    <h2 class="official-title font-bold text-base flex items-center gap-2"><i class="fa-solid fa-user-shield text-blue-400"></i> Teacher Control Center (Admin Panel)</h2>
+                    <p class="text-xs text-slate-400">Manage Tests, Enable/Disable, Retake Requests & Reports</p>
                 </div>
                 <button onclick="showStudentPortal()" class="text-xs bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl border border-slate-700 transition font-medium">Logout / Exit</button>
             </div>
@@ -221,16 +225,16 @@
             <!-- Realtime Retake Request Center -->
             <div class="bg-amber-50 border border-amber-300 p-6 rounded-3xl space-y-4 shadow-sm">
                 <h3 class="font-bold text-amber-900 text-sm flex items-center gap-2"><i class="fa-solid fa-bell text-amber-600"></i> Student Re-Test Requests (Notification Center)</h3>
-                <p class="text-xs text-amber-800">જે વિદ્યાર્થીઓએ રીટેસ્ટ માટે રિક્વેસ્ટ કરી છે તેમની જ લિસ્ટ અહી દેખાશે:</p>
+                <p class="text-xs text-amber-800">Pending re-test requests from students will appear here:</p>
                 <div id="retake-requests-list" class="space-y-2 text-xs">
-                    <p class="text-slate-500 italic">કોઈ પેન્ડિંગ રિક્વેસ્ટ નથી.</p>
+                    <p class="text-slate-500 italic">No pending requests.</p>
                 </div>
             </div>
 
             <!-- Admin Navigation Tabs -->
             <div class="flex border-b border-slate-200 gap-6 flex-wrap">
                 <button onclick="switchAdminTab('test-builder')" id="tab-btn-builder" class="pb-2.5 text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition">Create New Test</button>
-                <button onclick="switchAdminTab('test-manager')" id="tab-btn-manager" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Manage Tests (Edit/Delete)</button>
+                <button onclick="switchAdminTab('test-manager')" id="tab-btn-manager" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Manage Tests (Enable/Disable)</button>
                 <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Student Result Tracker & Reports</button>
             </div>
 
@@ -273,10 +277,10 @@
                 </div>
             </div>
 
-            <!-- TAB 2: Test Manager -->
+            <!-- TAB 2: Test Manager (Enable/Disable & Detailed Info) -->
             <div id="admin-tab-manager" class="hidden space-y-4">
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-800 text-sm mb-4">Manage Existing Tests:</h3>
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800 text-sm">Manage Uploaded Tests (Enable / Disable for Students):</h3>
                     <div id="admin-tests-manage-list" class="space-y-3"></div>
                 </div>
             </div>
@@ -300,7 +304,7 @@
                             <div class="h-14 w-auto max-w-[220px] mx-auto bg-transparent flex items-center justify-center mb-2">
                                 <img src="bharat_logo.jpeg" alt="Bharat Logo" class="h-full w-full object-contain">
                             </div>
-                            <h2 class="text-xl font-bold text-blue-900 tracking-tight" data-translate="site_title">BHARAT EDUCATION CENTER</h2>
+                            <h2 class="official-title text-xl font-bold text-blue-900 tracking-tight">BHARAT EDUCATION CENTER</h2>
                             <p class="text-xs text-slate-600 mt-0.5">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                             <p class="text-xs font-semibold text-slate-700 mt-0.5">Student Performance Report</p>
                         </div>
@@ -379,29 +383,8 @@
             }
         }
 
-        let currentLang = 'gu';
+        let currentLang = 'en';
         const translations = {
-            gu: {
-                site_title: "ભારત એજ્યુકેશન સેન્ટર",
-                student_portal: "વિદ્યાર્થી પોર્ટલ",
-                teacher_dashboard: "ટીચર ડેશબોર્ડ",
-                select_test: "ઉપલબ્ધ ટેસ્ટ સિલેક્ટ કરો:",
-                select_test_desc: "તમારે જે ટેસ્ટ આપવો હોય તેની સામે 'ટેસ્ટ શરૂ કરો' પર ક્લિક કરો.",
-                rules_title: "ટેસ્ટ આપવાના ખાસ નિયમો (Instructions):",
-                rule_1: "૧. દરેક સાચા પ્રશ્નનો ૧ ગુણ (1 Mark) છે.",
-                rule_3: "૩. દરેક વિદ્યાર્થી દરેક ચેપ્ટરનો ૧-૧ અટેમ્પટ આપી શકશે.",
-                rule_4: "૪. ટેસ્ટ આપતી વખતે પેજ રિફ્રેશ કરવું કે નવી ટેબ ખોલવી નહીં.",
-                proceed_btn: "હું નિયમો સમજ્યો છું -> આગળ વધો",
-                enter_name_prompt: "તમારું આખું નામ દાખલ કરો:",
-                cancel_btn: "કેન્સલ",
-                start_test_btn: "ટેસ્ટ ચાલુ કરો",
-                submit_test_btn: "ટેસ્ટ સબમિટ કરો",
-                score_lbl: "ગુણ",
-                pct_lbl: "ટકાવારી",
-                grade_lbl: "ગ્રેડ",
-                status_lbl: "સ્ટેટસ",
-                home_btn: "હોમ સ્ક્રીન પર જાઓ"
-            },
             en: {
                 site_title: "Bharat Education Center",
                 student_portal: "Student Portal",
@@ -422,13 +405,34 @@
                 grade_lbl: "Grade",
                 status_lbl: "Status",
                 home_btn: "Go to Home Screen"
+            },
+            gu: {
+                site_title: "ભારત એજ્યુકેશન સેન્ટર",
+                student_portal: "વિદ્યાર્થી પોર્ટલ",
+                teacher_dashboard: "ટીચર ડેશબોર્ડ",
+                select_test: "ઉપલબ્ધ ટેસ્ટ સિલેક્ટ કરો:",
+                select_test_desc: "તમારે જે ટેસ્ટ આપવો હોય તેની સામે 'ટેસ્ટ શરૂ કરો' પર ક્લિક કરો.",
+                rules_title: "ટેસ્ટ આપવાના ખાસ નિયમો (Instructions):",
+                rule_1: "૧. દરેક સાચા પ્રશ્નનો ૧ ગુણ (1 Mark) છે.",
+                rule_3: "૩. દરેક વિદ્યાર્થી દરેક ચેપ્ટરનો ૧-૧ અટેમ્પટ આપી શકશે.",
+                rule_4: "૪. ટેસ્ટ આપતી વખતે પેજ રિફ્રેશ કરવું કે નવી ટેબ ખોલવી નહીં.",
+                proceed_btn: "હું નિયમો સમજ્યો છું -> આગળ વધો",
+                enter_name_prompt: "તમારું આખું નામ દાખલ કરો:",
+                cancel_btn: "કેન્સલ",
+                start_test_btn: "ટેસ્ટ ચાલુ કરો",
+                submit_test_btn: "ટેસ્ટ સબમિટ કરો",
+                score_lbl: "ગુણ",
+                pct_lbl: "ટકાવારી",
+                grade_lbl: "ગ્રેડ",
+                status_lbl: "સ્ટેટસ",
+                home_btn: "હોમ સ્ક્રીન પર જાઓ"
             }
         };
 
         function setLanguage(lang) {
             currentLang = lang;
-            document.getElementById('lang-gu-btn').className = lang === 'gu' ? "px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition" : "px-3 py-1 text-xs font-bold rounded-lg text-slate-600 transition";
             document.getElementById('lang-en-btn').className = lang === 'en' ? "px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition" : "px-3 py-1 text-xs font-bold rounded-lg text-slate-600 transition";
+            document.getElementById('lang-gu-btn').className = lang === 'gu' ? "px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition" : "px-3 py-1 text-xs font-bold rounded-lg text-slate-600 transition";
 
             document.querySelectorAll('[data-translate]').forEach(el => {
                 const key = el.getAttribute('data-translate');
@@ -443,6 +447,7 @@
             if(urlParams.get('mode') === 'student' || urlParams.get('view') === 'student') {
                 document.getElementById('nav-teacher-btn').classList.add('hidden');
             }
+            setLanguage('en');
             loadTestsFromSupabase();
             loadResultsFromSupabase();
         });
@@ -471,7 +476,15 @@
         async function loadTestsFromSupabase() {
             const { data, error } = await supabaseClient.from('tests').select('*');
             if (!error && data) {
-                testsDB = data.map(t => ({ id: t.id, title: t.title, passMark: t.pass_mark, deadline: t.deadline || null, questions: t.questions_json }));
+                testsDB = data.map(t => ({ 
+                    id: t.id, 
+                    title: t.title, 
+                    passMark: t.pass_mark, 
+                    deadline: t.deadline || null, 
+                    isUnlocked: t.is_unlocked ?? false, 
+                    createdDate: new Date(t.created_at || Date.now()).toLocaleString(),
+                    questions: t.questions_json 
+                }));
                 renderStudentTestList();
                 renderAdminTestsManagerList();
                 populateFilterDropdowns();
@@ -490,21 +503,24 @@
 
         function renderStudentTestList() {
             const listContainer = document.getElementById('available-tests-list');
-            listContainer.innerHTML = testsDB.length === 0 ? `<div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">No tests available.</div>` : '';
+            // Filter only unlocked tests for students
+            const activeTests = testsDB.filter(t => t.isUnlocked === true);
+            listContainer.innerHTML = activeTests.length === 0 ? `<div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">No active tests unlocked by teacher right now.</div>` : '';
             const now = new Date();
 
-            testsDB.forEach((t, idx) => {
+            activeTests.forEach((t) => {
+                let originalIdx = testsDB.findIndex(item => item.id === t.id);
                 let isExpired = t.deadline && now > new Date(t.deadline);
                 const card = document.createElement('div');
                 card.className = "flex justify-between items-center p-4 border border-slate-200 rounded-2xl bg-slate-50/50 hover:bg-slate-50 transition";
                 card.innerHTML = `
                     <div>
                         <h3 class="font-bold text-slate-900 text-sm">${t.title}</h3>
-                        <p class="text-xs text-slate-500">Questions: ${t.questions.length} | Pass: ${t.passMark}%</p>
+                        <p class="text-xs text-slate-500">Questions: ${t.questions.length} | Pass: ${t.passMark}% | Deadline: ${t.deadline ? new Date(t.deadline).toLocaleString() : 'No Deadline'}</p>
                     </div>
                     <div>
                         ${isExpired ? '<span class="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-200">Closed</span>' : 
-                        `<button onclick="openRulesScreen(${idx})" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm">Start Test</button>`}
+                        `<button onclick="openRulesScreen(${originalIdx})" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm">Start Test</button>`}
                     </div>
                 `;
                 listContainer.appendChild(card);
@@ -680,7 +696,7 @@
         async function loadRetakeRequests() {
             const listContainer = document.getElementById('retake-requests-list');
             const { data } = await supabaseClient.from('retake_requests').select('*').eq('status', 'pending');
-            if(!data || data.length === 0) { listContainer.innerHTML = `<p class="text-slate-500 italic">કોઈ પેન્ડિંગ રિક્વેસ્ટ નથી.</p>`; return; }
+            if(!data || data.length === 0) { listContainer.innerHTML = `<p class="text-slate-500 italic">No pending requests.</p>`; return; }
 
             listContainer.innerHTML = data.map(r => `
                 <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-amber-300 gap-2 flex-wrap">
@@ -735,9 +751,9 @@
             if(!title || draftQuestions.length === 0) return showAlert('Provide title & questions!', true);
             
             if(editingTestId) await supabaseClient.from('tests').update({ title, pass_mark: passPct, deadline, questions_json: draftQuestions }).eq('id', editingTestId);
-            else await supabaseClient.from('tests').insert([{ title, pass_mark: passPct, deadline, questions_json: draftQuestions }]);
+            else await supabaseClient.from('tests').insert([{ title, pass_mark: passPct, deadline, questions_json: draftQuestions, is_unlocked: false }]);
             
-            showAlert('Test published successfully!');
+            showAlert('Test published successfully! (Locked by default)');
             draftQuestions = [];
             renderDraftList();
             showStudentPortal();
@@ -745,7 +761,35 @@
 
         function renderAdminTestsManagerList() {
             const container = document.getElementById('admin-tests-manage-list');
-            container.innerHTML = testsDB.map(t => `<div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-center"><div><h4 class="font-bold text-slate-900 text-sm">${t.title}</h4></div><div class="flex gap-2"><button onclick="deleteTest(${t.id})" class="px-3 py-1.5 bg-rose-50 text-rose-700 font-bold rounded-xl text-xs">Delete</button></div></div>`).join('');
+            container.innerHTML = testsDB.length === 0 ? `<p class="text-xs text-slate-400">No tests available.</p>` : '';
+            
+            testsDB.forEach((t) => {
+                const card = document.createElement('div');
+                card.className = "p-4 bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-center flex-wrap gap-3";
+                card.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm">${t.title}</h4>
+                        <p class="text-xs text-slate-500 mt-0.5">Uploaded: ${t.createdDate} | Questions: ${t.questions.length} | Pass %: ${t.passMark}% | Deadline: ${t.deadline ? new Date(t.deadline).toLocaleString() : 'None'}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="toggleTestUnlock(${t.id}, ${!t.isUnlocked})" class="px-3.5 py-1.5 rounded-xl font-bold text-xs transition ${t.isUnlocked ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-amber-500 text-white hover:bg-amber-600'}">
+                            ${t.isUnlocked ? '<i class="fa-solid fa-lock-open"></i> Unlocked (Enabled)' : '<i class="fa-solid fa-lock"></i> Locked (Disabled)'}
+                        </button>
+                        <button onclick="deleteTest(${t.id})" class="px-3 py-1.5 bg-rose-50 text-rose-700 font-bold rounded-xl text-xs hover:bg-rose-100 transition">Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function toggleTestUnlock(testId, newState) {
+            const { error } = await supabaseClient.from('tests').update({ is_unlocked: newState }).eq('id', testId);
+            if(error) {
+                showAlert('Error updating test status!', true);
+            } else {
+                showAlert(`Test status updated successfully!`);
+                loadTestsFromSupabase();
+            }
         }
 
         async function deleteTest(id) {
