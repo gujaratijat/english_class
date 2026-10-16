@@ -3,16 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bharat Education Center - Test Portal</title>
+    <title>Bharat Education Center - Online Test Portal</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gujarati:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- SheetJS & html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { 
-            font-family: 'Inter', 'Roboto', 'Aptos', system-ui, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             user-select: none;
             -webkit-user-select: none;
             background-color: #f8fafc;
@@ -42,43 +47,58 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- Custom Alert Modal -->
+    <!-- Foreground Custom Popup Modal -->
     <div id="custom-alert-modal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[99999] modal-center p-4">
-        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border text-center space-y-4">
-            <div id="alert-icon-wrapper" class="w-12 h-12 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl font-bold">i</div>
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4">
+            <div id="alert-icon-wrapper" class="w-12 h-12 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-circle-info"></i>
+            </div>
             <p id="custom-alert-text" class="text-sm font-semibold text-slate-800">--</p>
-            <button onclick="closeCustomAlert()" class="w-full py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs">OK</button>
+            <button onclick="closeCustomAlert()" class="w-full py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition">OK</button>
         </div>
     </div>
 
-    <!-- Teacher Login Modal -->
+    <!-- Teacher Login Modal UI -->
     <div id="teacher-login-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[99999] modal-center p-4">
-        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl text-center space-y-4">
-            <h3 class="text-base font-bold text-slate-900">Teacher Login</h3>
-            <input type="password" id="teacher-pin-input" placeholder="Enter PIN (98732)" class="w-full text-center px-4 py-3 rounded-xl border text-base font-bold tracking-widest outline-none">
-            <div class="flex gap-2">
-                <button onclick="closeTeacherLoginModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl">Cancel</button>
-                <button onclick="verifyTeacherPin()" class="w-1/2 py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl">Login</button>
+        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4">
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-slate-900 text-white flex items-center justify-center text-lg shadow-md">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-slate-900">Teacher Login</h3>
+                <p class="text-xs text-slate-500 mt-1">Please Enter Login PIN:</p>
+            </div>
+            <input type="password" id="teacher-pin-input" placeholder="Enter PIN" class="w-full text-center px-4 py-3 rounded-xl border border-slate-300 text-base font-bold tracking-widest outline-none focus:ring-2 focus:ring-slate-900">
+            <div class="flex gap-2 pt-1">
+                <button onclick="closeTeacherLoginModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition">Cancel</button>
+                <button onclick="verifyTeacherPin()" class="w-1/2 py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 transition">Login</button>
             </div>
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="bg-white border-b sticky top-0 z-40 shadow-sm">
+    <!-- Navigation Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <img src="bharat_logo.jpeg" alt="Logo" class="h-12 w-auto object-contain" onerror="this.src='';">
+                <div class="h-12 w-auto max-w-[180px] bg-transparent flex items-center justify-center">
+                    <img src="bharat_logo.jpeg" alt="Bharat Logo" class="h-full w-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-xs font-bold text-blue-900\'>BHARAT CENTER</span>';">
+                </div>
                 <div>
-                    <h1 class="official-title text-xl font-black text-blue-900">Bharat Education Center</h1>
-                    <p class="text-xs text-slate-500 font-medium">Teacher: Chetan Soni | +91 99986 42506</p>
+                    <h1 class="official-title text-xl md:text-2xl font-black text-blue-900 tracking-tight" id="main-site-title">Bharat Education Center</h1>
+                    <p class="text-xs text-slate-500 font-medium">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="showStudentPortal()" id="nav-student-btn" class="px-3.5 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl shadow-sm">Student Portal</button>
-                <button onclick="openTeacherLoginModal()" id="nav-teacher-btn" class="px-3.5 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl shadow-sm">Teacher Dashboard</button>
-                <div class="flex bg-slate-100 p-1 rounded-xl">
-                    <button onclick="setLanguage('en')" id="lang-en-btn" class="px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white">English</button>
-                    <button onclick="setLanguage('gu')" id="lang-gu-btn" class="px-3 py-1 text-xs font-bold rounded-lg text-slate-600">ગુજરાતી</button>
+            
+            <div class="flex items-center gap-3 shrink-0">
+                <button id="nav-student-btn" onclick="showStudentPortal()" class="px-3.5 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-100 transition shadow-sm">
+                    <i class="fa-solid fa-user"></i> <span>Student Portal</span>
+                </button>
+                <button id="nav-teacher-btn" onclick="openTeacherLoginModal()" class="px-3.5 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-sm">
+                    <i class="fa-solid fa-lock"></i> <span>Teacher Dashboard</span>
+                </button>
+                <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
+                    <button onclick="setLanguage('en')" id="lang-en-btn" class="px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition">English</button>
+                    <button onclick="setLanguage('gu')" id="lang-gu-btn" class="px-3 py-1 text-xs font-bold rounded-lg text-slate-600 transition">ગુજરાતી</button>
                 </div>
             </div>
         </div>
@@ -86,155 +106,338 @@
 
     <main class="max-w-4xl mx-auto px-4 py-8 w-full flex-grow">
 
-        <!-- STUDENT PORTAL -->
+        <!-- ================= STUDENT PORTAL ================= -->
         <div id="student-portal-view" class="space-y-6">
-            <div id="student-test-select-screen" class="bg-white rounded-3xl p-6 border shadow-xl space-y-4">
+            <div id="student-test-select-screen" class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-4">
                 <div class="flex justify-between items-center flex-wrap gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-slate-950">Select Available Test:</h2>
-                        <p class="text-xs text-slate-500">Click 'Start Test' below.</p>
+                        <p class="text-xs text-slate-500">Click 'Start Test' or view your completed score and retry status below.</p>
                     </div>
-                    <div class="bg-blue-50 px-3.5 py-2 rounded-xl border text-xs text-blue-900">
-                        Student: <span id="current-logged-student" class="font-bold">Not Set</span>
-                        <button onclick="changeStudentIdentity()" class="ml-2 text-blue-600 underline font-semibold">Change Name</button>
+                    <div class="bg-blue-50 px-3.5 py-2 rounded-xl border border-blue-200 text-xs text-blue-900">
+                        Student: <span id="current-logged-student" class="font-bold">Not Set</span> 
+                        <button onclick="changeStudentIdentity()" class="ml-2 text-blue-600 underline font-semibold hover:text-blue-800">Change Name</button>
                     </div>
                 </div>
-                <div id="available-tests-list" class="space-y-3 pt-2"></div>
+                <div id="available-tests-list" class="space-y-3 pt-2">
+                    <p class="text-xs text-slate-400">Loading tests...</p>
+                </div>
             </div>
 
-            <!-- Test Rules -->
-            <div id="test-rules-screen" class="hidden bg-white rounded-3xl p-6 border shadow-xl space-y-6">
-                <h2 class="official-title text-xl font-bold text-blue-900 text-center" id="rule-test-title">--</h2>
-                <div class="space-y-2 text-xs text-slate-700 bg-slate-50 p-4 rounded-2xl border" lang="gu">
+            <!-- Test Rules Screen -->
+            <div id="test-rules-screen" class="hidden bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-6">
+                <div class="text-center border-b border-slate-200 pb-4">
+                    <div class="h-14 w-auto max-w-[200px] mx-auto bg-transparent flex items-center justify-center mb-2">
+                        <img src="bharat_logo.jpeg" alt="Bharat Logo" class="h-full w-full object-contain">
+                    </div>
+                    <h2 class="official-title text-xl font-bold text-blue-900">BHARAT EDUCATION CENTER</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
+                    <div class="mt-3 inline-block bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-xs font-bold" id="rule-test-title">--</div>
+                </div>
+
+                <div class="space-y-3 text-xs text-slate-700 bg-slate-50 p-5 rounded-2xl border border-slate-200" lang="gu">
+                    <h3 class="font-bold text-slate-900 text-sm mb-2 border-b border-slate-200 pb-1">Special Test Instructions (પરીક્ષાની સૂચનાઓ):</h3>
                     <p>1. દરેક સાચા જવાબના ૧ ગુણ રહેશે.</p>
                     <p>2. પાસ થવા માટે ઓછામાં ઓછા <b id="rule-pass-pct" class="text-blue-600">50%</b> ગુણ જરૂરી છે.</p>
                     <p>3. સમય મર્યાદા: <b id="rule-time-limit" class="text-blue-600">Unlimited</b>.</p>
+                    <p>4. ટેસ્ટ સબમિટ કરતી વખતે જો પ્રશ્નો બાકી હોય તો પણ "Submit Anyway" દ્વારા સબમિટ કરી શકાશે.</p>
+                    <p>5. ટેસ્ટ પૂરો થયા બાદ તમારું પરિણામ, મેળવેલ ગુણ અને Retry બટન પોર્ટલ પર દેખાશે.</p>
                 </div>
-                <button onclick="verifyAndStartStudentTestDirect()" class="w-full py-3.5 bg-blue-600 text-white font-bold rounded-2xl text-xs shadow-lg">Start Test -> Proceed</button>
+
+                <button onclick="verifyAndStartStudentTestDirect()" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl text-sm shadow-lg hover:bg-blue-700 transition">
+                    Start Test -> Proceed (શરૂ કરો)
+                </button>
             </div>
 
-            <!-- Student Name Modal -->
+            <!-- Student Name Modal (Master List Validation) -->
             <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-[99998] modal-center p-4">
-                <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border space-y-4 text-center">
-                    <h3 class="text-lg font-bold text-slate-900">Enter Your Registered Full Name</h3>
-                    <p class="text-xs text-slate-500">Name must match teacher's student master list.</p>
-                    <input type="text" id="student-entry-name" placeholder="e.g. Vikram Chaudhary" class="w-full px-4 py-3 rounded-xl border text-sm text-center font-bold outline-none">
-                    <button onclick="saveStudentIdentity()" class="w-full py-3 bg-blue-600 text-white font-bold text-xs rounded-xl">Verify & Proceed</button>
+                <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 text-center">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-md">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Enter Your Registered Name</h3>
+                    <p class="text-xs text-slate-500">Name must match the Student Master list added by your teacher.</p>
+                    <input type="text" id="student-entry-name" placeholder="e.g. Vikram Chaudhary" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm text-center outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400 font-bold">
+                    <button onclick="saveStudentIdentity()" class="w-full py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition">Verify Name & Start Test</button>
                 </div>
             </div>
 
-            <!-- Retake Modal -->
+            <!-- Retake Request Modal Notice -->
             <div id="retake-modal" class="hidden fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-[99998] modal-center p-4">
-                <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border space-y-4 text-center">
+                <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 text-center">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-500 text-white flex items-center justify-center text-lg shadow-md">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
                     <h3 class="text-lg font-bold text-slate-900">Test Already Completed</h3>
-                    <p id="retake-modal-text" class="text-xs text-slate-600">Request teacher permission for retry.</p>
-                    <div class="flex gap-2">
-                        <button onclick="closeRetakeModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl">Cancel</button>
-                        <button onclick="sendRetakeRequestFromModal()" class="w-1/2 py-2.5 bg-amber-600 text-white font-bold text-xs rounded-xl">Request Retry</button>
+                    <p id="retake-modal-text" class="text-xs text-slate-600">You have already submitted this test. You need teacher permission for a retry/retake.</p>
+                    <div class="flex gap-2 pt-2">
+                        <button onclick="closeRetakeModal()" class="w-1/2 py-3 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition">Cancel</button>
+                        <button onclick="sendRetakeRequestFromModal()" class="w-1/2 py-3 bg-amber-600 text-white font-bold text-xs rounded-xl hover:bg-amber-700 transition">Request Retry</button>
                     </div>
                 </div>
             </div>
 
             <!-- Active Test Container -->
             <div id="active-test-container" class="hidden space-y-6">
-                <div class="bg-blue-50 p-4 rounded-2xl border flex justify-between items-center sticky top-16 z-30 shadow-sm">
+                <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 flex justify-between items-center shadow-sm sticky top-16 z-30">
                     <div>
-                        <h2 class="font-bold text-blue-900 text-sm" id="running-test-title">--</h2>
+                        <h2 class="font-bold text-blue-900 text-base" id="running-test-title">--</h2>
                         <p class="text-xs text-blue-700">Student: <span id="running-student-name" class="font-semibold">--</span></p>
                     </div>
-                    <span id="test-progress-counter" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1 rounded-full">0 Answered</span>
+                    <div class="flex items-center gap-3">
+                        <span id="test-progress-counter" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full border border-blue-200">0 / 0 Answered</span>
+                        <span id="test-timer-badge" class="text-xs font-bold bg-rose-600 text-white px-3.5 py-1.5 rounded-full shadow-sm"><i class="fa-solid fa-clock"></i> <span id="timer-countdown-display">Unlimited</span></span>
+                    </div>
                 </div>
+
                 <form id="active-quiz-form" onsubmit="submitStudentQuiz(event)" class="space-y-4">
                     <div id="quiz-questions-wrapper" class="space-y-4"></div>
-                    <!-- Submit Anyway button -->
-                    <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl text-xs shadow-lg">Submit Anyway / Final Submit</button>
+                    <div class="flex gap-3 pt-4">
+                        <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Test (સબમિટ કરો)
+                        </button>
+                    </div>
                 </form>
             </div>
 
-            <!-- Result Certificate Card -->
+            <!-- Student Result Screen -->
             <div id="student-result-card" class="hidden space-y-6 max-w-xl mx-auto">
-                <div id="printable-congrats-card" class="bg-white p-8 rounded-3xl border shadow-2xl space-y-5 text-slate-800 max-w-[600px] mx-auto">
-                    <div class="flex justify-between items-center border-b pb-4">
-                        <h2 class="official-title text-xl font-black text-blue-900">BHARAT EDUCATION CENTER</h2>
-                        <span id="res-medal-badge" class="px-3 py-1 rounded-full text-[11px] font-extrabold bg-amber-100 text-amber-800">VERIFIED RESULT</span>
+                <div id="printable-congrats-card" class="bg-white p-8 rounded-3xl border border-slate-200 shadow-2xl space-y-6 text-slate-800 w-full max-w-[600px] mx-auto">
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+                        <div class="h-10 w-auto max-w-[120px] flex items-center justify-center">
+                            <img src="bharat_logo.jpeg" alt="Logo" class="h-full w-full object-contain">
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-black uppercase tracking-wider text-slate-400 block">OFFICIAL CERTIFICATE</span>
+                            <span id="res-medal-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold mt-1">
+                                <i id="res-medal-icon" class="fa-solid fa-award"></i> <span id="res-medal-text">VERIFIED TEST RESULT</span>
+                            </span>
+                        </div>
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-2xl text-xs space-y-2">
-                        <div class="flex justify-between"><span>Student Name:</span><b id="res-student-name">--</b></div>
-                        <div class="flex justify-between"><span>Test / Chapter:</span><b id="res-test-name" class="text-blue-700">--</b></div>
+
+                    <div class="text-center space-y-1">
+                        <h2 class="official-title text-2xl font-black text-blue-900 tracking-tight">BHARAT EDUCATION CENTER</h2>
+                        <p class="text-xs text-slate-500 font-medium">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                     </div>
-                    <div class="bg-blue-50 p-5 rounded-2xl flex justify-between items-center">
-                        <div>
-                            <span class="text-[11px] font-black uppercase text-blue-800">Score Achieved</span>
+
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 text-xs">
+                        <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
+                            <span class="text-slate-500 font-semibold">Student Name:</span>
+                            <b id="res-student-name" class="text-slate-900 font-bold text-sm">--</b>
+                        </div>
+                        <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
+                            <span class="text-slate-500 font-semibold">Test / Chapter:</span>
+                            <b id="res-test-name" class="text-blue-700 font-bold">--</b>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500 font-semibold">Submission Date & Time:</span>
+                            <b id="res-timestamp" class="text-slate-800 font-medium">--</b>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-2xl border border-blue-100 flex items-center justify-between">
+                        <div class="text-left space-y-1">
+                            <span class="text-[11px] font-black uppercase tracking-wider text-blue-800">Overall Score Achieved</span>
                             <div class="text-3xl font-black text-blue-900" id="res-score">0 / 0</div>
                         </div>
                         <div class="text-right">
-                            <span class="text-xs font-bold text-slate-500">Percentage</span>
+                            <span class="text-xs font-bold text-slate-500 block">Percentage</span>
                             <div class="text-2xl font-black text-emerald-600" id="res-pct">0%</div>
                         </div>
                     </div>
-                    <div id="congrats-remarks-box" class="p-3.5 rounded-2xl text-center text-xs font-bold">--</div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-center">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Grade Performance</span>
+                            <span id="res-grade" class="text-xl font-black text-indigo-600">--</span>
+                        </div>
+                        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-center">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Status Qualification</span>
+                            <span id="res-status" class="text-xl font-black">--</span>
+                        </div>
+                    </div>
+
+                    <div id="congrats-remarks-box" class="p-3.5 rounded-2xl border text-xs font-bold text-center shadow-sm">
+                        <span id="congrats-main-title">--</span>
+                    </div>
                 </div>
-                <div class="flex gap-3 justify-center">
-                    <button onclick="shareResultAsPNGWhatsApp()" class="px-5 py-3 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow-md">Share Certificate PNG</button>
-                    <button onclick="showStudentPortal()" class="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Home Screen</button>
+
+                <div class="flex flex-wrap gap-3 justify-center">
+                    <button onclick="shareResultAsPNGWhatsApp()" class="px-5 py-3 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 transition flex items-center gap-2 shadow-md">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Share Certificate PNG
+                    </button>
+                    <button onclick="showStudentPortal()" class="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Go to Home Screen</button>
+                </div>
+
+                <div id="incorrect-solutions-container" class="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg space-y-3">
+                    <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 border-b pb-2">
+                        <i class="fa-solid fa-circle-xmark text-rose-500"></i> Incorrect Questions Analysis (Answer Key)
+                    </h3>
+                    <div id="solution-review-list" class="space-y-3"></div>
                 </div>
             </div>
         </div>
 
-        <!-- TEACHER DASHBOARD -->
+        <!-- ================= TEACHER ADMIN DASHBOARD ================= -->
         <div id="teacher-dashboard-view" class="hidden space-y-6">
             <div class="flex justify-between items-center bg-slate-900 text-white p-5 rounded-3xl shadow-lg flex-wrap gap-4">
                 <div>
-                    <h2 class="official-title font-bold text-base">Teacher Control Center (Admin Panel)</h2>
-                    <p class="text-xs text-slate-400">Student Master CRUD, Excel Upload, & Chapter-wise Reports</p>
+                    <h2 class="official-title font-bold text-base flex items-center gap-2"><i class="fa-solid fa-user-shield text-blue-400"></i> Teacher Control Center (Admin Panel)</h2>
+                    <p class="text-xs text-slate-400">Manage Students Master, Tests, Retake Requests & Reports</p>
                 </div>
-                <button onclick="logoutTeacher()" class="text-xs bg-rose-600 px-4 py-2 rounded-xl font-medium">Logout</button>
+                <button onclick="logoutTeacher()" class="text-xs bg-rose-600 hover:bg-rose-700 px-4 py-2 rounded-xl transition font-medium">Logout / Exit</button>
             </div>
 
-            <!-- Retake Requests Notification -->
-            <div class="bg-amber-50 border border-amber-300 p-6 rounded-3xl space-y-3">
-                <h3 class="font-bold text-amber-900 text-sm">Student Retry Requests</h3>
-                <div id="retake-requests-list" class="space-y-2 text-xs"><p class="text-slate-500 italic">No pending requests.</p></div>
-            </div>
-
-            <!-- Student Master CRUD Section -->
-            <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-4">
-                <h3 class="font-bold text-slate-900 text-sm">Student Master List (Add, Edit, Delete Students)</h3>
-                <input type="hidden" id="edit-master-student-id">
-                <div class="flex gap-2">
-                    <input type="text" id="master-student-name-input" placeholder="Enter Student Full Name" class="flex-1 px-4 py-3 rounded-xl border text-xs font-bold outline-none">
-                    <button onclick="saveStudentMaster()" id="master-save-btn" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl text-xs">Add Student</button>
-                    <button onclick="resetMasterForm()" id="master-cancel-btn" class="hidden px-4 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Cancel</button>
+            <!-- Retake Request Center -->
+            <div class="bg-amber-50 border border-amber-300 p-6 rounded-3xl space-y-4 shadow-sm">
+                <h3 class="font-bold text-amber-900 text-sm flex items-center gap-2"><i class="fa-solid fa-bell text-amber-600"></i> Student Re-Test Requests (Notification Center)</h3>
+                <div id="retake-requests-list" class="space-y-2 text-xs">
+                    <p class="text-slate-500 italic">No pending requests.</p>
                 </div>
-                <div id="master-students-table-list" class="space-y-2 text-xs pt-2"></div>
             </div>
 
-            <!-- Test Builder & Excel Upload -->
-            <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-4">
-                <h3 class="font-bold text-slate-900 text-sm">Create / Publish Chapter Test (Excel Bulk Import)</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <input type="text" id="new-test-title-input" placeholder="Test Title (e.g. Chapter 1 Test)" class="px-4 py-3 rounded-xl border text-xs font-bold">
-                    <input type="number" id="new-test-pass-input" placeholder="Passing % (Default: 50)" class="px-4 py-3 rounded-xl border text-xs font-bold">
-                    <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="text-xs file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-emerald-600 file:text-white cursor-pointer">
+            <!-- Admin Navigation Tabs -->
+            <div class="flex border-b border-slate-200 gap-6 flex-wrap">
+                <button onclick="switchAdminTab('student-master')" id="tab-btn-master" class="pb-2.5 text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition">Student Master (Add Students)</button>
+                <button onclick="switchAdminTab('test-builder')" id="tab-btn-builder" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Create / Edit Test</button>
+                <button onclick="switchAdminTab('test-manager')" id="tab-btn-manager" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Manage Tests</button>
+                <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Student Results & Failed Analysis</button>
+            </div>
+
+            <!-- TAB 0: Student Master Management -->
+            <div id="admin-tab-master" class="space-y-6">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800 text-sm">Add New Student to Master List (Unique Names Only):</h3>
+                    <div class="flex gap-3">
+                        <input type="text" id="new-master-student-input" placeholder="e.g. Vikram Chaudhary" class="flex-1 px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                        <button onclick="addStudentToMaster()" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm"><i class="fa-solid fa-user-plus"></i> Add Student</button>
+                    </div>
                 </div>
-                <button onclick="handleExcelUpload()" class="px-4 py-2.5 bg-emerald-700 text-white font-bold rounded-xl text-xs">Import Questions from Excel (q, correct, wrong1, wrong2)</button>
-                <div id="draft-questions-list" class="space-y-2 text-xs"></div>
-                <button onclick="publishTest()" class="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl text-xs">Publish Test to Cloud Database</button>
-            </div>
 
-            <!-- Test Manager List -->
-            <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-3">
-                <h3 class="font-bold text-slate-900 text-sm">Manage Tests (Lock / Unlock / Delete)</h3>
-                <div id="admin-tests-manage-list" class="space-y-2 text-xs"></div>
-            </div>
-
-            <!-- Chapter-wise Results & Pending Report -->
-            <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-4">
-                <div class="flex justify-between items-center flex-wrap gap-3">
-                    <h3 class="font-bold text-slate-900 text-sm">Chapter-wise Student Results & Unattempted/Pending Status</h3>
-                    <select id="admin-chapter-filter" onchange="renderChapterReports()" class="px-3 py-2 border rounded-xl text-xs bg-slate-50 font-bold"><option value="">All Chapters</option></select>
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3">
+                    <h3 class="font-bold text-slate-800 text-sm">Registered Students Master List (<span id="master-student-count">0</span>):</h3>
+                    <div id="master-students-list" class="space-y-2 text-xs">
+                        <p class="text-slate-400">Loading master students...</p>
+                    </div>
                 </div>
-                <div id="chapter-wise-report-container" class="space-y-3 text-xs"></div>
+            </div>
+
+            <!-- TAB 1: Test Builder -->
+            <div id="admin-tab-builder" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 id="builder-mode-title" class="font-bold text-slate-800 text-sm">1. Set Test Information (Time Limit & Deadline optional):</h3>
+                        <button id="cancel-edit-btn" onclick="resetTestBuilder()" class="hidden text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-lg font-bold">Cancel Edit</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <input type="text" id="new-test-title-input" placeholder="e.g. Chapter 1 English Test" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" id="new-test-pass-input" placeholder="Passing % (Default: 50)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" id="new-test-time-input" placeholder="Time Limit Mins (Empty = No Limit)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        <div>
+                            <input type="datetime-local" id="new-test-deadline-input" class="w-full px-3 py-3 rounded-xl border text-xs outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-50 border border-emerald-200 p-6 rounded-3xl space-y-3 shadow-sm">
+                    <h3 class="font-bold text-emerald-900 text-sm"><i class="fa-solid fa-file-excel"></i> Option A: Bulk Import Questions via Excel / CSV</h3>
+                    <p class="text-xs text-emerald-700">Required Column Headers: <b>q, correct, wrong1, wrong2</b></p>
+                    <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="text-xs file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white cursor-pointer">
+                    <button onclick="handleExcelUpload()" class="px-4 py-2.5 bg-emerald-700 text-white font-bold rounded-xl text-xs hover:bg-emerald-800 transition">Import Questions from Excel</button>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800 text-sm">Option B: Add Questions Manually:</h3>
+                    <textarea id="q-text-input" placeholder="Type question here..." class="w-full px-4 py-3 rounded-xl border text-sm outline-none h-24 focus:ring-2 focus:ring-blue-500"></textarea>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input type="text" id="q-correct-opt" placeholder="Correct Answer Option" class="px-4 py-3 rounded-xl border border-emerald-300 bg-emerald-50/50 text-sm outline-none">
+                        <input type="text" id="q-wrong-opt1" placeholder="Wrong Option 1" class="px-4 py-3 rounded-xl border text-sm outline-none">
+                        <input type="text" id="q-wrong-opt2" placeholder="Wrong Option 2" class="px-4 py-3 rounded-xl border text-sm outline-none">
+                    </div>
+                    <button onclick="addQuestionToDraft()" class="px-4 py-2.5 bg-slate-900 text-white font-bold rounded-xl text-xs hover:bg-slate-800 transition"><i class="fa-solid fa-plus"></i> Add Question to Draft</button>
+                </div>
+
+                <div class="bg-slate-100 p-5 rounded-3xl border border-slate-200 shadow-sm">
+                    <h4 class="font-bold text-xs text-slate-600 uppercase mb-3">Draft Questions Preview (<span id="draft-q-count">0</span>):</h4>
+                    <div id="draft-questions-list" class="space-y-2 text-xs"></div>
+                    <button onclick="saveCompleteTest()" class="mt-4 w-full py-3.5 bg-emerald-600 text-white font-bold rounded-xl text-sm shadow-md hover:bg-emerald-700 transition"><i class="fa-solid fa-cloud-arrow-up"></i> Publish Test to Cloud Database</button>
+                </div>
+            </div>
+
+            <!-- TAB 2: Test Manager -->
+            <div id="admin-tab-manager" class="hidden space-y-4">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800 text-sm">Manage Uploaded Tests (Edit, Enable / Disable & Share Links):</h3>
+                    <div id="admin-tests-manage-list" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- TAB 3: Records & Failed Analysis -->
+            <div id="admin-tab-records" class="hidden space-y-6">
+                <div class="bg-rose-50 border border-rose-200 p-6 rounded-3xl space-y-4 shadow-sm">
+                    <h3 class="font-bold text-rose-900 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Failed Students & Weakness Analysis (Follow-up List)
+                    </h3>
+                    <p class="text-xs text-rose-700">Tap on any student to inspect wrong answers. Click 'Mark as Followed Up' to remove from this follow-up list without deleting main record:</p>
+                    <div id="failed-students-accordion-list" class="space-y-3">
+                        <p class="text-xs text-slate-400 italic">No failed student records pending follow-up.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
+                    <div class="flex flex-wrap gap-3 items-center justify-between no-print">
+                        <div class="flex gap-3 flex-wrap">
+                            <select id="filter-test-select" onchange="applyResultFilters()" class="px-3 py-2 border rounded-xl text-xs bg-slate-50"><option value="">All Chapters</option></select>
+                            <select id="filter-student-select" onchange="applyResultFilters()" class="px-3 py-2 border rounded-xl text-xs bg-slate-50"><option value="">All Students</option></select>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="generateStudentReportCardView()" class="px-4 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs hover:bg-indigo-700 transition shadow-sm"><i class="fa-solid fa-file-lines"></i> Generate Report Card</button>
+                            <button onclick="window.print()" class="px-4 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm"><i class="fa-solid fa-print"></i> Print Report</button>
+                        </div>
+                    </div>
+
+                    <div id="printable-result-section" class="space-y-6">
+                        <div class="text-center mb-4 border-b pb-4">
+                            <div class="h-14 w-auto max-w-[220px] mx-auto bg-transparent flex items-center justify-center mb-2">
+                                <img src="bharat_logo.jpeg" alt="Bharat Logo" class="h-full w-full object-contain">
+                            </div>
+                            <h2 class="official-title text-xl font-bold text-blue-900 tracking-tight">BHARAT EDUCATION CENTER</h2>
+                            <p class="text-xs text-slate-600 mt-0.5">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
+                            <p class="text-xs font-semibold text-slate-700 mt-0.5">Student Performance Report</p>
+                        </div>
+
+                        <div id="single-student-report-card-container" class="hidden p-5 bg-blue-50/50 border border-blue-200 rounded-2xl space-y-4">
+                            <div class="flex justify-between items-center border-b border-blue-200 pb-3">
+                                <div>
+                                    <h3 class="font-bold text-slate-900 text-sm">Student Progress Report Card</h3>
+                                    <p class="text-xs text-blue-700 font-bold mt-0.5">Student Name: <span id="report-card-student-name">--</span></p>
+                                </div>
+                                <button onclick="shareReportCardAsJPGWhatsApp()" class="px-3.5 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 transition no-print flex items-center gap-1.5 shadow-sm"><i class="fa-brands fa-whatsapp"></i> Share PNG</button>
+                            </div>
+                            <div id="student-individual-report-content" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-100 border-b">
+                                        <th class="p-3 font-bold border-b">Timestamp</th>
+                                        <th class="p-3 font-bold border-b">Student Name</th>
+                                        <th class="p-3 font-bold border-b">Chapter / Test</th>
+                                        <th class="p-3 font-bold border-b">Score</th>
+                                        <th class="p-3 font-bold border-b">Attempt</th>
+                                        <th class="p-3 font-bold border-b">Percentage</th>
+                                        <th class="p-3 font-bold border-b">Status</th>
+                                        <th class="p-3 font-bold border-b no-print">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="student-results-table-body">
+                                    <tr><td colspan="8" class="p-4 text-center text-slate-400">Loading results...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -243,375 +446,891 @@
     <script>
         function showAlert(msg, isError = false) {
             document.getElementById('custom-alert-text').innerText = msg;
+            document.getElementById('alert-icon-wrapper').className = isError 
+                ? "w-12 h-12 mx-auto rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xl"
+                : "w-12 h-12 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl";
             document.getElementById('custom-alert-modal').classList.remove('hidden');
         }
-        function closeCustomAlert() { document.getElementById('custom-alert-modal').classList.add('hidden'); }
+        function closeCustomAlert() {
+            document.getElementById('custom-alert-modal').classList.add('hidden');
+        }
 
         function openTeacherLoginModal() {
-            document.getElementById('teacher-pin-input').value = '';
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.get('mode') === 'student' || urlParams.get('view') === 'student') {
+                showAlert('Access Denied: Teacher Dashboard is disabled in student link view!', true);
+                return;
+            }
+            const pinInput = document.getElementById('teacher-pin-input');
+            pinInput.value = '';
             document.getElementById('teacher-login-modal').classList.remove('hidden');
+            setTimeout(() => { pinInput.focus(); }, 100);
         }
-        function closeTeacherLoginModal() { document.getElementById('teacher-login-modal').classList.add('hidden'); }
+
+        function closeTeacherLoginModal() {
+            document.getElementById('teacher-login-modal').classList.add('hidden');
+        }
 
         function verifyTeacherPin() {
             const pin = document.getElementById('teacher-pin-input').value;
             if(pin === "98732") {
-                // Use sessionStorage so that exit or refresh logs out the teacher
-                sessionStorage.setItem('BEC_Teacher_LoggedIn', 'true');
+                localStorage.setItem('BEC_Teacher_LoggedIn', 'true');
                 closeTeacherLoginModal();
-                showTeacherDashboard();
-            } else {
-                showAlert("Incorrect PIN!", true);
+                document.getElementById('student-portal-view').classList.add('hidden');
+                document.getElementById('teacher-dashboard-view').classList.remove('hidden');
+                loadMasterStudents();
+                loadResultsFromSupabase();
+                renderAdminTestsManagerList();
+                loadRetakeRequests();
+            } else if(pin.length >= 5) {
+                showAlert("Incorrect Teacher PIN! Try again.", true);
             }
         }
 
         function logoutTeacher() {
-            sessionStorage.removeItem('BEC_Teacher_LoggedIn');
+            localStorage.removeItem('BEC_Teacher_LoggedIn');
             showStudentPortal();
         }
 
+        document.getElementById('teacher-pin-input').addEventListener('input', (e) => {
+            if (e.target.value === "98732") {
+                verifyTeacherPin();
+            }
+        });
+
+        let currentLang = 'en';
         function setLanguage(lang) {
-            document.getElementById('lang-en-btn').className = lang === 'en' ? "px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white" : "px-3 py-1 text-xs font-bold rounded-lg text-slate-600";
-            document.getElementById('lang-gu-btn').className = lang === 'gu' ? "px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white" : "px-3 py-1 text-xs font-bold rounded-lg text-slate-600";
-            document.documentElement.lang = lang;
+            currentLang = lang;
+            document.getElementById('lang-en-btn').className = lang === 'en' ? "px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition" : "px-3 py-1 text-xs font-bold rounded-lg text-slate-600 transition";
+            document.getElementById('lang-gu-btn').className = lang === 'gu' ? "px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition" : "px-3 py-1 text-xs font-bold rounded-lg text-slate-600 transition";
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            checkStudentIdentityDisplay();
-            loadAllDataFromSupabase();
-
-            // Refresh or exit logs out teacher because sessionStorage clears on tab/window close or refresh
-            if (sessionStorage.getItem('BEC_Teacher_LoggedIn') === 'true') {
-                showTeacherDashboard();
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.get('mode') === 'student' || urlParams.get('view') === 'student') {
+                document.getElementById('nav-teacher-btn').classList.add('hidden');
             }
+            setLanguage('en');
+            checkStudentIdentityDisplay();
+            loadMasterStudents();
+            loadTestsFromSupabase();
+            loadResultsFromSupabase();
+
+            if (localStorage.getItem('BEC_Teacher_LoggedIn') === 'true' && urlParams.get('mode') !== 'student') {
+                document.getElementById('student-portal-view').classList.add('hidden');
+                document.getElementById('teacher-dashboard-view').classList.remove('hidden');
+                loadMasterStudents();
+            }
+        });
+
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && ['u','c','i','s'].includes(e.key))) e.preventDefault();
         });
 
         const SUPABASE_URL = 'https://fixnefvoznegothpmehu.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpeG5lZnZvem5lZ290aHBtZWh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwOTU0MzQsImV4cCI6MjEwNzY3MTQzNH0.zjydOx0wP9KFY1KiP2iaNiis_rGQ-bLPGKleUsXIiFI';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let testsDB = [], resultsDB = [], masterStudentsDB = [], draftQuestions = [], selectedTestIdx = null, activeStudentName = "", runningQuizData = [], studentAnswers = {};
+        let testsDB = [], resultsDB = [], masterStudentsDB = [], draftQuestions = [], selectedTestIdx = null, activeStudentName = "", runningQuizData = [], studentAnswers = {}, editingTestId = null;
+        let testTimerInterval = null, timeRemainingSeconds = 0, cheatWarnings = 0;
+        let dismissedFollowupIds = JSON.parse(localStorage.getItem('BEC_Dismissed_Followups') || '[]');
 
         function checkStudentIdentityDisplay() {
-            activeStudentName = localStorage.getItem('BEC_Student_Name') || "";
-            document.getElementById('current-logged-student').innerText = activeStudentName || "Not Set";
+            let savedName = localStorage.getItem('BEC_Student_Name');
+            activeStudentName = savedName || "";
+            document.getElementById('current-logged-student').innerText = activeStudentName ? activeStudentName : "Not Set";
         }
 
         function changeStudentIdentity() {
-            const name = prompt("Enter your registered full name:", activeStudentName);
-            if(name) verifyAndSetStudentName(name.trim());
+            document.getElementById('student-entry-name').value = activeStudentName || '';
+            document.getElementById('student-name-modal').classList.remove('hidden');
         }
 
-        async function verifyAndSetStudentName(name) {
-            const { data } = await supabaseClient.from('students_master').select('*').ilike('student_name', name);
-            if(!data || data.length === 0) {
-                showAlert(`Access Denied: "${name}" is not registered in the Student Master list by your teacher!`, true);
+        async function saveStudentIdentity() {
+            const inputVal = document.getElementById('student-entry-name').value.trim();
+            if(!inputVal) { showAlert('Please enter your full name!', true); return; }
+
+            // Validate against Master Students Table in Supabase
+            const { data, error } = await supabaseClient.from('students_master').select('*').ilike('student_name', inputVal);
+            if (error || !data || data.length === 0) {
+                showAlert(`Access Denied: "${inputVal}" is not registered in the Student Master list by your teacher!`, true);
                 return;
             }
-            activeStudentName = data[0].student_name;
-            localStorage.setItem('BEC_Student_Name', activeStudentName);
+
+            const exactMatchedName = data[0].student_name;
+            localStorage.setItem('BEC_Student_Name', exactMatchedName);
+            activeStudentName = exactMatchedName;
             document.getElementById('current-logged-student').innerText = activeStudentName;
-            renderStudentTestList();
+            document.getElementById('student-name-modal').classList.add('hidden');
+            checkAttemptAndProceed();
         }
 
         function showStudentPortal() {
+            if(testTimerInterval) clearInterval(testTimerInterval);
             document.getElementById('student-portal-view').classList.remove('hidden');
             document.getElementById('teacher-dashboard-view').classList.add('hidden');
+            document.getElementById('student-test-select-screen').classList.remove('hidden');
             document.getElementById('test-rules-screen').classList.add('hidden');
             document.getElementById('active-test-container').classList.add('hidden');
             document.getElementById('student-result-card').classList.add('hidden');
             checkStudentIdentityDisplay();
-            loadAllDataFromSupabase();
+            loadTestsFromSupabase();
+            loadResultsFromSupabase();
         }
 
-        function showTeacherDashboard() {
-            document.getElementById('student-portal-view').classList.add('hidden');
-            document.getElementById('teacher-dashboard-view').classList.remove('hidden');
-            loadAllDataFromSupabase();
+        async function loadMasterStudents() {
+            const { data, error } = await supabaseClient.from('students_master').select('*').order('student_name', { ascending: true });
+            if (!error && data) {
+                masterStudentsDB = data;
+                renderMasterStudentsList();
+            }
         }
 
-        async function loadAllDataFromSupabase() {
-            const [tRes, rRes, mRes, reqRes] = await Promise.all([
-                supabaseClient.from('tests').select('*'),
-                supabaseClient.from('results').select('*').order('created_at', { ascending: false }),
-                supabaseClient.from('students_master').select('*').order('student_name'),
-                supabaseClient.from('retake_requests').select('*').eq('status', 'pending')
-            ]);
+        async function addStudentToMaster() {
+            const nameInput = document.getElementById('new-master-student-input');
+            const nameVal = nameInput.value.trim();
+            if(!nameVal) { showAlert('Enter student name!', true); return; }
 
-            if(tRes.data) testsDB = tRes.data.map(t => ({id: t.id, title: t.title, passMark: t.pass_mark, isUnlocked: t.is_unlocked, questions: t.questions_json}));
-            if(rRes.data) resultsDB = rRes.data.map(r => ({id: r.id, student: r.student_name, testName: r.test_name, score: r.score, pct: r.percentage, status: r.status, allowRetake: r.allow_retake}));
-            if(mRes.data) masterStudentsDB = mRes.data;
-
-            renderStudentTestList();
-            renderMasterStudentsTable();
-            renderAdminTestsManager();
-            populateChapterDropdown();
-            renderChapterReports();
-            renderRetakeRequests(reqRes.data || []);
+            const { error } = await supabaseClient.from('students_master').insert([{ student_name: nameVal }]);
+            if(error) {
+                showAlert('Error adding student or name already exists in master list!', true);
+            } else {
+                showAlert(`Student "${nameVal}" added successfully to Master list!`);
+                nameInput.value = '';
+                loadMasterStudents();
+            }
         }
 
-        // Student Portal Lists
+        async function deleteMasterStudent(id) {
+            if(confirm('Remove student from Master list?')) {
+                await supabaseClient.from('students_master').delete().eq('id', id);
+                loadMasterStudents();
+            }
+        }
+
+        function renderMasterStudentsList() {
+            const container = document.getElementById('master-students-list');
+            document.getElementById('master-student-count').innerText = masterStudentsDB.length;
+            if(masterStudentsDB.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 italic">No students added in master list yet.</p>`;
+                return;
+            }
+            container.innerHTML = masterStudentsDB.map(s => `
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center">
+                    <span class="font-bold text-slate-900">${s.student_name}</span>
+                    <button onclick="deleteMasterStudent(${s.id})" class="text-rose-600 font-bold px-3 py-1 bg-rose-50 rounded-lg hover:bg-rose-100">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        async function loadTestsFromSupabase() {
+            const { data, error } = await supabaseClient.from('tests').select('*');
+            if (!error && data) {
+                testsDB = data.map(t => ({ 
+                    id: t.id, 
+                    title: t.title, 
+                    passMark: t.pass_mark, 
+                    timeLimit: t.time_limit || null,
+                    deadline: t.deadline || null, 
+                    isUnlocked: t.is_unlocked ?? false, 
+                    createdDate: new Date(t.created_at || Date.now()).toLocaleString(),
+                    questions: t.questions_json 
+                }));
+                renderStudentTestList();
+                renderAdminTestsManagerList();
+                populateFilterDropdowns();
+            }
+        }
+
+        async function loadResultsFromSupabase() {
+            const { data, error } = await supabaseClient.from('results').select('*').order('created_at', { ascending: false });
+            if (!error && data) {
+                resultsDB = data.map(r => ({ 
+                    id: r.id, 
+                    date: new Date(r.created_at).toLocaleString(), 
+                    student: r.student_name, 
+                    testName: r.test_name, 
+                    score: r.score, 
+                    pct: r.percentage, 
+                    grade: r.grade, 
+                    status: r.status, 
+                    attempt: r.attempt || 1, 
+                    allowRetake: r.allow_retake || false,
+                    wrongAnswersJson: r.wrong_answers_json || []
+                }));
+                renderStudentTestList();
+                renderAdminResultsTable(resultsDB);
+                populateFilterDropdowns();
+                loadRetakeRequests();
+                renderFailedStudentsAccordion();
+            }
+        }
+
         function renderStudentTestList() {
-            const container = document.getElementById('available-tests-list');
-            container.innerHTML = testsDB.length === 0 ? `<p class="text-xs text-slate-400">No tests available.</p>` : '';
+            const listContainer = document.getElementById('available-tests-list');
+            listContainer.innerHTML = testsDB.length === 0 ? `<div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">No tests available right now.</div>` : '';
+            const now = new Date();
 
             testsDB.forEach((t, idx) => {
-                const attempt = resultsDB.find(r => r.student === activeStudentName && r.testName === t.title);
+                let isExpired = t.deadline && now > new Date(t.deadline);
+                const card = document.createElement('div');
+                card.className = "flex justify-between items-center p-4 border border-slate-200 rounded-2xl bg-slate-50/50 hover:bg-slate-50 transition flex-wrap gap-3";
+                
+                // Check if current student has completed this test
+                let studentAttemptRecord = activeStudentName ? resultsDB.find(r => r.student === activeStudentName && r.testName === t.title) : null;
+                
                 let actionBtn = "";
-                if(!t.isUnlocked) {
-                    actionBtn = `<span class="text-xs text-slate-400 font-bold">Locked</span>`;
-                } else if(attempt) {
+                if(isExpired) {
+                    actionBtn = `<span class="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-200">Closed (Expired)</span>`;
+                } else if(!t.isUnlocked) {
+                    actionBtn = `<button onclick="handleLockedTestClick()" class="px-4 py-2 bg-slate-300 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-400 transition shadow-sm"><i class="fa-solid fa-lock"></i> Locked</button>`;
+                } else if(studentAttemptRecord) {
+                    // Completed state with Obtained Score & Retry button
                     actionBtn = `
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3 flex-wrap">
                             <div class="text-right">
-                                <span class="text-[11px] font-bold text-emerald-600 block">Completed ✓ (${attempt.score})</span>
-                                <span class="text-[10px] text-slate-500">${attempt.pct}% | ${attempt.status}</span>
+                                <span class="text-[11px] font-bold text-emerald-600 block">Completed ✓ (${studentAttemptRecord.score})</span>
+                                <span class="text-[10px] text-slate-500">Score: ${studentAttemptRecord.pct}% | ${studentAttemptRecord.status}</span>
                             </div>
-                            ${attempt.allowRetake ? `<button onclick="openRulesScreen(${idx})" class="px-3 py-1.5 bg-amber-600 text-white font-bold rounded-xl text-xs">Retry</button>` : `<span class="text-[10px] text-slate-400 italic">Awaiting Retry Approval</span>`}
+                            <button onclick="openRulesScreen(${idx})" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs hover:bg-amber-700 transition shadow-sm">
+                                <i class="fa-solid fa-rotate-right"></i> Retry Test
+                            </button>
                         </div>
                     `;
                 } else {
-                    actionBtn = `<button onclick="openRulesScreen(${idx})" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs">Start Test</button>`;
+                    actionBtn = `<button onclick="openRulesScreen(${idx})" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm">Start Test</button>`;
                 }
 
-                container.innerHTML += `
-                    <div class="p-4 bg-slate-50 border rounded-2xl flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold text-slate-900 text-sm">${t.title}</h4>
-                            <p class="text-xs text-slate-500">Questions: ${t.questions.length} | Passing: ${t.passMark}%</p>
-                        </div>
-                        <div>${actionBtn}</div>
+                card.innerHTML = `
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-sm">${t.title}</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Questions: ${t.questions.length} | Time: ${t.timeLimit ? t.timeLimit + ' Mins' : 'Unlimited'} | Pass: ${t.passMark}%</p>
                     </div>
+                    <div>${actionBtn}</div>
                 `;
+                listContainer.appendChild(card);
             });
         }
 
-        function openRulesScreen(idx) {
-            if(!activeStudentName) { changeStudentIdentity(); return; }
-            selectedTestIdx = idx;
-            document.getElementById('rule-test-title').innerText = testsDB[idx].title;
-            document.getElementById('rule-pass-pct').innerText = `${testsDB[idx].passMark}%`;
+        function handleLockedTestClick() {
+            showAlert("This test is currently locked by the teacher. Please contact Chetan Soni (+91 99986 42506) to unlock.", true);
+        }
+
+        function openRulesScreen(index) {
+            if(!activeStudentName) {
+                document.getElementById('student-name-modal').classList.remove('hidden');
+                return;
+            }
+            selectedTestIdx = index;
+            document.getElementById('rule-test-title').innerText = testsDB[index].title;
+            document.getElementById('rule-pass-pct').innerText = `${testsDB[index].passMark}%`;
+            document.getElementById('rule-time-limit').innerText = testsDB[index].timeLimit ? `${testsDB[index].timeLimit} Mins` : `Unlimited`;
+            document.getElementById('student-test-select-screen').classList.add('hidden');
             document.getElementById('test-rules-screen').classList.remove('hidden');
         }
 
         function verifyAndStartStudentTestDirect() {
+            let savedName = localStorage.getItem('BEC_Student_Name');
+            if(!savedName) {
+                document.getElementById('student-name-modal').classList.remove('hidden');
+                return;
+            }
+            activeStudentName = savedName;
+            document.getElementById('current-logged-student').innerText = activeStudentName;
+            checkAttemptAndProceed();
+        }
+
+        async function checkAttemptAndProceed() {
+            const targetTest = testsDB[selectedTestIdx];
+            const { data } = await supabaseClient.from('results').select('*').eq('student_name', activeStudentName).eq('test_name', targetTest.title);
+
+            if(data && data.length > 0) {
+                const canRetake = data.some(r => r.allow_retake === true);
+                if(!canRetake) {
+                    document.getElementById('retake-modal-text').innerText = `Dear ${activeStudentName}, you have already completed this test. Would you like to send a retry permission request to the teacher?`;
+                    document.getElementById('retake-modal').classList.remove('hidden');
+                    return;
+                }
+            }
+
             document.getElementById('test-rules-screen').classList.add('hidden');
-            const t = testsDB[selectedTestIdx];
-            document.getElementById('running-test-title').innerText = t.title;
+            document.getElementById('running-test-title').innerText = targetTest.title;
             document.getElementById('running-student-name').innerText = activeStudentName;
 
-            runningQuizData = t.questions.map((q, qIdx) => {
-                let opts = [{text: q.correct, isCorrect:true}, {text: q.wrong1, isCorrect:false}, {text: q.wrong2, isCorrect:false}].sort(() => Math.random() - 0.5);
-                return {question: q.q, options: opts, correctIdx: opts.findIndex(o => o.isCorrect)};
+            let shuffledQuestions = [...targetTest.questions].sort(() => Math.random() - 0.5);
+            runningQuizData = shuffledQuestions.map((q, idx) => {
+                let opts = [
+                    { text: q.correct, isCorrect: true }, 
+                    { text: q.wrong1, isCorrect: false }, 
+                    { text: q.wrong2, isCorrect: false }
+                ].sort(() => Math.random() - 0.5);
+                return { id: idx, question: q.q, options: opts, correctIndex: opts.findIndex(o => o.isCorrect) };
             });
 
             studentAnswers = {};
-            const wrapper = document.getElementById('quiz-questions-wrapper');
-            wrapper.innerHTML = runningQuizData.map((q, qIdx) => `
-                <div class="p-4 bg-white border rounded-2xl space-y-2">
-                    <p class="font-bold text-xs">Q${qIdx+1}. ${q.question}</p>
-                    ${q.options.map((o, oIdx) => `<label class="block p-2 bg-slate-50 rounded-xl text-xs cursor-pointer"><input type="radio" name="q_${qIdx}" value="${oIdx}" onchange="studentAnswers[${qIdx}]=${oIdx}"> ${o.text}</label>`).join('')}
-                </div>
-            `).join('');
+            renderQuizQuestions();
+            updateProgressDisplay();
 
+            if (targetTest.timeLimit && targetTest.timeLimit > 0) {
+                timeRemainingSeconds = targetTest.timeLimit * 60;
+                if(testTimerInterval) clearInterval(testTimerInterval);
+                testTimerInterval = setInterval(() => {
+                    timeRemainingSeconds--;
+                    let m = Math.floor(timeRemainingSeconds / 60);
+                    let s = timeRemainingSeconds % 60;
+                    document.getElementById('timer-countdown-display').innerText = `${m}:${s < 10 ? '0':''}${s}`;
+                    if(timeRemainingSeconds <= 0) {
+                        clearInterval(testTimerInterval);
+                        showAlert("Time's up! Submitting test automatically.");
+                        forceSubmitQuiz();
+                    }
+                }, 1000);
+            } else {
+                document.getElementById('timer-countdown-display').innerText = "Unlimited";
+            }
+
+            cheatWarnings = 0;
+            document.addEventListener('visibilitychange', handleVisibilityChange);
             document.getElementById('active-test-container').classList.remove('hidden');
         }
 
-        async function submitStudentQuiz(e) {
-            e.preventDefault();
-            const t = testsDB[selectedTestIdx];
-            let score = 0;
-            runningQuizData.forEach((q, idx) => { if(studentAnswers[idx] === q.correctIdx) score++; });
-
-            const total = runningQuizData.length;
-            const pct = Math.round((score/total)*100);
-            const status = pct >= t.passMark ? "PASS" : "FAIL";
-
-            await supabaseClient.from('results').update({allow_retake: false}).eq('student_name', activeStudentName).eq('test_name', t.title);
-            await supabaseClient.from('results').insert([{
-                student_name: activeStudentName, test_name: t.title, score: `${score} / ${total}`, percentage: pct, grade: pct>=50?'C':'F', status, allow_retake: false
-            }]);
-
-            document.getElementById('active-test-container').classList.add('hidden');
-            document.getElementById('student-result-card').classList.remove('hidden');
-            document.getElementById('res-student-name').innerText = activeStudentName;
-            document.getElementById('res-test-name').innerText = t.title;
-            document.getElementById('res-score').innerText = `${score} / ${total}`;
-            document.getElementById('res-pct').innerText = `${pct}%`;
-            document.getElementById('congrats-remarks-box').className = status === 'PASS' ? "p-3.5 rounded-2xl text-center text-xs font-bold bg-emerald-50 text-emerald-800" : "p-3.5 rounded-2xl text-center text-xs font-bold bg-amber-50 text-amber-800";
-            document.getElementById('congrats-remarks-box').innerText = status === 'PASS' ? "🎉 Passed Successfully!" : "⚠️ Needs Improvement.";
-
-            loadAllDataFromSupabase();
+        function handleVisibilityChange() {
+            if (document.hidden && !document.getElementById('active-test-container').classList.contains('hidden')) {
+                cheatWarnings++;
+                if(cheatWarnings < 3) {
+                    showAlert(`⚠️ Warning ${cheatWarnings}/3: Do not switch tabs during the test!`, true);
+                } else {
+                    showAlert("⚠️ Maximum tab switches exceeded. Auto-submitting test.", true);
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                    forceSubmitQuiz();
+                }
+            }
         }
 
-        function shareResultAsPNGWhatsApp() {
-            html2canvas(document.getElementById('printable-congrats-card'), {scale: 2}).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'Certificate.png';
-                link.href = canvas.toDataURL();
-                link.click();
+        function closeRetakeModal() {
+            document.getElementById('retake-modal').classList.add('hidden');
+        }
+
+        async function sendRetakeRequestFromModal() {
+            const targetTest = testsDB[selectedTestIdx];
+            const { error } = await supabaseClient.from('retake_requests').insert([{ student_name: activeStudentName, test_name: targetTest.title, status: 'pending' }]);
+            if(error) {
+                showAlert('Error sending request!', true);
+            } else {
+                showAlert(`Retry request sent successfully to teacher for ${activeStudentName}!`);
+                closeRetakeModal();
+            }
+            loadRetakeRequests();
+        }
+
+        function renderQuizQuestions() {
+            const wrapper = document.getElementById('quiz-questions-wrapper');
+            wrapper.innerHTML = '';
+            runningQuizData.forEach((q, qIdx) => {
+                const card = document.createElement('div');
+                card.id = `q_card_${qIdx}`;
+                card.className = "bg-white p-5 rounded-2xl border border-slate-200 shadow-sm";
+                let optsHTML = '';
+                q.options.forEach((opt, optIdx) => {
+                    optsHTML += `<label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium text-slate-700 hover:bg-slate-50 transition"><input type="radio" name="q_${qIdx}" value="${optIdx}" onchange="selectStudentOpt(${qIdx}, ${optIdx})" class="w-4 h-4 text-blue-600"><span class="ml-2.5">${opt.text}</span></label>`;
+                });
+                card.innerHTML = `<div class="font-bold text-sm text-slate-900 mb-3">Q ${qIdx+1}. ${q.question}</div><div class="space-y-2">${optsHTML}</div>`;
+                wrapper.appendChild(card);
             });
         }
 
-        // Student Master CRUD (Add, Edit, Delete with Auto-clear focus)
-        async function saveStudentMaster() {
-            const input = document.getElementById('master-student-name-input');
-            const name = input.value.trim();
-            const editId = document.getElementById('edit-master-student-id').value;
-            if(!name) { showAlert('Enter student name!', true); return; }
+        function selectStudentOpt(qIdx, optIdx) {
+            studentAnswers[qIdx] = optIdx;
+            updateProgressDisplay();
+        }
 
-            if(editId) {
-                await supabaseClient.from('students_master').update({student_name: name}).eq('id', editId);
+        function updateProgressDisplay() {
+            const answeredCount = Object.keys(studentAnswers).length;
+            document.getElementById('test-progress-counter').innerText = `${answeredCount} / ${runningQuizData.length} Answered`;
+        }
+
+        function submitStudentQuiz(e) {
+            e.preventDefault();
+            const totalQuestions = runningQuizData.length;
+            const answeredQuestions = Object.keys(studentAnswers).length;
+            const remaining = totalQuestions - answeredQuestions;
+
+            if (remaining > 0) {
+                // Submit Anyway confirmation when unanswered questions remain
+                if (!confirm(`તમારા ${remaining} પ્રશ્નોના જવાબો બાકી છે. શું તમે છતાં પણ ટેસ્ટ સબમિટ કરવા માંગો છો? (Submit Anyway)`)) {
+                    return;
+                }
+            }
+            forceSubmitQuiz();
+        }
+
+        async function forceSubmitQuiz() {
+            if(testTimerInterval) clearInterval(testTimerInterval);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+
+            let score = 0;
+            let wrongDetailsList = [];
+
+            runningQuizData.forEach((q, idx) => { 
+                let studentAnsIdx = studentAnswers[idx];
+                if(studentAnsIdx === q.correctIndex) {
+                    score++;
+                } else {
+                    wrongDetailsList.push({
+                        qNumber: idx + 1,
+                        question: q.question,
+                        studentAnswer: studentAnsIdx !== undefined ? q.options[studentAnsIdx].text : 'Not Answered',
+                        correctAnswer: q.options[q.correctIndex].text
+                    });
+                }
+            });
+
+            const total = runningQuizData.length, percentage = Math.round((score / total) * 100), targetTest = testsDB[selectedTestIdx], status = percentage >= (targetTest.passMark || 50) ? "PASS" : "FAIL";
+            let grade = percentage >= 90 ? "A+" : percentage >= 75 ? "A" : percentage >= 60 ? "B" : percentage >= 50 ? "C" : "F";
+            const submissionTimestamp = new Date().toLocaleString();
+
+            const { data: existingRecords } = await supabaseClient.from('results').select('*').eq('student_name', activeStudentName).eq('test_name', targetTest.title);
+            let nextAttempt = existingRecords ? existingRecords.length + 1 : 1;
+
+            await supabaseClient.from('results').update({ allow_retake: false }).eq('student_name', activeStudentName).eq('test_name', targetTest.title);
+            
+            const { error: insertErr } = await supabaseClient.from('results').insert([{ 
+                student_name: activeStudentName, 
+                test_name: targetTest.title, 
+                score: `${score} / ${total}`, 
+                percentage: percentage, 
+                grade: grade, 
+                status: status, 
+                attempt: nextAttempt, 
+                allow_retake: false,
+                wrong_answers_json: wrongDetailsList
+            }]);
+
+            if(insertErr) {
+                showAlert("Error submitting result to database!", true);
+                return;
+            }
+
+            document.getElementById('active-test-container').classList.add('hidden');
+            document.getElementById('student-result-card').classList.remove('hidden');
+            
+            document.getElementById('res-test-name').innerText = targetTest.title;
+            document.getElementById('res-student-name').innerText = activeStudentName;
+            document.getElementById('res-timestamp').innerText = submissionTimestamp;
+            document.getElementById('res-score').innerText = `${score} / ${total}`;
+            document.getElementById('res-pct').innerText = `${percentage}%`;
+            document.getElementById('res-grade').innerText = grade;
+            document.getElementById('res-status').innerText = status;
+
+            const medalBadge = document.getElementById('res-medal-badge');
+            const medalIcon = document.getElementById('res-medal-icon');
+            const medalText = document.getElementById('res-medal-text');
+            const remarksBox = document.getElementById('congrats-remarks-box');
+            const remarksText = document.getElementById('congrats-main-title');
+
+            if(status === 'PASS') {
+                medalBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold shadow-sm bg-amber-100 text-amber-800 border border-amber-300";
+                medalIcon.className = "fa-solid fa-award text-amber-600";
+                medalText.innerText = "VERIFIED TEST RESULT";
+                
+                remarksBox.className = "p-3.5 rounded-2xl border text-xs font-bold text-center bg-emerald-50 border-emerald-300 text-emerald-800 shadow-sm";
+                remarksText.innerText = "🎉 Congratulations! You Passed the Test Successfully!";
             } else {
-                await supabaseClient.from('students_master').insert([{student_name: name}]);
+                medalBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold shadow-sm bg-rose-100 text-rose-800 border border-rose-300";
+                medalIcon.className = "fa-solid fa-triangle-exclamation text-rose-600";
+                medalText.innerText = "ATTEMPT COMPLETION RECORD";
+                
+                remarksBox.className = "p-3.5 rounded-2xl border text-xs font-bold text-center bg-amber-50 border-amber-300 text-amber-800 shadow-sm";
+                remarksText.innerText = "⚠️ Need Improvement! Keep Trying & Practice More.";
             }
-            resetMasterForm();
-            loadAllDataFromSupabase();
-        }
 
-        function editMasterStudent(id, name) {
-            document.getElementById('edit-master-student-id').value = id;
-            document.getElementById('master-student-name-input').value = name;
-            document.getElementById('master-save-btn').innerText = "Update Student";
-            document.getElementById('master-cancel-btn').classList.remove('hidden');
-            document.getElementById('master-student-name-input').focus();
-        }
-
-        function resetMasterForm() {
-            document.getElementById('edit-master-student-id').value = '';
-            document.getElementById('master-student-name-input').value = '';
-            document.getElementById('master-save-btn').innerText = "Add Student";
-            document.getElementById('master-cancel-btn').classList.add('hidden');
-            document.getElementById('master-student-name-input').focus();
-        }
-
-        async function deleteMasterStudent(id) {
-            if(confirm('Delete student from master list?')) {
-                await supabaseClient.from('students_master').delete().eq('id', id);
-                loadAllDataFromSupabase();
-            }
-        }
-
-        function renderMasterStudentsTable() {
-            const container = document.getElementById('master-students-table-list');
-            container.innerHTML = masterStudentsDB.map(s => `
-                <div class="p-3 bg-slate-50 border rounded-xl flex justify-between items-center">
-                    <b>${s.student_name}</b>
-                    <div class="flex gap-2">
-                        <button onclick="editMasterStudent(${s.id}, '${s.student_name}')" class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg">Edit</button>
-                        <button onclick="deleteMasterStudent(${s.id})" class="px-2.5 py-1 bg-rose-50 text-rose-700 rounded-lg">Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Excel Upload
-        function handleExcelUpload() {
-            const fileInput = document.getElementById('excel-file-input');
-            if(fileInput.files.length === 0) { showAlert('Select Excel file!', true); return; }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
-                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {defval: ""});
-                draftQuestions = [];
-                json.forEach(row => {
-                    const vals = Object.values(row);
-                    if(vals.length >= 4) draftQuestions.push({q: vals[0], correct: vals[1], wrong1: vals[2], wrong2: vals[3]});
+            const solutionList = document.getElementById('solution-review-list');
+            const solutionContainer = document.getElementById('incorrect-solutions-container');
+            solutionList.innerHTML = '';
+            
+            if (wrongDetailsList.length === 0) {
+                solutionContainer.classList.add('hidden');
+            } else {
+                solutionContainer.classList.remove('hidden');
+                wrongDetailsList.forEach(item => {
+                    let div = document.createElement('div');
+                    div.className = "p-3.5 rounded-xl border border-rose-200 bg-rose-50/40 text-xs space-y-1";
+                    div.innerHTML = `
+                        <div class="font-bold text-slate-900">Q ${item.qNumber}. ${item.question}</div>
+                        <div class="text-rose-600">Your Answer: <span class="font-bold">${item.studentAnswer}</span></div>
+                        <div class="text-emerald-700">Correct Answer: <span class="font-bold">${item.correctAnswer}</span></div>
+                    `;
+                    solutionList.appendChild(div);
                 });
-                document.getElementById('draft-questions-list').innerHTML = `<p class="text-emerald-700 font-bold">Imported ${draftQuestions.length} questions from Excel!</p>`;
-            };
-            reader.readAsArrayBuffer(fileInput.files[0]);
+            }
+
+            loadResultsFromSupabase();
         }
 
-        async function publishTest() {
-            const title = document.getElementById('new-test-title-input').value.trim();
-            const pass = parseInt(document.getElementById('new-test-pass-input').value) || 50;
-            if(!title || draftQuestions.length === 0) { showAlert('Provide title and questions!', true); return; }
-            await supabaseClient.from('tests').insert([{title, pass_mark: pass, is_unlocked: false, questions_json: draftQuestions}]);
-            showAlert('Test published successfully! (Locked by default)');
-            document.getElementById('new-test-title-input').value = '';
-            draftQuestions = [];
-            document.getElementById('draft-questions-list').innerHTML = '';
-            loadAllDataFromSupabase();
+        function shareResultAsPNGWhatsApp() {
+            html2canvas(document.getElementById('printable-congrats-card'), { backgroundColor: '#ffffff', scale: 2 }).then(canvas => {
+                canvas.toBlob(blob => {
+                    const file = new File([blob], `${activeStudentName}-Certificate.png`, { type: "image/png" });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({ files: [file], title: 'Test Certificate', text: `Bharat Education Center Certificate for ${activeStudentName}` });
+                    } else {
+                        const link = document.createElement('a');
+                        link.download = `${activeStudentName}-Certificate.png`;
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                        showAlert('Certificate Image Downloaded Successfully!');
+                    }
+                }, 'image/png');
+            });
         }
 
-        function renderAdminTestsManager() {
-            const container = document.getElementById('admin-tests-manage-list');
-            container.innerHTML = testsDB.map(t => `
-                <div class="p-3 bg-slate-50 border rounded-xl flex justify-between items-center">
-                    <b>${t.title} (${t.questions.length} Qs)</b>
+        function switchAdminTab(tab) {
+            ['master','builder','manager','records'].forEach(t => {
+                document.getElementById(`admin-tab-${t}`).classList.add('hidden');
+            });
+
+            ['master','builder','manager','records'].forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if(btn) btn.className = "pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition";
+            });
+
+            if(tab === 'student-master') {
+                document.getElementById('admin-tab-master').classList.remove('hidden');
+                document.getElementById('tab-btn-master').className = "pb-2.5 text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition";
+                loadMasterStudents();
+            } else if(tab === 'test-builder') {
+                document.getElementById('admin-tab-builder').classList.remove('hidden');
+                document.getElementById('tab-btn-builder').className = "pb-2.5 text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition";
+            } else if(tab === 'test-manager') {
+                document.getElementById('admin-tab-manager').classList.remove('hidden');
+                document.getElementById('tab-btn-manager').className = "pb-2.5 text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition";
+                renderAdminTestsManagerList();
+            } else if(tab === 'student-records') {
+                document.getElementById('admin-tab-records').classList.remove('hidden');
+                document.getElementById('tab-btn-records').className = "pb-2.5 text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition";
+                loadResultsFromSupabase();
+            }
+        }
+
+        async function loadRetakeRequests() {
+            const listContainer = document.getElementById('retake-requests-list');
+            const { data, error } = await supabaseClient.from('retake_requests').select('*').eq('status', 'pending');
+            if(error || !data || data.length === 0) { listContainer.innerHTML = `<p class="text-slate-500 italic">No pending requests.</p>`; return; }
+
+            listContainer.innerHTML = data.map(r => `
+                <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-amber-300 gap-2 flex-wrap">
+                    <span>Student: <b class="text-slate-900">${r.student_name}</b> | Chapter: <b class="text-blue-700">${r.test_name}</b></span>
                     <div class="flex gap-2">
-                        <button onclick="toggleTestLock(${t.id}, ${!t.isUnlocked})" class="px-3 py-1 ${t.isUnlocked ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'} rounded-lg">${t.isUnlocked ? 'Unlocked' : 'Locked'}</button>
-                        <button onclick="deleteTest(${t.id})" class="px-2 py-1 bg-rose-50 text-rose-700 rounded-lg">Delete</button>
+                        <button onclick="approveRetakeReq(${r.id}, '${r.student_name}', '${r.test_name}')" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-bold text-xs hover:bg-emerald-700 transition">Allow Retry</button>
+                        <button onclick="denyRetakeReq(${r.id})" class="px-3.5 py-1.5 bg-rose-600 text-white rounded-lg font-bold text-xs hover:bg-rose-700 transition">Deny</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        async function toggleTestLock(id, state) {
-            await supabaseClient.from('tests').update({is_unlocked: state}).eq('id', id);
-            loadAllDataFromSupabase();
+        async function approveRetakeReq(reqId, student, test) {
+            await supabaseClient.from('results').update({ allow_retake: true }).eq('student_name', student).eq('test_name', test);
+            await supabaseClient.from('retake_requests').delete().eq('id', reqId);
+            showAlert(`Granted retry permission for ${student}!`);
+            loadRetakeRequests();
+            loadResultsFromSupabase();
         }
 
-        async function deleteTest(id) {
-            if(confirm('Delete test?')) {
-                await supabaseClient.from('tests').delete().eq('id', id);
-                loadAllDataFromSupabase();
+        async function denyRetakeReq(reqId) {
+            const { error } = await supabaseClient.from('retake_requests').delete().eq('id', reqId);
+            if(!error) {
+                showAlert('Retry request denied.');
+                loadRetakeRequests();
             }
         }
 
-        // Chapter-wise Reports & Unattempted/Pending List
-        function populateChapterDropdown() {
-            const sel = document.getElementById('admin-chapter-filter');
-            sel.innerHTML = '<option value="">All Chapters</option>';
-            testsDB.forEach(t => sel.innerHTML += `<option value="${t.title}">${t.title}</option>`);
-        }
+        function renderFailedStudentsAccordion() {
+            const container = document.getElementById('failed-students-accordion-list');
+            const failedResults = resultsDB.filter(r => r.status === 'FAIL' && !dismissedFollowupIds.includes(r.id));
 
-        function renderChapterReports() {
-            const filter = document.getElementById('admin-chapter-filter').value;
-            const container = document.getElementById('chapter-wise-report-container');
-            container.innerHTML = '';
-            const testsToDisplay = filter ? testsDB.filter(t => t.title === filter) : testsDB;
+            if (failedResults.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 italic">No failed student records pending follow-up.</p>`;
+                return;
+            }
 
-            testsToDisplay.forEach(t => {
-                const subs = resultsDB.filter(r => r.testName === t.title);
-                const unattempted = masterStudentsDB.filter(m => !subs.some(s => s.student === m.student_name));
+            container.innerHTML = failedResults.map((res, idx) => {
+                let wrongItemsHTML = '';
+                if (res.wrongAnswersJson && res.wrongAnswersJson.length > 0) {
+                    wrongItemsHTML = res.wrongAnswersJson.map(w => `
+                        <div class="p-2.5 bg-white rounded-xl border border-rose-200 text-xs space-y-0.5">
+                            <div class="font-bold text-slate-900">Q ${w.qNumber}. ${w.question}</div>
+                            <div class="text-rose-600">Student Answer: <b>${w.studentAnswer}</b></div>
+                            <div class="text-emerald-700">Correct Answer: <b>${w.correctAnswer}</b></div>
+                        </div>
+                    `).join('');
+                } else {
+                    wrongItemsHTML = `<p class="text-xs text-slate-500 italic">Detailed wrong answer logs not available.</p>`;
+                }
 
-                container.innerHTML += `
-                    <div class="p-4 bg-slate-50 border rounded-2xl space-y-2">
-                        <h4 class="font-bold text-blue-900">${t.title}</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div class="bg-white p-3 rounded-xl border">
-                                <span class="font-bold text-emerald-700 block mb-1">Submitted (${subs.length}):</span>
-                                ${subs.length ? subs.map(s => `<div>• ${s.student} - <b>${s.score} (${s.pct}\%)</b> [${s.status}]</div>`).join('') : '<i class="text-slate-400">None</i>'}
+                return `
+                    <div class="bg-white rounded-2xl border border-rose-200 shadow-sm overflow-hidden">
+                        <button onclick="toggleAccordion(${idx})" class="w-full p-4 flex justify-between items-center bg-rose-50/60 hover:bg-rose-100/50 transition text-left">
+                            <div>
+                                <span class="font-bold text-slate-900 text-sm">${res.student}</span>
+                                <span class="text-xs text-blue-700 font-semibold ml-2">(${res.testName})</span>
+                                <span class="block text-[11px] text-slate-500">Submitted: ${res.date} | Score: <b class="text-rose-600">${res.score} (${res.pct}%)</b> | Attempt: <b>#${res.attempt || 1}</b></span>
                             </div>
-                            <div class="bg-white p-3 rounded-xl border">
-                                <span class="font-bold text-rose-700 block mb-1">Pending / Unattempted (${unattempted.length}):</span>
-                                ${unattempted.length ? unattempted.map(u => `<div>• ${u.student_name}</div>`).join('') : '<i class="text-slate-400">All submitted!</i>'}
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-rose-700 bg-rose-100 px-3 py-1 rounded-full">FAIL</span>
+                                <i id="accordion-icon-${idx}" class="fa-solid fa-chevron-down text-slate-500 text-xs transition"></i>
+                            </div>
+                        </button>
+                        <div id="accordion-content-${idx}" class="hidden p-4 bg-slate-50 border-t border-rose-200 space-y-2">
+                            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wide mb-2">Incorrectly Answered Questions:</h4>
+                            ${wrongItemsHTML}
+                            <div class="flex justify-end pt-2">
+                                <button onclick="dismissFollowupRecord(${res.id})" class="px-3 py-1.5 bg-amber-600 text-white rounded-xl text-xs font-bold hover:bg-amber-700 transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-check-double"></i> Mark as Followed Up (Dismiss)
+                                </button>
                             </div>
                         </div>
                     </div>
                 `;
+            }).join('');
+        }
+
+        function dismissFollowupRecord(recordId) {
+            if (!dismissedFollowupIds.includes(recordId)) {
+                dismissedFollowupIds.push(recordId);
+                localStorage.setItem('BEC_Dismissed_Followups', JSON.stringify(dismissedFollowupIds));
+                showAlert('Entry removed from follow-up list!');
+                renderFailedStudentsAccordion();
+            }
+        }
+
+        function toggleAccordion(idx) {
+            const content = document.getElementById(`accordion-content-${idx}`);
+            const icon = document.getElementById(`accordion-icon-${idx}`);
+            if(content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.className = "fa-solid fa-chevron-up text-slate-500 text-xs transition";
+            } else {
+                content.classList.add('hidden');
+                icon.className = "fa-solid fa-chevron-down text-slate-500 text-xs transition";
+            }
+        }
+
+        function handleExcelUpload() {
+            const fileInput = document.getElementById('excel-file-input');
+            if(fileInput.files.length === 0) return showAlert('Select an Excel or CSV file!', true);
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+                const rawJson = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: "" });
+                let count = 0;
+                rawJson.forEach(row => {
+                    const vals = Object.values(row);
+                    if(vals.length >= 4) { draftQuestions.push({ q: vals[0], correct: vals[1], wrong1: vals[2], wrong2: vals[3] }); count++; }
+                });
+                showAlert(`Imported ${count} questions!`);
+                renderDraftList();
+            };
+            reader.readAsArrayBuffer(fileInput.files[0]);
+        }
+
+        function addQuestionToDraft() {
+            const q = document.getElementById('q-text-input').value.trim(), correct = document.getElementById('q-correct-opt').value.trim(), w1 = document.getElementById('q-wrong-opt1').value.trim(), w2 = document.getElementById('q-wrong-opt2').value.trim();
+            if(!q || !correct || !w1 || !w2) return showAlert('Fill out all fields!', true);
+            draftQuestions.push({ q, correct, wrong1: w1, wrong2: w2 });
+            ['q-text-input','q-correct-opt','q-wrong-opt1','q-wrong-opt2'].forEach(id => document.getElementById(id).value = '');
+            renderDraftList();
+        }
+
+        function renderDraftList() {
+            const container = document.getElementById('draft-questions-list');
+            document.getElementById('draft-q-count').innerText = draftQuestions.length;
+            container.innerHTML = draftQuestions.map((item, idx) => `<div class="p-3 bg-white border border-slate-200 rounded-xl flex justify-between items-center"><div><strong>Q ${idx+1}:</strong> ${item.q}</div><button onclick="draftQuestions.splice(${idx},1);renderDraftList();" class="text-rose-600 font-bold px-2">X</button></div>`).join('');
+        }
+
+        function editTest(testId) {
+            const t = testsDB.find(item => item.id === testId);
+            if(!t) return;
+            editingTestId = t.id;
+            document.getElementById('new-test-title-input').value = t.title;
+            document.getElementById('new-test-pass-input').value = t.passMark;
+            document.getElementById('new-test-time-input').value = t.timeLimit || '';
+            document.getElementById('new-test-deadline-input').value = t.deadline || '';
+            draftQuestions = [...t.questions];
+            renderDraftList();
+            
+            document.getElementById('builder-mode-title').innerText = `Editing Test: ${t.title}`;
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            switchAdminTab('test-builder');
+        }
+
+        function resetTestBuilder() {
+            editingTestId = null;
+            document.getElementById('new-test-title-input').value = '';
+            document.getElementById('new-test-pass-input').value = '';
+            document.getElementById('new-test-time-input').value = '';
+            document.getElementById('new-test-deadline-input').value = '';
+            draftQuestions = [];
+            renderDraftList();
+            document.getElementById('builder-mode-title').innerText = "1. Set Test Information (Time Limit & Deadline optional):";
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+        }
+
+        async function saveCompleteTest() {
+            const title = document.getElementById('new-test-title-input').value.trim();
+            const passPct = parseInt(document.getElementById('new-test-pass-input').value) || 50;
+            const timeLimitVal = document.getElementById('new-test-time-input').value.trim();
+            const timeLimit = timeLimitVal ? parseInt(timeLimitVal) : null;
+            const deadline = document.getElementById('new-test-deadline-input').value.trim() || null;
+
+            if(!title || draftQuestions.length === 0) return showAlert('Provide title & questions!', true);
+            
+            if(editingTestId) {
+                const { error } = await supabaseClient.from('tests').update({ 
+                    title, 
+                    pass_mark: passPct, 
+                    time_limit: timeLimit, 
+                    deadline, 
+                    questions_json: draftQuestions 
+                }).eq('id', editingTestId);
+                
+                if(error) { showAlert('Error updating test!', true); return; }
+                showAlert('Test updated successfully!');
+            } else {
+                const { error } = await supabaseClient.from('tests').insert([{ 
+                    title, 
+                    pass_mark: passPct, 
+                    time_limit: timeLimit, 
+                    deadline, 
+                    questions_json: draftQuestions, 
+                    is_unlocked: false 
+                }]);
+                
+                if(error) { showAlert('Error publishing test!', true); return; }
+                showAlert('Test published successfully! (Locked by default)');
+            }
+            
+            resetTestBuilder();
+            showStudentPortal();
+        }
+
+        function renderAdminTestsManagerList() {
+            const container = document.getElementById('admin-tests-manage-list');
+            container.innerHTML = testsDB.length === 0 ? `<p class="text-xs text-slate-400">No tests available.</p>` : '';
+            
+            testsDB.forEach((t) => {
+                const card = document.createElement('div');
+                card.className = "p-4 bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-center flex-wrap gap-3";
+                
+                card.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm">${t.title}</h4>
+                        <p class="text-xs text-slate-500 mt-0.5">Uploaded: ${t.createdDate} | Questions: ${t.questions.length} | Time: ${t.timeLimit ? t.timeLimit + 'm' : 'Unlimited'} | Pass: ${t.passMark}%</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button onclick="editTest(${t.id})" class="px-3.5 py-1.5 bg-indigo-600 text-white font-bold rounded-xl text-xs hover:bg-indigo-700 transition">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button onclick="toggleTestUnlock(${t.id}, ${!t.isUnlocked})" class="px-3.5 py-1.5 rounded-xl font-bold text-xs transition ${t.isUnlocked ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-amber-500 text-white hover:bg-amber-600'}">
+                            ${t.isUnlocked ? '<i class="fa-solid fa-lock-open"></i> Unlocked' : '<i class="fa-solid fa-lock"></i> Locked'}
+                        </button>
+                        <button onclick="copyTestLinkToClipboard('${t.title}')" class="px-3.5 py-1.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-copy"></i> Copy Link
+                        </button>
+                        <button onclick="deleteTest(${t.id})" class="px-3.5 py-1.5 bg-rose-50 text-rose-700 font-bold rounded-xl text-xs hover:bg-rose-100 transition">Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
             });
         }
 
-        // Retake Approvals
-        function renderRetakeRequests(reqs) {
-            const container = document.getElementById('retake-requests-list');
-            if(!reqs || reqs.length === 0) { container.innerHTML = `<p class="text-slate-500 italic">No pending requests.</p>`; return; }
-            container.innerHTML = reqs.map(r => `
-                <div class="p-3 bg-white border border-amber-200 rounded-xl flex justify-between items-center">
-                    <span>Student: <b>${r.student_name}</b> | Test: <b>${r.test_name}</b></span>
-                    <button onclick="approveRetake(${r.id}, '${r.student_name}', '${r.test_name}')" class="px-3 py-1 bg-emerald-600 text-white rounded-lg font-bold">Approve Retry</button>
-                </div>
+        function copyTestLinkToClipboard(testTitle) {
+            const link = window.location.href.split('?')[0] + `?test=${encodeURIComponent(testTitle)}&mode=student`;
+            navigator.clipboard.writeText(link).then(() => {
+                showAlert('Link Copied to Clipboard!');
+            });
+        }
+
+        async function toggleTestUnlock(testId, newState) {
+            const { error } = await supabaseClient.from('tests').update({ is_unlocked: newState }).eq('id', testId);
+            if(!error) {
+                showAlert(`Test status updated successfully!`);
+                loadTestsFromSupabase();
+            }
+        }
+
+        async function deleteTest(id) {
+            if(confirm('Delete test?')) { await supabaseClient.from('tests').delete().eq('id', id); loadTestsFromSupabase(); }
+        }
+
+        function populateFilterDropdowns() {
+            const testSelect = document.getElementById('filter-test-select'), studentSelect = document.getElementById('filter-student-select');
+            testSelect.innerHTML = '<option value="">All Chapters</option>'; studentSelect.innerHTML = '<option value="">All Students</option>';
+            [...new Set(resultsDB.map(r => r.testName))].forEach(t => testSelect.innerHTML += `<option value="${t}">${t}</option>`);
+            [...new Set(resultsDB.map(r => r.student))].forEach(s => studentSelect.innerHTML += `<option value="${s}">${s}</option>`);
+        }
+
+        function applyResultFilters() {
+            const st = document.getElementById('filter-test-select').value, ss = document.getElementById('filter-student-select').value;
+            renderAdminResultsTable(resultsDB.filter(r => (st === "" || r.testName === st) && (ss === "" || r.student === ss)));
+        }
+
+        function generateStudentReportCardView() {
+            const selectedStudent = document.getElementById('filter-student-select').value;
+            if(!selectedStudent) { showAlert('Please select a student from dropdown!', true); return; }
+
+            const studentResults = resultsDB.filter(r => r.student === selectedStudent);
+            document.getElementById('report-card-student-name').innerText = selectedStudent;
+            const container = document.getElementById('student-individual-report-content');
+            container.innerHTML = '';
+
+            if(studentResults.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400">No test records found for this student.</p>`;
+            } else {
+                studentResults.forEach(res => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-3 rounded-xl border border-slate-200 flex justify-between items-center shadow-sm";
+                    card.innerHTML = `
+                        <div>
+                            <h4 class="font-bold text-xs text-slate-900">${res.testName}</h4>
+                            <p class="text-[10px] text-slate-500">Timestamp: ${res.date} | Attempt #${res.attempt || 1}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold text-blue-600">${res.score} (${res.pct}%)</span>
+                            <span class="block text-[10px] font-bold ${res.status === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}">${res.status}</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            document.getElementById('single-student-report-card-container').classList.remove('hidden');
+        }
+
+        function renderAdminResultsTable(dataList) {
+            const tbody = document.getElementById('student-results-table-body');
+            tbody.innerHTML = dataList.map(r => `
+                <tr class="border-b hover:bg-slate-50">
+                    <td class="p-3 text-slate-600">${r.date}</td>
+                    <td class="p-3 font-bold">${r.student}</td>
+                    <td class="p-3 text-blue-600">${r.testName}</td>
+                    <td class="p-3 font-bold">${r.score}</td>
+                    <td class="p-3 font-semibold text-slate-700">Attempt #${r.attempt || 1}</td>
+                    <td class="p-3">${r.pct}%</td>
+                    <td class="p-3 font-bold ${r.status === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}">${r.status}</td>
+                    <td class="p-3 no-print"><button onclick="deleteSingleResult(${r.id})" class="px-2.5 py-1 bg-rose-50 text-rose-700 text-[11px] font-bold rounded-lg hover:bg-rose-100">Delete</button></td>
+                </tr>
             `).join('');
         }
 
-        async function approveRetake(reqId, student, test) {
-            await supabaseClient.from('results').update({allow_retake: true}).eq('student_name', student).eq('test_name', test);
-            await supabaseClient.from('retake_requests').delete().eq('id', reqId);
-            showAlert('Retry approved successfully!');
-            loadAllDataFromSupabase();
+        async function deleteSingleResult(id) {
+            if(confirm('Are you sure you want to delete this main database record?')) { 
+                const { error } = await supabaseClient.from('results').delete().eq('id', id); 
+                if(!error) {
+                    showAlert('Record deleted successfully!');
+                    loadResultsFromSupabase();
+                }
+            }
         }
     </script>
 </body>
