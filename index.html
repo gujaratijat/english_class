@@ -38,8 +38,8 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- In-Page Custom Popup Modal (Replaces Browser Default Alerts) -->
-    <div id="custom-alert-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 modal-center p-4">
+    <!-- Foreground In-Page Custom Popup Modal (z-[9999]) -->
+    <div id="custom-alert-modal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[9999] modal-center p-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4">
             <div id="alert-icon-wrapper" class="w-12 h-12 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-circle-info"></i>
@@ -49,11 +49,28 @@
         </div>
     </div>
 
+    <!-- Teacher Password Login Modal UI with Masked Dots (***) -->
+    <div id="teacher-login-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9998] modal-center p-4">
+        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4">
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-slate-900 text-white flex items-center justify-center text-lg shadow-md">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-slate-900">Teacher Login</h3>
+                <p class="text-xs text-slate-500 mt-1">Admin Panel mate Password/PIN nako:</p>
+            </div>
+            <input type="password" id="teacher-pin-input" placeholder="Enter PIN (Default: 1234)" class="w-full text-center px-4 py-3 rounded-xl border border-slate-300 text-base font-bold tracking-widest outline-none focus:ring-2 focus:ring-slate-900">
+            <div class="flex gap-2 pt-1">
+                <button onclick="closeTeacherLoginModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition">Cancel</button>
+                <button onclick="verifyTeacherPin()" class="w-1/2 py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 transition">Login</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation Header -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <!-- Bharat Logo Integration (Clean Transparent / Light BG) -->
                 <div class="h-12 w-auto max-w-[180px] bg-transparent flex items-center justify-center">
                     <img src="bharat_logo.jpeg" alt="Bharat Logo" class="h-full w-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-xs font-bold text-blue-900\'>BHARAT CENTER</span>';">
                 </div>
@@ -63,12 +80,11 @@
                 </div>
             </div>
             
-            <!-- Actions & Locked Language Switcher -->
             <div class="flex items-center gap-3 shrink-0">
                 <button id="nav-student-btn" onclick="showStudentPortal()" class="px-3.5 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-100 transition shadow-sm">
                     <i class="fa-solid fa-user"></i> <span data-translate="student_portal">વિદ્યાર્થી પોર્ટલ</span>
                 </button>
-                <button id="nav-teacher-btn" onclick="promptTeacherLogin()" class="px-3.5 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-sm">
+                <button id="nav-teacher-btn" onclick="openTeacherLoginModal()" class="px-3.5 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-sm">
                     <i class="fa-solid fa-lock"></i> <span data-translate="teacher_dashboard">ટીચર ડેશબોર્ડ</span>
                 </button>
                 <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
@@ -115,8 +131,8 @@
                 </button>
             </div>
 
-            <!-- Student Name Entry & In-Page Retake Modal -->
-            <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 modal-center p-4">
+            <!-- Student Name Entry & In-Page Retake Foreground Modal (z-[9990]) -->
+            <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9990] modal-center p-4">
                 <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4">
                     <h3 class="text-lg font-bold text-slate-900" id="active-test-modal-title">ટેસ્ટ નામ</h3>
                     <p class="text-xs text-slate-500" data-translate="enter_name_prompt">તમારું આખું નામ દાખલ કરો:</p>
@@ -314,7 +330,7 @@
     </main>
 
     <script>
-        // Custom In-Page Alert System
+        // Custom In-Page Foreground Alert System
         function showAlert(msg, isError = false) {
             document.getElementById('custom-alert-text').innerText = msg;
             const iconWrapper = document.getElementById('alert-icon-wrapper');
@@ -325,6 +341,33 @@
         }
         function closeCustomAlert() {
             document.getElementById('custom-alert-modal').classList.add('hidden');
+        }
+
+        // Teacher Login Modal Handlers
+        function openTeacherLoginModal() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.get('mode') === 'student' || urlParams.get('view') === 'student') {
+                showAlert('Access Denied: Teacher Dashboard is disabled in student link view!', true);
+                return;
+            }
+            document.getElementById('teacher-pin-input').value = '';
+            document.getElementById('teacher-login-modal').classList.remove('hidden');
+        }
+        function closeTeacherLoginModal() {
+            document.getElementById('teacher-login-modal').classList.add('hidden');
+        }
+        function verifyTeacherPin() {
+            const pin = document.getElementById('teacher-pin-input').value;
+            if(pin === "1234") {
+                closeTeacherLoginModal();
+                document.getElementById('student-portal-view').classList.add('hidden');
+                document.getElementById('teacher-dashboard-view').classList.remove('hidden');
+                loadResultsFromSupabase();
+                renderAdminTestsManagerList();
+                loadRetakeRequests();
+            } else {
+                showAlert("Incorrect Teacher PIN! Try again.", true);
+            }
         }
 
         // Language Engine
@@ -418,24 +461,6 @@
             document.getElementById('active-test-container').classList.add('hidden');
             document.getElementById('student-result-card').classList.add('hidden');
             loadTestsFromSupabase();
-        }
-
-        function promptTeacherLogin() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if(urlParams.get('mode') === 'student' || urlParams.get('view') === 'student') {
-                showAlert('Security Warning: Access Denied! You do not have authorization to view Teacher Panel.', true);
-                return;
-            }
-            const pin = prompt("Enter Teacher Admin PIN");
-            if(pin === "98732") {
-                document.getElementById('student-portal-view').classList.add('hidden');
-                document.getElementById('teacher-dashboard-view').classList.remove('hidden');
-                loadResultsFromSupabase();
-                renderAdminTestsManagerList();
-                loadRetakeRequests();
-            } else if(pin !== null) {
-                showAlert('Incorrect PIN!', true);
-            }
         }
 
         async function loadTestsFromSupabase() {
