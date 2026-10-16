@@ -1,15 +1,4 @@
-body {
-    font-family: 'Hind Vadodara', 'Inter', sans-serif;
-    user-select: none; /* પ્રોટેક્શન: ટેક્સ્ટ સિલેક્ટ ન કરી શકાય */
-    -webkit-user-select: none;
-}
 
-@media print {
-    body * { visibility: hidden; }
-    #printable-report, #printable-report * { visibility: visible; }
-    #printable-report { position: absolute; left: 0; top: 0; width: 100%; }
-    .no-print { display: none !important; }
-}
 :lang(gu), [lang="gu"] {
     font-family: 'Noto Sans Gujarati', sans-serif !important;
 }
