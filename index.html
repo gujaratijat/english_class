@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Roboto & Hind Vadodara -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Hind+Vadodara:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -38,8 +38,8 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- Foreground In-Page Custom Popup Modal (z-[9999]) -->
-    <div id="custom-alert-modal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[9999] modal-center p-4">
+    <!-- Foreground Custom Popup Modal (z-[99999]) -->
+    <div id="custom-alert-modal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[99999] modal-center p-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4">
             <div id="alert-icon-wrapper" class="w-12 h-12 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-circle-info"></i>
@@ -49,8 +49,8 @@
         </div>
     </div>
 
-    <!-- Teacher Password Login Modal UI with Masked Dots (***) -->
-    <div id="teacher-login-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9998] modal-center p-4">
+    <!-- Teacher Login Modal UI with Masked Dots (***) & z-[99999] -->
+    <div id="teacher-login-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[99999] modal-center p-4">
         <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4">
             <div class="w-12 h-12 mx-auto rounded-2xl bg-slate-900 text-white flex items-center justify-center text-lg shadow-md">
                 <i class="fa-solid fa-lock"></i>
@@ -59,7 +59,7 @@
                 <h3 class="text-base font-bold text-slate-900">Teacher Login</h3>
                 <p class="text-xs text-slate-500 mt-1">Admin Panel mate Password/PIN nako:</p>
             </div>
-            <input type="password" id="teacher-pin-input" placeholder="Enter PIN (Default: 1234)" class="w-full text-center px-4 py-3 rounded-xl border border-slate-300 text-base font-bold tracking-widest outline-none focus:ring-2 focus:ring-slate-900">
+            <input type="password" id="teacher-pin-input" placeholder="Enter PIN (Default: 98732)" class="w-full text-center px-4 py-3 rounded-xl border border-slate-300 text-base font-bold tracking-widest outline-none focus:ring-2 focus:ring-slate-900">
             <div class="flex gap-2 pt-1">
                 <button onclick="closeTeacherLoginModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition">Cancel</button>
                 <button onclick="verifyTeacherPin()" class="w-1/2 py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 transition">Login</button>
@@ -75,7 +75,8 @@
                     <img src="bharat_logo.jpeg" alt="Bharat Logo" class="h-full w-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-xs font-bold text-blue-900\'>BHARAT CENTER</span>';">
                 </div>
                 <div>
-                    <h1 class="text-base font-bold text-blue-900 tracking-tight" id="main-site-title" data-translate="site_title">ભારત એજ્યુકેશન સેન્ટર</h1>
+                    <!-- Title made larger -->
+                    <h1 class="text-lg font-black text-blue-900 tracking-tight" id="main-site-title" data-translate="site_title">ભારત એજ્યુકેશન સેન્ટર</h1>
                     <p class="text-[11px] text-slate-500">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                 </div>
             </div>
@@ -123,7 +124,7 @@
                     <p data-translate="rule_1">૧. દરેક સાચા પ્રશ્નનો ૧ ગુણ (1 Mark) છે.</p>
                     <p>૨. પાસ થવા માટે ઓછામાં ઓછા <b id="rule-pass-pct" class="text-blue-600">50%</b> ગુણ લાવવા જરૂરી છે.</p>
                     <p data-translate="rule_3">૩. દરેક વિદ્યાર્થી દરેક ચેપ્ટરનો ૧-૧ અટેમ્પટ આપી શકશે.</p>
-                    <p data-translate="rule_4">૪. ટેસ્ટ આપતી વખતે પેજ રીફ્રેશ કરવું કે નવી ટેબ ખોલવી નહીં.</p>
+                    <p data-translate="rule_4">૪. ટેસ્ટ આપતી વખતે પેજ રિફ્રેશ કરવું કે નવી ટેબ ખોલવી નહીં.</p>
                 </div>
 
                 <button onclick="proceedToStudentNameModal()" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl text-sm shadow-lg hover:bg-blue-700 transition">
@@ -131,8 +132,8 @@
                 </button>
             </div>
 
-            <!-- Student Name Entry & In-Page Retake Foreground Modal (z-[9990]) -->
-            <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9990] modal-center p-4">
+            <!-- Student Name Entry & In-Page Retake Foreground Modal (z-[9998]) -->
+            <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-[9998] modal-center p-4">
                 <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4">
                     <h3 class="text-lg font-bold text-slate-900" id="active-test-modal-title">ટેસ્ટ નામ</h3>
                     <p class="text-xs text-slate-500" data-translate="enter_name_prompt">તમારું આખું નામ દાખલ કરો:</p>
@@ -330,11 +331,9 @@
     </main>
 
     <script>
-        // Custom In-Page Foreground Alert System
         function showAlert(msg, isError = false) {
             document.getElementById('custom-alert-text').innerText = msg;
-            const iconWrapper = document.getElementById('alert-icon-wrapper');
-            iconWrapper.className = isError 
+            document.getElementById('alert-icon-wrapper').className = isError 
                 ? "w-12 h-12 mx-auto rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xl"
                 : "w-12 h-12 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl";
             document.getElementById('custom-alert-modal').classList.remove('hidden');
@@ -343,7 +342,6 @@
             document.getElementById('custom-alert-modal').classList.add('hidden');
         }
 
-        // Teacher Login Modal Handlers
         function openTeacherLoginModal() {
             const urlParams = new URLSearchParams(window.location.search);
             if(urlParams.get('mode') === 'student' || urlParams.get('view') === 'student') {
@@ -370,7 +368,6 @@
             }
         }
 
-        // Language Engine
         let currentLang = 'gu';
         const translations = {
             gu: {
@@ -430,7 +427,6 @@
             });
         }
 
-        // Security Link Detection (URL Query Mode)
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             if(urlParams.get('mode') === 'student' || urlParams.get('view') === 'student') {
@@ -440,18 +436,16 @@
             loadResultsFromSupabase();
         });
 
-        // Anti-refresh & Security Guard
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
             if (e.key === 'F12' || (e.ctrlKey && ['u','c','i','s'].includes(e.key))) e.preventDefault();
         });
 
-        // Supabase Init
         const SUPABASE_URL = 'https://fixnefvoznegothpmehu.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpeG5lZnZvem5lZ290aHBtZWh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwOTU0MzQsImV4cCI6MjEwNzY3MTQzNH0.zjydOx0wP9KFY1KiP2iaNiis_rGQ-bLPGKleUsXIiFI';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let testsDB = [], resultsDB = [], draftQuestions = [], selectedTestIdx = null, activeStudentName = "", runningQuizData = [], studentAnswers = {}, editingTestId = null;
+        let testsDB = [], resultsDB = [], draftQuestions = [], selectedTestIdx = null, activeStudentName = "", runningQuizData = [], studentAnswers = {};
 
         function showStudentPortal() {
             document.getElementById('student-portal-view').classList.remove('hidden');
@@ -561,8 +555,13 @@
 
         async function sendRetakeRequestFromModal() {
             const targetTest = testsDB[selectedTestIdx];
-            await supabaseClient.from('retake_requests').insert([{ student_name: activeStudentName, test_name: targetTest.title, status: 'pending' }]);
-            showAlert(`Re-test request sent to teacher for ${activeStudentName}!`);
+            const { error } = await supabaseClient.from('retake_requests').insert([{ student_name: activeStudentName, test_name: targetTest.title, status: 'pending' }]);
+            if(error) {
+                showAlert('Error sending request. Check Supabase RLS policies!', true);
+            } else {
+                showAlert(`Re-test request sent to teacher for ${activeStudentName}!`);
+                closeStudentModal();
+            }
             loadRetakeRequests();
         }
 
