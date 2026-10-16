@@ -8,8 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Hind+Vadodara:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Literata & Rubik -->
+    <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- SheetJS & html2canvas -->
@@ -17,7 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { 
-            font-family: 'Roboto', 'Hind Vadodara', Arvo;
+            font-family: 'Literata', 'Rubik', sans-serif;
             user-select: none;
             -webkit-user-select: none;
             background-color: #f8fafc;
@@ -59,7 +59,7 @@
                 <h3 class="text-base font-bold text-slate-900">Teacher Login</h3>
                 <p class="text-xs text-slate-500 mt-1">Admin Panel mate Password/PIN nako:</p>
             </div>
-            <input type="password" id="teacher-pin-input" placeholder="Enter PIN" class="w-full text-center px-4 py-3 rounded-xl border border-slate-300 text-base font-bold tracking-widest outline-none focus:ring-2 focus:ring-slate-900">
+            <input type="password" id="teacher-pin-input" placeholder="Enter PIN (Default: 1234)" class="w-full text-center px-4 py-3 rounded-xl border border-slate-300 text-base font-bold tracking-widest outline-none focus:ring-2 focus:ring-slate-900">
             <div class="flex gap-2 pt-1">
                 <button onclick="closeTeacherLoginModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition">Cancel</button>
                 <button onclick="verifyTeacherPin()" class="w-1/2 py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 transition">Login</button>
@@ -75,7 +75,8 @@
                     <img src="bharat_logo.jpeg" alt="Bharat Logo" class="h-full w-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-xs font-bold text-blue-900\'>BHARAT CENTER</span>';">
                 </div>
                 <div>
-                    <h1 class="text-lg font-black text-blue-900 tracking-tight" id="main-site-title" data-translate="site_title">ભારત એજ્યુકેશન સેન્ટર</h1>
+                    <!-- Title font size: Change 'text-xl' to 'text-lg', 'text-xl', or 'text-2xl' as needed -->
+                    <h1 class="text-xl font-black text-blue-900 tracking-tight" id="main-site-title" data-translate="site_title">ભારત એજ્યુકેશન સેન્ટર</h1>
                     <p class="text-[11px] text-slate-500">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                 </div>
             </div>
@@ -173,36 +174,26 @@
             <!-- Student Result Screen & Perfect Score Card -->
             <div id="student-result-card" class="hidden bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-xl text-center space-y-5 max-w-lg mx-auto">
                 <div id="printable-congrats-card" class="p-6 rounded-2xl border bg-slate-50 border-slate-200 shadow-sm space-y-4">
-                    <!-- 1. Logo -->
                     <div class="h-14 w-auto max-w-[200px] mx-auto bg-transparent flex items-center justify-center">
                         <img src="bharat_logo.jpeg" alt="Logo" class="h-full w-full object-contain">
                     </div>
-                    
-                    <!-- 2. Header & Address -->
                     <div>
                         <h2 class="text-lg font-black text-blue-900 tracking-tight">BHARAT EDUCATION CENTER</h2>
                         <p class="text-[11px] text-slate-500 font-medium">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                     </div>
-
                     <div class="border-t border-slate-200 pt-3">
                         <span class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1 rounded-full uppercase tracking-wider">Test Report Card</span>
                     </div>
-
-                    <!-- 3. Student & Test Name -->
                     <div class="bg-white p-3 rounded-xl border border-slate-200 text-left space-y-1">
                         <p class="text-xs text-slate-600">Student Name: <b id="res-student-name" class="text-slate-900 font-bold">--</b></p>
                         <p class="text-xs text-slate-600">Chapter / Test: <b id="res-test-name" class="text-blue-700 font-bold">--</b></p>
                     </div>
-
-                    <!-- 4. Score Grid -->
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 pt-1">
                         <div class="bg-white p-3 rounded-xl border border-slate-200"><span class="text-[10px] text-slate-400 block font-bold" data-translate="score_lbl">ગુણ</span><span id="res-score" class="text-base font-black text-blue-600">0</span></div>
                         <div class="bg-white p-3 rounded-xl border border-slate-200"><span class="text-[10px] text-slate-400 block font-bold" data-translate="pct_lbl">ટકાવારી</span><span id="res-pct" class="text-base font-black text-emerald-600">0%</span></div>
                         <div class="bg-white p-3 rounded-xl border border-slate-200"><span class="text-[10px] text-slate-400 block font-bold" data-translate="grade_lbl">ગ્રેડ</span><span id="res-grade" class="text-base font-black text-indigo-600">A</span></div>
                         <div class="bg-white p-3 rounded-xl border border-slate-200"><span class="text-[10px] text-slate-400 block font-bold" data-translate="status_lbl">સ્ટેટસ</span><span id="res-status" class="text-base font-black">PASS</span></div>
                     </div>
-
-                    <!-- 5. Dynamic Remarks / Congrats -->
                     <div id="congrats-remarks-box" class="p-3 rounded-xl border text-xs font-bold text-center">
                         <span id="congrats-main-title">--</span>
                     </div>
@@ -376,7 +367,7 @@
         }
         function verifyTeacherPin() {
             const pin = document.getElementById('teacher-pin-input').value;
-            if(pin === "98732") {
+            if(pin === "1234") {
                 closeTeacherLoginModal();
                 document.getElementById('student-portal-view').classList.add('hidden');
                 document.getElementById('teacher-dashboard-view').classList.remove('hidden');
@@ -563,8 +554,14 @@
             document.getElementById('running-student-name').innerText = activeStudentName;
             document.getElementById('test-progress-counter').innerText = `0 / ${targetTest.questions.length}`;
 
-            runningQuizData = targetTest.questions.map((q, idx) => {
-                let opts = [{ text: q.correct, isCorrect: true }, { text: q.wrong1, isCorrect: false }, { text: q.wrong2, isCorrect: false }].sort(() => Math.random() - 0.5);
+            // SHUFFLE QUESTIONS AND OPTIONS FOR EVERY STUDENT & ATTEMPT
+            let shuffledQuestions = [...targetTest.questions].sort(() => Math.random() - 0.5);
+            runningQuizData = shuffledQuestions.map((q, idx) => {
+                let opts = [
+                    { text: q.correct, isCorrect: true }, 
+                    { text: q.wrong1, isCorrect: false }, 
+                    { text: q.wrong2, isCorrect: false }
+                ].sort(() => Math.random() - 0.5);
                 return { id: idx, question: q.q, options: opts, correctIndex: opts.findIndex(o => o.isCorrect) };
             });
 
@@ -657,7 +654,6 @@
             });
         }
 
-        // Admin Tab Engine Fix
         function switchAdminTab(tab) {
             ['builder','manager','records'].forEach(t => {
                 document.getElementById(`admin-tab-${t}`).classList.add('hidden');
