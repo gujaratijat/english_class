@@ -9,7 +9,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gujarati:wght@600;700;800&display=swap" rel="stylesheet">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- SheetJS & html2canvas -->
@@ -198,45 +198,68 @@
                 </form>
             </div>
 
-            <!-- Student Result Screen -->
+            <!-- Student Result Screen (Duolingo Style Certificate Layout) -->
             <div id="student-result-card" class="hidden space-y-6 max-w-xl mx-auto">
-                <div id="printable-congrats-card" class="bg-gradient-to-b from-slate-50 via-white to-blue-50/30 p-6 md:p-8 rounded-3xl border-2 border-blue-200 shadow-2xl space-y-5 text-center relative overflow-hidden">
-                    <div class="flex justify-between items-center border-b border-slate-200 pb-4 gap-2 flex-wrap">
-                        <div class="h-12 w-auto max-w-[150px] bg-transparent flex items-center justify-center">
-                            <img src="bharat_logo.jpeg" alt="Logo" class="h-full w-full object-contain">
+                <div id="printable-congrats-card" class="bg-white p-8 rounded-3xl border border-slate-200 shadow-2xl space-y-6 text-slate-800 w-full max-w-[600px] mx-auto">
+                    <!-- Certificate Header -->
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-auto max-w-[120px] flex items-center justify-center">
+                                <img src="bharat_logo.jpeg" alt="Logo" class="h-full w-full object-contain">
+                            </div>
                         </div>
-                        <div>
-                            <span id="res-medal-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold shadow-sm">
-                                <i id="res-medal-icon" class="fa-solid fa-medal"></i> <span id="res-medal-text">Certificate</span>
+                        <div class="text-right">
+                            <span class="text-xs font-black uppercase tracking-wider text-slate-400 block">OFFICIAL CERTIFICATE</span>
+                            <span id="res-medal-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold mt-1">
+                                <i id="res-medal-icon" class="fa-solid fa-award"></i> <span id="res-medal-text">VERIFIED TEST RESULT</span>
                             </span>
                         </div>
                     </div>
 
-                    <div>
-                        <h2 class="official-title text-xl font-black text-blue-950 tracking-tight">BHARAT EDUCATION CENTER</h2>
-                        <p class="text-[11px] text-slate-500 font-medium">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
+                    <!-- Main Center Title -->
+                    <div class="text-center space-y-1">
+                        <h2 class="official-title text-2xl font-black text-blue-900 tracking-tight">BHARAT EDUCATION CENTER</h2>
+                        <p class="text-xs text-slate-500 font-medium">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                     </div>
 
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm text-left space-y-1.5">
-                        <div class="flex justify-between text-xs text-slate-700 border-b border-slate-100 pb-1.5">
-                            <span>Student Name:</span>
-                            <b id="res-student-name" class="text-slate-900 font-bold">--</b>
+                    <!-- Student Info Details -->
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 text-xs">
+                        <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
+                            <span class="text-slate-500 font-semibold">Student Name:</span>
+                            <b id="res-student-name" class="text-slate-900 font-bold text-sm">--</b>
                         </div>
-                        <div class="flex justify-between text-xs text-slate-700 border-b border-slate-100 pb-1.5">
-                            <span>Test Chapter:</span>
+                        <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
+                            <span class="text-slate-500 font-semibold">Test / Chapter:</span>
                             <b id="res-test-name" class="text-blue-700 font-bold">--</b>
                         </div>
-                        <div class="flex justify-between text-xs text-slate-700">
-                            <span>Submission Timestamp:</span>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500 font-semibold">Submission Date & Time:</span>
                             <b id="res-timestamp" class="text-slate-800 font-medium">--</b>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm"><span class="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Score</span><span id="res-score" class="text-base font-black text-blue-600">0</span></div>
-                        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm"><span class="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Percentage</span><span id="res-pct" class="text-base font-black text-emerald-600">0%</span></div>
-                        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm"><span class="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Grade</span><span id="res-grade" class="text-base font-black text-indigo-600">A</span></div>
-                        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm"><span class="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Status</span><span id="res-status" class="text-base font-black">PASS</span></div>
+                    <!-- Overall Score Box (Duolingo Style) -->
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-2xl border border-blue-100 flex items-center justify-between">
+                        <div class="text-left space-y-1">
+                            <span class="text-[11px] font-black uppercase tracking-wider text-blue-800">Overall Score Achieved</span>
+                            <div class="text-3xl font-black text-blue-900" id="res-score">0 / 0</div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold text-slate-500 block">Percentage</span>
+                            <div class="text-2xl font-black text-emerald-600" id="res-pct">0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Subscores Grid -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-center">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Grade Performance</span>
+                            <span id="res-grade" class="text-xl font-black text-indigo-600">--</span>
+                        </div>
+                        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-center">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Status Qualification</span>
+                            <span id="res-status" class="text-xl font-black">--</span>
+                        </div>
                     </div>
 
                     <div id="congrats-remarks-box" class="p-3.5 rounded-2xl border text-xs font-bold text-center shadow-sm">
@@ -245,8 +268,8 @@
                 </div>
 
                 <div class="flex flex-wrap gap-3 justify-center">
-                    <button onclick="shareResultAsJPGWhatsApp()" class="px-5 py-3 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 transition flex items-center gap-2 shadow-md">
-                        <i class="fa-brands fa-whatsapp text-sm"></i> Share Certificate JPG
+                    <button onclick="shareResultAsPNGWhatsApp()" class="px-5 py-3 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 transition flex items-center gap-2 shadow-md">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Share Certificate PNG
                     </button>
                     <button onclick="showStudentPortal()" class="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Go to Home Screen</button>
                 </div>
@@ -267,7 +290,7 @@
                     <h2 class="official-title font-bold text-base flex items-center gap-2"><i class="fa-solid fa-user-shield text-blue-400"></i> Teacher Control Center (Admin Panel)</h2>
                     <p class="text-xs text-slate-400">Manage Tests, Enable/Disable, Retake Requests & Reports</p>
                 </div>
-                <button onclick="showStudentPortal()" class="text-xs bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl border border-slate-700 transition font-medium">Logout / Exit</button>
+                <button onclick="logoutTeacher()" class="text-xs bg-rose-600 hover:bg-rose-700 px-4 py-2 rounded-xl transition font-medium">Logout / Exit</button>
             </div>
 
             <!-- Retake Request Center -->
@@ -337,14 +360,14 @@
 
             <!-- TAB 3: Records & Failed Analysis -->
             <div id="admin-tab-records" class="hidden space-y-6">
-                <!-- Failed Students Expandable Section -->
+                <!-- Failed Students Expandable Section (Follow-up list) -->
                 <div class="bg-rose-50 border border-rose-200 p-6 rounded-3xl space-y-4 shadow-sm">
                     <h3 class="font-bold text-rose-900 text-sm flex items-center gap-2">
-                        <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Failed Students & Weakness Analysis (Expandable Dropdowns)
+                        <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Failed Students & Weakness Analysis (Follow-up List)
                     </h3>
-                    <p class="text-xs text-rose-700">Tap on any student below to inspect which specific questions they answered incorrectly so you can re-teach:</p>
+                    <p class="text-xs text-rose-700">Tap on any student to inspect wrong answers. Click 'Mark as Followed Up' to remove from this follow-up list without deleting the main database record:</p>
                     <div id="failed-students-accordion-list" class="space-y-3">
-                        <p class="text-xs text-slate-400 italic">No failed student records found.</p>
+                        <p class="text-xs text-slate-400 italic">No failed student records pending follow-up.</p>
                     </div>
                 </div>
 
@@ -376,7 +399,7 @@
                                     <h3 class="font-bold text-slate-900 text-sm">Student Progress Report Card</h3>
                                     <p class="text-xs text-blue-700 font-bold mt-0.5">Student Name: <span id="report-card-student-name">--</span></p>
                                 </div>
-                                <button onclick="shareReportCardAsJPGWhatsApp()" class="px-3.5 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 transition no-print flex items-center gap-1.5 shadow-sm"><i class="fa-brands fa-whatsapp"></i> Share JPG</button>
+                                <button onclick="shareReportCardAsJPGWhatsApp()" class="px-3.5 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 transition no-print flex items-center gap-1.5 shadow-sm"><i class="fa-brands fa-whatsapp"></i> Share PNG</button>
                             </div>
                             <div id="student-individual-report-content" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
                         </div>
@@ -388,14 +411,15 @@
                                         <th class="p-3 font-bold border-b">Timestamp</th>
                                         <th class="p-3 font-bold border-b">Student Name</th>
                                         <th class="p-3 font-bold border-b">Chapter / Test</th>
-                                        <th class="p-3 font-bold border-b">Score / Attempt</th>
+                                        <th class="p-3 font-bold border-b">Score</th>
+                                        <th class="p-3 font-bold border-b">Attempt</th>
                                         <th class="p-3 font-bold border-b">Percentage</th>
                                         <th class="p-3 font-bold border-b">Status</th>
                                         <th class="p-3 font-bold border-b no-print">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="student-results-table-body">
-                                    <tr><td colspan="7" class="p-4 text-center text-slate-400">Loading results...</td></tr>
+                                    <tr><td colspan="8" class="p-4 text-center text-slate-400">Loading results...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -418,31 +442,49 @@
             document.getElementById('custom-alert-modal').classList.add('hidden');
         }
 
+        // Fast Login Modal Handling
         function openTeacherLoginModal() {
             const urlParams = new URLSearchParams(window.location.search);
             if(urlParams.get('mode') === 'student' || urlParams.get('view') === 'student') {
                 showAlert('Access Denied: Teacher Dashboard is disabled in student link view!', true);
                 return;
             }
-            document.getElementById('teacher-pin-input').value = '';
+            const pinInput = document.getElementById('teacher-pin-input');
+            pinInput.value = '';
             document.getElementById('teacher-login-modal').classList.remove('hidden');
+            setTimeout(() => { pinInput.focus(); }, 100);
         }
+
         function closeTeacherLoginModal() {
             document.getElementById('teacher-login-modal').classList.add('hidden');
         }
+
         function verifyTeacherPin() {
             const pin = document.getElementById('teacher-pin-input').value;
             if(pin === "98732") {
+                localStorage.setItem('BEC_Teacher_LoggedIn', 'true');
                 closeTeacherLoginModal();
                 document.getElementById('student-portal-view').classList.add('hidden');
                 document.getElementById('teacher-dashboard-view').classList.remove('hidden');
                 loadResultsFromSupabase();
                 renderAdminTestsManagerList();
                 loadRetakeRequests();
-            } else {
+            } else if(pin.length >= 5) {
                 showAlert("Incorrect Teacher PIN! Try again.", true);
             }
         }
+
+        function logoutTeacher() {
+            localStorage.removeItem('BEC_Teacher_LoggedIn');
+            showStudentPortal();
+        }
+
+        // Instant PIN Verification on Type
+        document.getElementById('teacher-pin-input').addEventListener('input', (e) => {
+            if (e.target.value === "98732") {
+                verifyTeacherPin();
+            }
+        });
 
         let currentLang = 'en';
         function setLanguage(lang) {
@@ -460,6 +502,12 @@
             checkStudentIdentityDisplay();
             loadTestsFromSupabase();
             loadResultsFromSupabase();
+
+            // Retain Teacher Login Session on Refresh/Tab Switches
+            if (localStorage.getItem('BEC_Teacher_LoggedIn') === 'true' && urlParams.get('mode') !== 'student') {
+                document.getElementById('student-portal-view').classList.add('hidden');
+                document.getElementById('teacher-dashboard-view').classList.remove('hidden');
+            }
         });
 
         document.addEventListener('contextmenu', e => e.preventDefault());
@@ -473,6 +521,7 @@
 
         let testsDB = [], resultsDB = [], draftQuestions = [], selectedTestIdx = null, activeStudentName = "", runningQuizData = [], studentAnswers = {}, editingTestId = null;
         let testTimerInterval = null, timeRemainingSeconds = 0, cheatWarnings = 0;
+        let dismissedFollowupIds = JSON.parse(localStorage.getItem('BEC_Dismissed_Followups') || '[]');
 
         function checkStudentIdentityDisplay() {
             let savedName = localStorage.getItem('BEC_Student_Name');
@@ -658,7 +707,8 @@
         }
 
         function handleVisibilityChange() {
-            if (document.hidden) {
+            // Anti-cheat strict check ONLY for Active Student Quiz mode
+            if (document.hidden && !document.getElementById('active-test-container').classList.contains('hidden')) {
                 cheatWarnings++;
                 if(cheatWarnings < 3) {
                     showAlert(`⚠️ Warning ${cheatWarnings}/3: Do not switch tabs or minimize browser during the test!`, true);
@@ -778,7 +828,7 @@
             document.getElementById('res-test-name').innerText = targetTest.title;
             document.getElementById('res-student-name').innerText = activeStudentName;
             document.getElementById('res-timestamp').innerText = submissionTimestamp;
-            document.getElementById('res-score').innerText = `${score}/${total}`;
+            document.getElementById('res-score').innerText = `${score} / ${total}`;
             document.getElementById('res-pct').innerText = `${percentage}%`;
             document.getElementById('res-grade').innerText = grade;
             document.getElementById('res-status').innerText = status;
@@ -792,17 +842,17 @@
             if(status === 'PASS') {
                 medalBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold shadow-sm bg-amber-100 text-amber-800 border border-amber-300";
                 medalIcon.className = "fa-solid fa-award text-amber-600";
-                medalText.innerText = "Verified Certificate & Gold Medal Badge";
+                medalText.innerText = "VERIFIED TEST RESULT";
                 
                 remarksBox.className = "p-3.5 rounded-2xl border text-xs font-bold text-center bg-emerald-50 border-emerald-300 text-emerald-800 shadow-sm";
-                remarksText.innerText = "🎉 Congratulations! You Passed the Test Successfully with Excellence!";
+                remarksText.innerText = "🎉 Congratulations! You Passed the Test Successfully!";
             } else {
                 medalBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold shadow-sm bg-rose-100 text-rose-800 border border-rose-300";
                 medalIcon.className = "fa-solid fa-triangle-exclamation text-rose-600";
-                medalText.innerText = "Attempt Completion Card";
+                medalText.innerText = "ATTEMPT COMPLETION RECORD";
                 
                 remarksBox.className = "p-3.5 rounded-2xl border text-xs font-bold text-center bg-amber-50 border-amber-300 text-amber-800 shadow-sm";
-                remarksText.innerText = "⚠️ Need Improvement! Keep Trying & Practice More to Pass.";
+                remarksText.innerText = "⚠️ Need Improvement! Keep Trying & Practice More.";
             }
 
             const solutionList = document.getElementById('solution-review-list');
@@ -828,20 +878,20 @@
             loadResultsFromSupabase();
         }
 
-        function shareResultAsJPGWhatsApp() {
+        function shareResultAsPNGWhatsApp() {
             html2canvas(document.getElementById('printable-congrats-card'), { backgroundColor: '#ffffff', scale: 2 }).then(canvas => {
                 canvas.toBlob(blob => {
-                    const file = new File([blob], `${activeStudentName}-Certificate.jpg`, { type: "image/jpeg" });
+                    const file = new File([blob], `${activeStudentName}-Certificate.png`, { type: "image/png" });
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         navigator.share({ files: [file], title: 'Test Certificate', text: `Bharat Education Center Certificate for ${activeStudentName}` });
                     } else {
                         const link = document.createElement('a');
-                        link.download = `${activeStudentName}-Certificate.jpg`;
-                        link.href = canvas.toDataURL('image/jpeg');
+                        link.download = `${activeStudentName}-Certificate.png`;
+                        link.href = canvas.toDataURL('image/png');
                         link.click();
                         showAlert('Certificate Image Downloaded Successfully!');
                     }
-                }, 'image/jpeg');
+                }, 'image/png');
             });
         }
 
@@ -904,10 +954,11 @@
 
         function renderFailedStudentsAccordion() {
             const container = document.getElementById('failed-students-accordion-list');
-            const failedResults = resultsDB.filter(r => r.status === 'FAIL');
+            // Filter failed results excluding those marked as followed-up/dismissed by teacher
+            const failedResults = resultsDB.filter(r => r.status === 'FAIL' && !dismissedFollowupIds.includes(r.id));
 
             if (failedResults.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-500 italic">No failed student records found.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-500 italic">No failed student records pending follow-up.</p>`;
                 return;
             }
 
@@ -922,7 +973,7 @@
                         </div>
                     `).join('');
                 } else {
-                    wrongItemsHTML = `<p class="text-xs text-slate-500 italic">Detailed wrong answer logs not available for this legacy record. (Will appear for new submissions).</p>`;
+                    wrongItemsHTML = `<p class="text-xs text-slate-500 italic">Detailed wrong answer logs not available for this record.</p>`;
                 }
 
                 return `
@@ -931,7 +982,7 @@
                             <div>
                                 <span class="font-bold text-slate-900 text-sm">${res.student}</span>
                                 <span class="text-xs text-blue-700 font-semibold ml-2">(${res.testName})</span>
-                                <span class="block text-[11px] text-slate-500">Submitted: ${res.date} | Score: <b class="text-rose-600">${res.score} (${res.pct}%)</b></span>
+                                <span class="block text-[11px] text-slate-500">Submitted: ${res.date} | Score: <b class="text-rose-600">${res.score} (${res.pct}%)</b> | Attempt: <b>#${res.attempt || 1}</b></span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="text-xs font-bold text-rose-700 bg-rose-100 px-3 py-1 rounded-full">FAIL</span>
@@ -942,12 +993,23 @@
                             <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wide mb-2">Incorrectly Answered Questions (For Re-teaching):</h4>
                             ${wrongItemsHTML}
                             <div class="flex justify-end pt-2">
-                                <button onclick="deleteSingleResult(${res.id})" class="px-3.5 py-1.5 bg-rose-600 text-white rounded-xl text-xs font-bold hover:bg-rose-700 transition">Delete Record</button>
+                                <button onclick="dismissFollowupRecord(${res.id})" class="px-3 py-1.5 bg-amber-600 text-white rounded-xl text-xs font-bold hover:bg-amber-700 transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-check-double"></i> Mark as Followed Up (Dismiss)
+                                </button>
                             </div>
                         </div>
                     </div>
                 `;
             }).join('');
+        }
+
+        function dismissFollowupRecord(recordId) {
+            if (!dismissedFollowupIds.includes(recordId)) {
+                dismissedFollowupIds.push(recordId);
+                localStorage.setItem('BEC_Dismissed_Followups', JSON.stringify(dismissedFollowupIds));
+                showAlert('Entry removed from follow-up analysis! Main result record remains saved in database.');
+                renderFailedStudentsAccordion();
+            }
         }
 
         function toggleAccordion(idx) {
@@ -1168,16 +1230,27 @@
 
         function renderAdminResultsTable(dataList) {
             const tbody = document.getElementById('student-results-table-body');
-            tbody.innerHTML = dataList.map(r => `<tr class="border-b hover:bg-slate-50"><td class="p-3 text-slate-600">${r.date}</td><td class="p-3 font-bold">${r.student}</td><td class="p-3 text-blue-600">${r.testName}</td><td class="p-3">${r.score} (#${r.attempt || 1})</td><td class="p-3">${r.pct}%</td><td class="p-3 font-bold ${r.status === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}">${r.status}</td><td class="p-3 no-print"><button onclick="deleteSingleResult(${r.id})" class="px-2.5 py-1 bg-rose-50 text-rose-700 text-[11px] font-bold rounded-lg hover:bg-rose-100">Delete</button></td></tr>`).join('');
+            tbody.innerHTML = dataList.map(r => `
+                <tr class="border-b hover:bg-slate-50">
+                    <td class="p-3 text-slate-600">${r.date}</td>
+                    <td class="p-3 font-bold">${r.student}</td>
+                    <td class="p-3 text-blue-600">${r.testName}</td>
+                    <td class="p-3 font-bold">${r.score}</td>
+                    <td class="p-3 font-semibold text-slate-700">Attempt #${r.attempt || 1}</td>
+                    <td class="p-3">${r.pct}%</td>
+                    <td class="p-3 font-bold ${r.status === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}">${r.status}</td>
+                    <td class="p-3 no-print"><button onclick="deleteSingleResult(${r.id})" class="px-2.5 py-1 bg-rose-50 text-rose-700 text-[11px] font-bold rounded-lg hover:bg-rose-100">Delete</button></td>
+                </tr>
+            `).join('');
         }
 
         async function deleteSingleResult(id) {
-            if(confirm('Are you sure you want to delete this record?')) { 
+            if(confirm('Are you sure you want to delete this main database record?')) { 
                 const { error } = await supabaseClient.from('results').delete().eq('id', id); 
                 if(error) {
                     showAlert('Error deleting record! Check Supabase policies.', true);
                 } else {
-                    showAlert('Record deleted successfully!');
+                    showAlert('Main database record deleted successfully!');
                     loadResultsFromSupabase();
                 }
             }
