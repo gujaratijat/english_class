@@ -1,25 +1,23 @@
 <!DOCTYPE html>
-<html lang="gu">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bharat Education Center - Online Test Portal</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
+    <!-- Font Awesome for UI icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gujarati:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Supabase JS Client CDN -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase JavaScript Client SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- SheetJS & html2canvas -->
+    <!-- SheetJS for Excel / CSV file parsing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         body { 
-            font-family: 'Inter', 'Noto Sans Gujarati', system-ui, -apple-system, sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: #f8fafc;
             color: #1e293b;
             font-size: 14px;
@@ -33,6 +31,7 @@
             align-items: center;
             justify-content: center;
         }
+        /* Clean Print Styling for Performance Reports */
         @media print {
             body { background: white !important; color: black !important; }
             body * { visibility: hidden !important; }
@@ -51,11 +50,11 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- Custom Alert Popup Modal -->
+    <!-- Custom Alert Modal Component -->
     <div id="custom-alert-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99999] modal-center p-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4 relative">
             <button onclick="closeCustomAlert()" class="absolute top-3 right-3 text-slate-400 hover:text-slate-600 font-bold text-sm"><i class="fa-solid fa-xmark"></i></button>
-            <div id="alert-icon-wrapper" class="w-12 h-12 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
+            <div class="w-12 h-12 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-circle-info"></i>
             </div>
             <p id="custom-alert-text" class="text-sm font-semibold text-slate-800">--</p>
@@ -63,7 +62,7 @@
         </div>
     </div>
 
-    <!-- Custom Confirmation Modal -->
+    <!-- Custom Confirm Modal Component -->
     <div id="custom-confirm-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99999] modal-center p-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4 relative">
             <button onclick="closeCustomConfirm()" class="absolute top-3 right-3 text-slate-400 hover:text-slate-600 font-bold text-sm"><i class="fa-solid fa-xmark"></i></button>
@@ -72,13 +71,13 @@
             </div>
             <p id="custom-confirm-text" class="text-sm font-semibold text-slate-800">--</p>
             <div class="flex gap-2">
-                <button id="confirm-cancel-btn" onclick="closeCustomConfirm()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition" data-translate="cancel">રદ કરો</button>
-                <button id="confirm-ok-btn" class="w-1/2 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition" data-translate="submit_anyway">Submit Anyway</button>
+                <button onclick="closeCustomConfirm()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition">Cancel</button>
+                <button id="confirm-ok-btn" class="w-1/2 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition">Proceed</button>
             </div>
         </div>
     </div>
 
-    <!-- Teacher Login Modal UI -->
+    <!-- Teacher PIN Login Modal -->
     <div id="teacher-login-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99999] modal-center p-4">
         <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4 relative">
             <button onclick="closeTeacherLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -86,18 +85,18 @@
                 <i class="fa-solid fa-lock"></i>
             </div>
             <div>
-                <h3 class="text-base font-bold text-slate-900" data-translate="teacher_login">Teacher Login</h3>
-                <p class="text-xs text-slate-500 mt-1" data-translate="enter_pin">Please Enter Login PIN:</p>
+                <h3 class="text-base font-bold text-slate-900">Teacher Login</h3>
+                <p class="text-xs text-slate-500 mt-1">Please Enter Admin PIN (98732):</p>
             </div>
-            <input type="password" id="teacher-pin-input" inputmode="numeric" pattern="[0-9]*" placeholder="Enter PIN" class="w-full text-center px-4 py-3 rounded-xl border border-slate-300 text-base font-bold tracking-widest outline-none focus:ring-2 focus:ring-blue-600">
+            <input type="password" id="teacher-pin-input" inputmode="numeric" placeholder="Enter PIN" class="w-full text-center px-4 py-3 rounded-xl border border-slate-300 text-base font-bold tracking-widest outline-none focus:ring-2 focus:ring-blue-600">
             <div class="flex gap-2 pt-1">
-                <button onclick="closeTeacherLoginModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition" data-translate="cancel">Cancel</button>
-                <button onclick="verifyTeacherPin()" class="w-1/2 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition" data-translate="login">Login</button>
+                <button onclick="closeTeacherLoginModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition">Cancel</button>
+                <button onclick="verifyTeacherPin()" class="w-1/2 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition">Login</button>
             </div>
         </div>
     </div>
 
-    <!-- Navigation Header -->
+    <!-- Main Navigation Header -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm no-print">
         <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center gap-4 flex-wrap">
             <div class="flex items-center gap-3">
@@ -111,41 +110,37 @@
             </div>
             
             <div class="flex items-center gap-2 shrink-0 flex-wrap">
-                <button id="nav-student-btn" onclick="showStudentPortal()" class="px-3 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-100 transition shadow-sm">
-                    <i class="fa-solid fa-user"></i> <span data-translate="student_portal">Student Portal</span>
+                <button id="nav-student-btn" onclick="showStudentPortal()" class="px-3.5 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-100 transition shadow-sm">
+                    <i class="fa-solid fa-user"></i> Student Portal
                 </button>
-                <button id="nav-teacher-btn" onclick="openTeacherLoginModal()" class="px-3 py-2 bg-slate-100 text-slate-800 text-xs font-bold rounded-xl hover:bg-slate-200 transition shadow-sm border border-slate-200">
-                    <i class="fa-solid fa-lock"></i> <span data-translate="teacher_dashboard">Teacher Dashboard</span>
+                <button id="nav-teacher-btn" onclick="openTeacherLoginModal()" class="px-3.5 py-2 bg-slate-100 text-slate-800 text-xs font-bold rounded-xl hover:bg-slate-200 transition shadow-sm border border-slate-200">
+                    <i class="fa-solid fa-lock"></i> Teacher Dashboard
                 </button>
-                <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
-                    <button onclick="setLanguage('en')" id="lang-en-btn" class="px-2.5 py-1 text-xs font-bold rounded-lg transition">EN</button>
-                    <button onclick="setLanguage('gu')" id="lang-gu-btn" class="px-2.5 py-1 text-xs font-bold rounded-lg transition">GJ</button>
-                </div>
             </div>
         </div>
     </header>
 
     <main class="max-w-5xl mx-auto px-4 py-8 w-full flex-grow">
 
-        <!-- STUDENT PORTAL -->
+        <!-- ================= STUDENT PORTAL VIEW ================= -->
         <div id="student-portal-view" class="space-y-6">
             <div id="student-test-select-screen" class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-4">
                 <div class="flex justify-between items-center flex-wrap gap-3">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-950" data-translate="select_test">Select Available Test:</h2>
-                        <p class="text-xs text-slate-500" data-translate="select_test_desc">Click 'Start Test' or view your completed score and retry status below.</p>
+                        <h2 class="text-xl font-bold text-slate-950">Select Available Test:</h2>
+                        <p class="text-xs text-slate-500">Click 'Start Test' or view your completed score below.</p>
                     </div>
                     <div class="bg-blue-50 px-3.5 py-2 rounded-xl border border-blue-200 text-xs text-blue-900">
-                        <span data-translate="student_label">Student</span>: <span id="current-logged-student" class="font-bold">Not Set</span> 
-                        <button onclick="changeStudentIdentity()" class="ml-2 text-blue-600 underline font-semibold hover:text-blue-800" data-translate="change_name">Change Name</button>
+                        Student: <span id="current-logged-student" class="font-bold">Not Set</span> 
+                        <button onclick="changeStudentIdentity()" class="ml-2 text-blue-600 underline font-semibold hover:text-blue-800">Change Name</button>
                     </div>
                 </div>
                 <div id="available-tests-list" class="space-y-3 pt-2">
-                    <p class="text-xs text-slate-400" data-translate="loading_tests">Loading tests...</p>
+                    <p class="text-xs text-slate-400">Loading available tests...</p>
                 </div>
             </div>
 
-            <!-- Test Rules Screen -->
+            <!-- Test Rules & Instructions Screen -->
             <div id="test-rules-screen" class="hidden bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-6">
                 <div class="text-center border-b border-slate-200 pb-4">
                     <h2 class="official-title text-xl font-bold text-blue-900">BHARAT EDUCATION CENTER</h2>
@@ -154,56 +149,52 @@
                 </div>
 
                 <div class="space-y-3 text-xs text-slate-700 bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                    <h3 class="font-bold text-slate-900 text-sm mb-2 border-b border-slate-200 pb-1" data-translate="instructions_title">Special Test Instructions:</h3>
-                    <p data-translate="rule_1">1. Each correct answer carries 1 Mark.</p>
-                    <p>2. <span data-translate="rule_2_prefix">Passing marks required:</span> <b id="rule-pass-pct" class="text-blue-600">50%</b>.</p>
-                    <p>3. <span data-translate="rule_3_prefix">Time Limit:</span> <b id="rule-time-limit" class="text-blue-600">Unlimited</b>.</p>
-                    <p data-translate="rule_4">4. Each student can attempt every chapter test once freely.</p>
+                    <h3 class="font-bold text-slate-900 text-sm mb-2 border-b border-slate-200 pb-1">Special Test Instructions:</h3>
+                    <p>1. Each correct answer carries 1 Mark.</p>
+                    <p>2. Passing marks required: <b id="rule-pass-pct" class="text-blue-600">50%</b>.</p>
+                    <p>3. Time Limit: <b id="rule-time-limit" class="text-blue-600">Unlimited</b>.</p>
+                    <p>4. Registered students can attempt tests.</p>
                 </div>
 
                 <div class="flex gap-2">
-                    <button onclick="showStudentPortal()" class="w-1/3 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs hover:bg-slate-200 transition" data-translate="cancel">Cancel</button>
-                    <button onclick="verifyAndStartStudentTestDirect()" class="w-2/3 py-3 bg-blue-600 text-white font-bold rounded-xl text-xs shadow-lg hover:bg-blue-700 transition" data-translate="start_test_btn">
-                        Start Test -> Proceed
-                    </button>
+                    <button onclick="showStudentPortal()" class="w-1/3 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs hover:bg-slate-200 transition">Cancel</button>
+                    <button onclick="verifyAndStartStudentTestDirect()" class="w-2/3 py-3 bg-blue-600 text-white font-bold rounded-xl text-xs shadow-lg hover:bg-blue-700 transition">Start Test -> Proceed</button>
                 </div>
             </div>
 
-            <!-- Student Name Modal -->
+            <!-- Student Name Verification Modal -->
             <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99998] modal-center p-4">
                 <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 text-center relative">
                     <button onclick="document.getElementById('student-name-modal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold"><i class="fa-solid fa-xmark"></i></button>
                     <div class="w-12 h-12 mx-auto rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-md">
                         <i class="fa-solid fa-user-graduate"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900" data-translate="modal_enter_name">Enter Your Registered Name</h3>
-                    <p class="text-xs text-slate-500" data-translate="modal_name_desc">Name must match the Student Master list added by your teacher.</p>
-                    <input type="text" id="student-entry-name" placeholder="e.g. Vikram Chaudhary" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm text-center outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400 font-bold">
-                    <button onclick="saveStudentIdentity()" class="w-full py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition" data-translate="modal_verify_btn">Verify Name & Start Test</button>
+                    <h3 class="text-lg font-bold text-slate-900">Enter Your Registered Name</h3>
+                    <p class="text-xs text-slate-500">Name must match the Student Master list added by your teacher.</p>
+                    <input type="text" id="student-entry-name" placeholder="e.g. Vikram Chaudhary" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm text-center outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                    <button onclick="saveStudentIdentity()" class="w-full py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition">Verify Name & Start Test</button>
                 </div>
             </div>
 
-            <!-- Active Test Container -->
+            <!-- Active Quiz Taking Screen -->
             <div id="active-test-container" class="hidden space-y-6">
                 <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 flex justify-between items-center shadow-sm sticky top-16 z-30">
                     <div>
                         <h2 class="font-bold text-blue-900 text-base" id="running-test-title">--</h2>
-                        <p class="text-xs text-blue-700"><span data-translate="student_label">Student</span>: <span id="running-student-name" class="font-semibold">--</span></p>
+                        <p class="text-xs text-blue-700">Student: <span id="running-student-name" class="font-semibold">--</span></p>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <span id="test-progress-counter" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full border border-blue-200">0 / 0 Answered</span>
-                    </div>
+                    <span id="test-progress-counter" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full border border-blue-200">0 / 0 Answered</span>
                 </div>
 
                 <form id="active-quiz-form" onsubmit="submitStudentQuiz(event)" class="space-y-4">
                     <div id="quiz-questions-wrapper" class="space-y-4"></div>
-                    <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition mt-6" data-translate="submit_test_btn">
+                    <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition mt-6">
                         <i class="fa-solid fa-paper-plane"></i> Submit Test
                     </button>
                 </form>
             </div>
 
-            <!-- Student Result Screen -->
+            <!-- Student Score Result Card -->
             <div id="student-result-card" class="hidden space-y-6 max-w-xl mx-auto">
                 <div id="printable-congrats-card" class="bg-white p-8 rounded-3xl border border-slate-200 shadow-2xl space-y-6 text-slate-800 w-full max-w-[600px] mx-auto">
                     <div class="flex justify-between items-center border-b border-slate-200 pb-4">
@@ -211,7 +202,7 @@
                             <img src="bharat_logo.jpeg" alt="Logo" class="h-full w-full object-contain">
                         </div>
                         <div class="text-right">
-                            <span class="text-xs font-black uppercase tracking-wider text-slate-400 block" data-translate="official_cert">OFFICIAL CERTIFICATE</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-slate-400 block">OFFICIAL CERTIFICATE</span>
                             <span id="res-medal-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold mt-1">
                                 <i id="res-medal-icon" class="fa-solid fa-award"></i> <span id="res-medal-text">VERIFIED TEST RESULT</span>
                             </span>
@@ -225,37 +216,37 @@
 
                     <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 text-xs">
                         <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
-                            <span class="text-slate-500 font-semibold" data-translate="table_student">Student Name:</span>
+                            <span class="text-slate-500 font-semibold">Student Name:</span>
                             <b id="res-student-name" class="text-slate-900 font-bold text-sm">--</b>
                         </div>
                         <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
-                            <span class="text-slate-500 font-semibold" data-translate="table_chapter">Test / Chapter:</span>
+                            <span class="text-slate-500 font-semibold">Test / Chapter:</span>
                             <b id="res-test-name" class="text-blue-700 font-bold">--</b>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-500 font-semibold" data-translate="submission_time">Submission Date & Time:</span>
+                            <span class="text-slate-500 font-semibold">Submission Date & Time:</span>
                             <b id="res-timestamp" class="text-slate-800 font-medium">--</b>
                         </div>
                     </div>
 
                     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-2xl border border-blue-100 flex items-center justify-between">
                         <div class="text-left space-y-1">
-                            <span class="text-[11px] font-black uppercase tracking-wider text-blue-800" data-translate="overall_score">Overall Score Achieved</span>
+                            <span class="text-[11px] font-black uppercase tracking-wider text-blue-800">Overall Score Achieved</span>
                             <div class="text-3xl font-black text-blue-900" id="res-score">0 / 0</div>
                         </div>
                         <div class="text-right">
-                            <span class="text-xs font-bold text-slate-500 block" data-translate="percentage_label">Percentage</span>
+                            <span class="text-xs font-bold text-slate-500 block">Percentage</span>
                             <div class="text-2xl font-black text-emerald-600" id="res-pct">0%</div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-center">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block" data-translate="grade_label">Grade Performance</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Grade Performance</span>
                             <span id="res-grade" class="text-xl font-black text-indigo-600">--</span>
                         </div>
                         <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-center">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block" data-translate="status_label">Status Qualification</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Status Qualification</span>
                             <span id="res-status" class="text-xl font-black">--</span>
                         </div>
                     </div>
@@ -267,13 +258,13 @@
 
                 <div class="flex flex-wrap gap-3 justify-center">
                     <button onclick="shareResultWhatsAppText()" class="px-5 py-3 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 transition flex items-center gap-2 shadow-md">
-                        <i class="fa-brands fa-whatsapp text-sm"></i> <span data-translate="share_whatsapp">WhatsApp Text Report Share</span>
+                        <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp Text Report Share
                     </button>
-                    <button onclick="showStudentPortal()" class="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition" data-translate="home_screen">Go to Home Screen</button>
+                    <button onclick="showStudentPortal()" class="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Go to Home Screen</button>
                 </div>
 
-                <div id="incorrect-solutions-container" class="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg space-y-3">
-                    <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 border-b pb-2" data-translate="incorrect_analysis">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg space-y-3">
+                    <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 border-b pb-2">
                         <i class="fa-solid fa-circle-xmark text-rose-500"></i> Incorrect Questions Analysis (Answer Key)
                     </h3>
                     <div id="solution-review-list" class="space-y-3"></div>
@@ -281,52 +272,52 @@
             </div>
         </div>
 
-        <!-- TEACHER ADMIN DASHBOARD -->
+        <!-- ================= TEACHER ADMIN DASHBOARD VIEW ================= -->
         <div id="teacher-dashboard-view" class="hidden space-y-6">
             <div class="flex justify-between items-center bg-white border border-slate-200 p-5 rounded-3xl shadow-sm flex-wrap gap-4">
                 <div>
-                    <h2 class="official-title font-bold text-base flex items-center gap-2 text-slate-900"><i class="fa-solid fa-user-shield text-blue-600"></i> <span data-translate="teacher_control">Teacher Control Center (Admin Panel)</span></h2>
-                    <p class="text-xs text-slate-500" data-translate="teacher_subtitle">Manage Students Master, Categories, Tests & Reports</p>
+                    <h2 class="official-title font-bold text-base flex items-center gap-2 text-slate-900"><i class="fa-solid fa-user-shield text-blue-600"></i> Teacher Control Center (Admin Panel)</h2>
+                    <p class="text-xs text-slate-500">Manage Students Master, Categories, Tests & Reports</p>
                 </div>
-                <button onclick="logoutTeacher()" class="text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 px-4 py-2.5 rounded-xl transition font-bold" data-translate="logout">Logout / Exit</button>
+                <button onclick="logoutTeacher()" class="text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 px-4 py-2.5 rounded-xl transition font-bold">Logout / Exit</button>
             </div>
 
-            <!-- Admin Navigation Tabs -->
+            <!-- Admin Navigation Tabs matching screenshot layout -->
             <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
-                <button onclick="switchAdminTab('student-master')" id="tab-btn-master" class="py-2.5 px-3 text-xs font-bold rounded-xl bg-blue-600 text-white transition shadow-sm" data-translate="tab_student_master">Students Master</button>
-                <button onclick="switchAdminTab('test-builder')" id="tab-btn-builder" class="py-2.5 px-3 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition" data-translate="tab_builder">Create / Edit Test</button>
-                <button onclick="switchAdminTab('test-manager')" id="tab-btn-manager" class="py-2.5 px-3 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition" data-translate="tab_manager">Manage Tests</button>
-                <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="py-2.5 px-3 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition" data-translate="tab_records">Student Results</button>
+                <button onclick="switchAdminTab('student-master')" id="tab-btn-master" class="py-2.5 px-3 text-xs font-bold rounded-xl bg-blue-600 text-white transition shadow-sm">Students Master</button>
+                <button onclick="switchAdminTab('test-builder')" id="tab-btn-builder" class="py-2.5 px-3 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition">Create / Edit Test</button>
+                <button onclick="switchAdminTab('test-manager')" id="tab-btn-manager" class="py-2.5 px-3 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition">Manage Tests</button>
+                <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="py-2.5 px-3 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition">Student Results</button>
             </div>
 
-            <!-- TAB 0: Student Master Management -->
+            <!-- TAB 0: Student Master Management (Fixed & Rebuilt) -->
             <div id="admin-tab-master" class="space-y-6">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="font-bold text-slate-800 text-sm" id="student-form-title" data-translate="add_student_title">Add New Student to Master List:</h3>
+                    <h3 class="font-bold text-slate-800 text-sm" id="student-form-title">Add New Student to Master List:</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <input type="text" id="new-master-student-input" placeholder="Student Full Name" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold">
                         <input type="text" id="new-master-student-category" placeholder="Category / Batch (e.g. Std 10)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold">
                         <div class="flex gap-2">
-                            <button id="save-student-btn" onclick="addStudentToMaster()" class="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm" data-translate="add_student_btn"><i class="fa-solid fa-user-plus"></i> Add Student</button>
-                            <button id="cancel-student-edit-btn" onclick="resetStudentForm()" class="hidden px-4 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs hover:bg-slate-200 transition" data-translate="cancel">Cancel</button>
+                            <button id="save-student-btn" onclick="addStudentToMaster()" class="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm"><i class="fa-solid fa-user-plus"></i> Add Student</button>
+                            <button id="cancel-student-edit-btn" onclick="resetStudentForm()" class="hidden px-4 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs hover:bg-slate-200 transition">Cancel</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3">
-                    <h3 class="font-bold text-slate-800 text-sm"><span data-translate="registered_list">Registered Students Master List</span> (<span id="master-student-count">0</span>):</h3>
+                    <h3 class="font-bold text-slate-800 text-sm">Registered Students Master List (<span id="master-student-count">0</span>):</h3>
                     <div id="master-students-list" class="space-y-2 text-xs">
-                        <p class="text-slate-400" data-translate="loading_master">Loading master students...</p>
+                        <p class="text-slate-400">Loading master students...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 1: Test Builder -->
+            <!-- TAB 1: Test Builder (Excel Upload & Manual Question Add) -->
             <div id="admin-tab-builder" class="hidden space-y-6">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
                     <div class="flex justify-between items-center">
-                        <h3 id="builder-mode-title" class="font-bold text-slate-800 text-sm" data-translate="test_info_title">1. Set Test Information:</h3>
-                        <button id="cancel-edit-btn" onclick="resetTestBuilder()" class="hidden text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-lg font-bold" data-translate="cancel_edit">Cancel Edit</button>
+                        <h3 id="builder-mode-title" class="font-bold text-slate-800 text-sm">1. Set Test Information:</h3>
+                        <button id="cancel-edit-btn" onclick="resetTestBuilder()" class="hidden text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-lg font-bold">Cancel Edit</button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <input type="text" id="new-test-title-input" placeholder="e.g. Chapter 1 Test" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
@@ -337,39 +328,39 @@
                 </div>
 
                 <div class="bg-emerald-50 border border-emerald-200 p-6 rounded-3xl space-y-3 shadow-sm">
-                    <h3 class="font-bold text-emerald-900 text-sm"><i class="fa-solid fa-file-excel"></i> <span data-translate="excel_import_title">Option A: Bulk Import Questions via Excel / CSV</span></h3>
-                    <p class="text-xs text-emerald-700" data-translate="excel_headers">Required Column Headers: <b>q, correct, wrong1, wrong2</b></p>
+                    <h3 class="font-bold text-emerald-900 text-sm"><i class="fa-solid fa-file-excel"></i> Option A: Bulk Import Questions via Excel / CSV</h3>
+                    <p class="text-xs text-emerald-700">Required Column Headers in Excel: <b>q, correct, wrong1, wrong2</b></p>
                     <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="text-xs file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white cursor-pointer">
-                    <button onclick="handleExcelUpload()" class="px-4 py-2.5 bg-emerald-700 text-white font-bold rounded-xl text-xs hover:bg-emerald-800 transition" data-translate="excel_import_btn">Import Questions from Excel</button>
+                    <button onclick="handleExcelUpload()" class="px-4 py-2.5 bg-emerald-700 text-white font-bold rounded-xl text-xs hover:bg-emerald-800 transition">Import Questions from Excel</button>
                 </div>
 
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="font-bold text-slate-800 text-sm" data-translate="manual_q_title">Option B: Add Questions Manually:</h3>
+                    <h3 class="font-bold text-slate-800 text-sm">Option B: Add Questions Manually:</h3>
                     <textarea id="q-text-input" placeholder="Type question here..." class="w-full px-4 py-3 rounded-xl border text-sm outline-none h-24 focus:ring-2 focus:ring-blue-500"></textarea>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <input type="text" id="q-correct-opt" placeholder="Correct Answer Option" class="px-4 py-3 rounded-xl border border-emerald-300 bg-emerald-50/50 text-sm outline-none">
                         <input type="text" id="q-wrong-opt1" placeholder="Wrong Option 1" class="px-4 py-3 rounded-xl border text-sm outline-none">
                         <input type="text" id="q-wrong-opt2" placeholder="Wrong Option 2" class="px-4 py-3 rounded-xl border text-sm outline-none">
                     </div>
-                    <button onclick="addQuestionToDraft()" class="px-4 py-2.5 bg-slate-900 text-white font-bold rounded-xl text-xs hover:bg-slate-800 transition" data-translate="add_q_btn"><i class="fa-solid fa-plus"></i> Add Question to Draft</button>
+                    <button onclick="addQuestionToDraft()" class="px-4 py-2.5 bg-slate-900 text-white font-bold rounded-xl text-xs hover:bg-slate-800 transition"><i class="fa-solid fa-plus"></i> Add Question to Draft</button>
                 </div>
 
                 <div class="bg-slate-100 p-5 rounded-3xl border border-slate-200 shadow-sm">
-                    <h4 class="font-bold text-xs text-slate-600 uppercase mb-3"><span data-translate="draft_preview">Draft Questions Preview</span> (<span id="draft-q-count">0</span>):</h4>
+                    <h4 class="font-bold text-xs text-slate-600 uppercase mb-3">Draft Questions Preview (<span id="draft-q-count">0</span>):</h4>
                     <div id="draft-questions-list" class="space-y-2 text-xs"></div>
-                    <button onclick="saveCompleteTest()" class="mt-4 w-full py-3.5 bg-emerald-600 text-white font-bold rounded-xl text-sm shadow-md hover:bg-emerald-700 transition" data-translate="publish_test_btn"><i class="fa-solid fa-cloud-arrow-up"></i> Publish Test to Cloud Database</button>
+                    <button onclick="saveCompleteTest()" class="mt-4 w-full py-3.5 bg-emerald-600 text-white font-bold rounded-xl text-sm shadow-md hover:bg-emerald-700 transition"><i class="fa-solid fa-cloud-arrow-up"></i> Publish Test to Cloud Database</button>
                 </div>
             </div>
 
-            <!-- TAB 2: Test Manager -->
+            <!-- TAB 2: Test Manager (Lock/Unlock, Delete, Edit) -->
             <div id="admin-tab-manager" class="hidden space-y-4">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="font-bold text-slate-800 text-sm" data-translate="manage_tests_title">Manage Uploaded Tests:</h3>
+                    <h3 class="font-bold text-slate-800 text-sm">Manage Uploaded Tests:</h3>
                     <div id="admin-tests-manage-list" class="space-y-3"></div>
                 </div>
             </div>
 
-            <!-- TAB 3: Records -->
+            <!-- TAB 3: Student Results & Reports -->
             <div id="admin-tab-records" class="hidden space-y-6">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
                     <div class="flex flex-wrap gap-3 items-center justify-between no-print">
@@ -377,34 +368,32 @@
                             <select id="filter-test-select" onchange="applyResultFilters()" class="px-3 py-2 border rounded-xl text-xs bg-slate-50"><option value="">All Chapters</option></select>
                             <select id="filter-student-select" onchange="applyResultFilters()" class="px-3 py-2 border rounded-xl text-xs bg-slate-50"><option value="">All Students</option></select>
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="window.print()" class="px-4 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm" data-translate="print_report_btn"><i class="fa-solid fa-print"></i> Print Clean Report</button>
-                        </div>
+                        <button onclick="window.print()" class="px-4 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm"><i class="fa-solid fa-print"></i> Print Clean Report</button>
                     </div>
 
                     <div id="printable-result-section" class="space-y-6">
                         <div class="text-center mb-4 border-b pb-4">
                             <h2 class="official-title text-xl font-bold text-blue-900 tracking-tight">BHARAT EDUCATION CENTER</h2>
                             <p class="text-xs text-slate-600 mt-0.5">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
-                            <p class="text-xs font-semibold text-slate-700 mt-0.5" data-translate="perf_report">Student Performance Report</p>
+                            <p class="text-xs font-semibold text-slate-700 mt-0.5">Student Performance Report</p>
                         </div>
 
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-xs border-collapse">
                                 <thead>
                                     <tr class="bg-slate-100 border-b">
-                                        <th class="p-3 font-bold border-b" data-translate="th_timestamp">Timestamp</th>
-                                        <th class="p-3 font-bold border-b" data-translate="th_student">Student Name</th>
-                                        <th class="p-3 font-bold border-b" data-translate="th_chapter">Chapter / Test</th>
-                                        <th class="p-3 font-bold border-b" data-translate="th_score">Score</th>
-                                        <th class="p-3 font-bold border-b" data-translate="th_attempt">Attempt</th>
-                                        <th class="p-3 font-bold border-b" data-translate="th_pct">Percentage</th>
-                                        <th class="p-3 font-bold border-b" data-translate="th_status">Status</th>
-                                        <th class="p-3 font-bold border-b no-print" data-translate="th_actions">Actions</th>
+                                        <th class="p-3 font-bold border-b">Timestamp</th>
+                                        <th class="p-3 font-bold border-b">Student Name</th>
+                                        <th class="p-3 font-bold border-b">Chapter / Test</th>
+                                        <th class="p-3 font-bold border-b">Score</th>
+                                        <th class="p-3 font-bold border-b">Attempt</th>
+                                        <th class="p-3 font-bold border-b">Percentage</th>
+                                        <th class="p-3 font-bold border-b">Status</th>
+                                        <th class="p-3 font-bold border-b no-print">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="student-results-table-body">
-                                    <tr><td colspan="8" class="p-4 text-center text-slate-400" data-translate="loading_results">Loading results...</td></tr>
+                                    <tr><td colspan="8" class="p-4 text-center text-slate-400">Loading results...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -415,231 +404,101 @@
 
     </main>
 
+    <!-- ================= JAVASCRIPT LOGIC WITH COMMENTS ================= -->
     <script>
-        const translations = {
-            en: {
-                teacher_login: "Teacher Login",
-                enter_pin: "Please Enter Login PIN:",
-                cancel: "Cancel",
-                login: "Login",
-                student_portal: "Student Portal",
-                teacher_dashboard: "Teacher Dashboard",
-                select_test: "Select Available Test:",
-                select_test_desc: "Click 'Start Test' or view your completed score below.",
-                student_label: "Student",
-                change_name: "Change Name",
-                loading_tests: "Loading tests...",
-                instructions_title: "Special Test Instructions:",
-                rule_1: "1. Each correct answer carries 1 Mark.",
-                rule_2_prefix: "Passing marks required:",
-                rule_3_prefix: "Time Limit:",
-                rule_4: "4. Each student can attempt every chapter test once freely.",
-                start_test_btn: "Start Test -> Proceed",
-                modal_enter_name: "Enter Your Registered Name",
-                modal_name_desc: "Name must match the Student Master list added by your teacher.",
-                modal_verify_btn: "Verify Name & Start Test",
-                submit_test_btn: "Submit Test",
-                official_cert: "OFFICIAL CERTIFICATE",
-                table_student: "Student Name:",
-                table_chapter: "Test / Chapter:",
-                submission_time: "Submission Date & Time:",
-                overall_score: "Overall Score Achieved",
-                percentage_label: "Percentage",
-                grade_label: "Grade Performance",
-                status_label: "Status Qualification",
-                share_whatsapp: "WhatsApp Text Report Share",
-                home_screen: "Go to Home Screen",
-                incorrect_analysis: "Incorrect Questions Analysis (Answer Key)",
-                teacher_control: "Teacher Control Center (Admin Panel)",
-                teacher_subtitle: "Manage Students Master, Categories, Tests & Reports",
-                logout: "Logout / Exit",
-                tab_student_master: "Students Master",
-                tab_builder: "Create / Edit Test",
-                tab_manager: "Manage Tests",
-                tab_records: "Student Results",
-                add_student_title: "Add New Student to Master List:",
-                add_student_btn: "Add Student",
-                registered_list: "Registered Students Master List",
-                loading_master: "Loading master students...",
-                test_info_title: "1. Set Test Information:",
-                cancel_edit: "Cancel Edit",
-                excel_import_title: "Option A: Bulk Import Questions via Excel / CSV",
-                excel_headers: "Required Column Headers: q, correct, wrong1, wrong2",
-                excel_import_btn: "Import Questions from Excel",
-                manual_q_title: "Option B: Add Questions Manually:",
-                add_q_btn: "Add Question to Draft",
-                draft_preview: "Draft Questions Preview",
-                publish_test_btn: "Publish Test to Cloud Database",
-                manage_tests_title: "Manage Uploaded Tests:",
-                print_report_btn: "Print Clean Report",
-                perf_report: "Student Performance Report",
-                th_timestamp: "Timestamp",
-                th_student: "Student Name",
-                th_chapter: "Chapter / Test",
-                th_score: "Score",
-                th_attempt: "Attempt",
-                th_pct: "Percentage",
-                th_status: "Status",
-                th_actions: "Actions",
-                loading_results: "Loading results...",
-                submit_anyway: "Submit Anyway"
-            },
-            gu: {
-                teacher_login: "શિક્ષક લૉગિન",
-                enter_pin: "કૃપા કરીને લૉગિન પિન દાખલ કરો:",
-                cancel: "રદ કરો",
-                login: "લૉગિન કરો",
-                student_portal: "વિદ્યાર્થી પોર્ટલ",
-                teacher_dashboard: "શિક્ષક ડેશબોર્ડ",
-                select_test: "ઉપલબ્ધ ટેસ્ટ પસંદ કરો:",
-                select_test_desc: "ટેસ્ટ આપવા માટે 'Start Test' પર ક્લિક કરો અથવા તમારું સ્કોરકાર્ડ જુઓ.",
-                student_label: "વિદ્યાર્થી",
-                change_name: "નામ બદલો",
-                loading_tests: "ટેસ્ટ લોડ થઈ રહી છે...",
-                instructions_title: "પરીક્ષાની વિશેષ સૂચનાઓ:",
-                rule_1: "૧. દરેક સાચા જવાબના ૧ ગુણ રહેશે.",
-                rule_2_prefix: "પાસ થવા માટે જરૂરી ગુણ:",
-                rule_3_prefix: "સમય મર્યાદા:",
-                rule_4: "૪. દરેક વિદ્યાર્થી દરેક ચેપ્ટર ટેસ્ટ આપી શકે છે.",
-                start_test_btn: "ટેસ્ટ શરૂ કરો -> આગળ વધો",
-                modal_enter_name: "તમારું રજિસ્ટર્ડ નામ દાખલ કરો",
-                modal_name_desc: "નામ શિક્ષક દ્વારા ઉમેરાયેલ સ્ટુડન્ટ માસ્ટર લિસ્ટ સાથે મેચ થવું જોઈએ.",
-                modal_verify_btn: "નામ ચકાસો અને ટેસ્ટ શરૂ કરો",
-                submit_test_btn: "ટેસ્ટ સબમિટ કરો",
-                official_cert: "સત્તાવાર પ્રમાણપત્ર",
-                table_student: "વિદ્યાર્થીનું નામ:",
-                table_chapter: "ટેસ્ટ / ચેપ્ટર:",
-                submission_time: "સબમિશન તારીખ અને સમય:",
-                overall_score: "મેળવેલ કુલ ગુણ",
-                percentage_label: "ટકાવારી",
-                grade_label: "ગ્રેડ પરફોર્મન્સ",
-                status_label: "સ્ટેટસ",
-                share_whatsapp: "WhatsApp ટેક્સ્ટ રિપોર્ટ શેર કરો",
-                home_screen: "હોમ સ્ક્રીન પર જાઓ",
-                incorrect_analysis: "ખોટા પડેલા પ્રશ્નોનું વિશ્લેષણ (Answer Key)",
-                teacher_control: "શિક્ષક નિયંત્રણ કેન્દ્ર (એડમિન પેનલ)",
-                teacher_subtitle: "વિદ્યાર્થી માસ્ટર, કેટેગરી, ટેસ્ટ અને રિપોર્ટ્સ મેનેજ કરો",
-                logout: "લૉગ આઉટ / બહાર નીકળો",
-                tab_student_master: "સ્ટુડન્ટ્સ માસ્ટર",
-                tab_builder: "ટેસ્ટ બનાવો / એડિટ",
-                tab_manager: "ટેસ્ટ મેનેજમેન્ટ",
-                tab_records: "વિદ્યાર્થી પરિણામો",
-                add_student_title: "માસ્ટર લિસ્ટમાં નવો વિદ્યાર્થી ઉમેરો:",
-                add_student_btn: "વિદ્યાર્થી ઉમેરો",
-                registered_list: "રજિસ્ટર્ડ સ્ટુડન્ટ્સ માસ્ટર લિસ્ટ",
-                loading_master: "માસ્ટર વિદ્યાર્થીઓ લોડ થઈ રહ્યા છે...",
-                test_info_title: "૧. ટેસ્ટની માહિતી સેટ કરો:",
-                cancel_edit: "એડિટ રદ કરો",
-                excel_import_title: "વિકલ્પ A: Excel / CSV દ્વારા પ્રશ્નો બલ્ક આયાત કરો",
-                excel_headers: "જરૂરી કૉલમ હેડર્સ: q, correct, wrong1, wrong2",
-                excel_import_btn: "Excel માંથી પ્રશ્નો આયાત કરો",
-                manual_q_title: "વિકલ્પ B: જાતે પ્રશ્નો ઉમેરો:",
-                add_q_btn: "ડ્રાફ્ટમાં પ્રશ્ન ઉમેરો",
-                draft_preview: "ડ્રાફ્ટ પ્રશ્નોનું પૂર્વાવલોકન",
-                publish_test_btn: "ક્લાઉડ ડેટાબેઝ પર ટેસ્ટ પબ્લિશ કરો",
-                manage_tests_title: "અપલોડ કરેલ ટેસ્ટ મેનેજ કરો:",
-                print_report_btn: "સ્વચ્છ રિપોર્ટ પ્રિન્ટ કરો",
-                perf_report: "વિદ્યાર્થી પ્રદર્શન રિપોર્ટ",
-                th_timestamp: "સમય અને તારીખ",
-                th_student: "વિદ્યાર્થીનું નામ",
-                th_chapter: "ચેપ્ટર / ટેસ્ટ",
-                th_score: "ગુણ",
-                th_attempt: "પ્રયાસ",
-                th_pct: "ટકાવારી",
-                th_status: "સ્ટેટસ",
-                th_actions: "ક્રિયાઓ",
-                loading_results: "પરિણામો લોડ થઈ રહ્યા છે...",
-                submit_anyway: "છતાં પણ સબમિટ કરો"
+        // Global variables for holding database state and temporary drafts
+        let testsDB = [];
+        let resultsDB = [];
+        let masterStudentsDB = [];
+        let draftQuestions = [];
+        let selectedTestIdx = null;
+        let activeStudentName = "";
+        let runningQuizData = [];
+        let studentAnswers = {};
+        let editingTestId = null;
+        let editingStudentId = null;
+
+        // Supabase Connection Configuration
+        const SUPABASE_URL = 'https://fixnefvoznegothpmehu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpeG5lZnZvem5lZ290aHBtZWh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwOTU0MzQsImV4cCI6MjEwNzY3MTQzNH0.zjydOx0wP9KFY1KiP2iaNiis_rGQ-bLPGKleUsXIiFI';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Window load event listener to initialize application state
+        window.addEventListener('DOMContentLoaded', () => {
+            checkStudentIdentityDisplay();
+            loadAllDataFromSupabase();
+
+            // Auto-open teacher dashboard if session storage indicates logged in
+            if (sessionStorage.getItem('BEC_Teacher_LoggedIn') === 'true') {
+                showTeacherDashboard();
             }
-        };
+        });
 
-        let currentLang = 'gu';
-
-        function setLanguage(lang) {
-            currentLang = lang;
-            document.getElementById('lang-en-btn').className = lang === 'en' ? "px-2.5 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition" : "px-2.5 py-1 text-xs font-bold rounded-lg text-slate-600 transition";
-            document.getElementById('lang-gu-btn').className = lang === 'gu' ? "px-2.5 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition" : "px-2.5 py-1 text-xs font-bold rounded-lg text-slate-600 transition";
-            document.documentElement.lang = lang;
-
-            const elements = document.querySelectorAll('[data-translate]');
-            elements.forEach(el => {
-                const key = el.getAttribute('data-translate');
-                if(translations[lang] && translations[lang][key]) {
-                    el.innerText = translations[lang][key];
-                }
-            });
-        }
-
+        // Helper UI alert popup function
         function showAlert(msg) {
             document.getElementById('custom-alert-text').innerText = msg;
             document.getElementById('custom-alert-modal').classList.remove('hidden');
         }
-        function closeCustomAlert() { document.getElementById('custom-alert-modal').classList.add('hidden'); }
+        function closeCustomAlert() {
+            document.getElementById('custom-alert-modal').classList.add('hidden');
+        }
 
+        // Custom Confirmation dialog helper
         function showCustomConfirm(msg, onConfirm) {
             document.getElementById('custom-confirm-text').innerText = msg;
             const confirmModal = document.getElementById('custom-confirm-modal');
-            const okBtn = document.getElementById('confirm-ok-btn');
-
             confirmModal.classList.remove('hidden');
-
-            okBtn.onclick = function() {
+            document.getElementById('confirm-ok-btn').onclick = function() {
                 confirmModal.classList.add('hidden');
                 onConfirm();
             };
         }
-        function closeCustomConfirm() { document.getElementById('custom-confirm-modal').classList.add('hidden'); }
+        function closeCustomConfirm() {
+            document.getElementById('custom-confirm-modal').classList.add('hidden');
+        }
 
+        // Teacher Login PIN Modal Controls
         function openTeacherLoginModal() {
             const input = document.getElementById('teacher-pin-input');
             input.value = '';
             document.getElementById('teacher-login-modal').classList.remove('hidden');
             setTimeout(() => input.focus(), 150);
         }
-        function closeTeacherLoginModal() { document.getElementById('teacher-login-modal').classList.add('hidden'); }
+        function closeTeacherLoginModal() {
+            document.getElementById('teacher-login-modal').classList.add('hidden');
+        }
 
+        // Verify Admin PIN (98732)
         function verifyTeacherPin() {
-            const pin = document.getElementById('teacher-pin-input').value;
+            const pin = document.getElementById('teacher-pin-input').value.trim();
             if(pin === "98732") {
                 sessionStorage.setItem('BEC_Teacher_LoggedIn', 'true');
                 closeTeacherLoginModal();
                 showTeacherDashboard();
             } else {
-                showAlert("Incorrect PIN!");
+                showAlert("Incorrect Admin PIN! Please enter correct PIN.");
             }
         }
 
+        // Logout Teacher Session
         function logoutTeacher() {
             sessionStorage.removeItem('BEC_Teacher_LoggedIn');
             showStudentPortal();
         }
 
-        const SUPABASE_URL = 'https://fixnefvoznegothpmehu.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpeG5lZnZvem5lZ290aHBtZWh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwOTU0MzQsImV4cCI6MjEwNzY3MTQzNH0.zjydOx0wP9KFY1KiP2iaNiis_rGQ-bLPGKleUsXIiFI';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        let testsDB = [], resultsDB = [], masterStudentsDB = [], draftQuestions = [], selectedTestIdx = null, activeStudentName = "", runningQuizData = [], studentAnswers = {}, editingTestId = null, editingStudentId = null;
-
-        window.addEventListener('DOMContentLoaded', () => {
-            checkStudentIdentityDisplay();
-            loadAllDataFromSupabase();
-            setLanguage('gu');
-
-            if (sessionStorage.getItem('BEC_Teacher_LoggedIn') === 'true') {
-                showTeacherDashboard();
-            }
-        });
-
+        // Display current active student name in student portal header
         function checkStudentIdentityDisplay() {
             activeStudentName = localStorage.getItem('BEC_Student_Name') || "";
             document.getElementById('current-logged-student').innerText = activeStudentName || "Not Set";
         }
 
+        // Prompt student to change their registered name
         function changeStudentIdentity() {
             document.getElementById('student-entry-name').value = activeStudentName || '';
             document.getElementById('student-name-modal').classList.remove('hidden');
         }
 
+        // Verify student name against Supabase Master List before starting test
         async function saveStudentIdentity() {
             const inputVal = document.getElementById('student-entry-name').value.trim();
             if(!inputVal) { showAlert('Please enter your full name!'); return; }
@@ -647,7 +506,7 @@
             try {
                 const { data, error } = await supabaseClient.from('students_master').select('*').ilike('student_name', inputVal);
                 if (error || !data || data.length === 0) {
-                    showAlert(`તમારું નામ "${inputVal}" સ્ટુડન્ટ માસ્ટર લિસ્ટમાં રજિસ્ટર્ડ નથી! શિક્ષકનો સંપર્ક કરો.`);
+                    showAlert(`Student name "${inputVal}" is not registered in the Master list! Contact teacher.`);
                     return;
                 }
 
@@ -658,10 +517,11 @@
                 document.getElementById('student-name-modal').classList.add('hidden');
                 if(selectedTestIdx !== null) verifyAndStartStudentTestDirect();
             } catch(e) {
-                showAlert("Connection error. Check Supabase connection!");
+                showAlert("Database connection error during name verification!");
             }
         }
 
+        // View Switcher: Show Student Portal
         function showStudentPortal() {
             document.getElementById('student-portal-view').classList.remove('hidden');
             document.getElementById('teacher-dashboard-view').classList.add('hidden');
@@ -673,6 +533,7 @@
             loadAllDataFromSupabase();
         }
 
+        // View Switcher: Show Teacher Dashboard
         function showTeacherDashboard() {
             document.getElementById('student-portal-view').classList.add('hidden');
             document.getElementById('teacher-dashboard-view').classList.remove('hidden');
@@ -680,6 +541,7 @@
             loadAllDataFromSupabase();
         }
 
+        // Fetch all tests, results, and master students from Supabase with error handling
         async function loadAllDataFromSupabase() {
             try {
                 const [tRes, rRes, mRes] = await Promise.all([
@@ -698,14 +560,14 @@
                 renderAdminResultsTable(resultsDB);
                 populateFilterDropdowns();
             } catch(e) {
-                console.error("Supabase load error:", e);
-                document.getElementById('master-students-list').innerHTML = `<p class="text-xs text-rose-500 font-bold">Failed to load data from Supabase. Make sure table 'students_master' exists.</p>`;
+                console.error("Supabase fetch error:", e);
             }
         }
 
+        // Render available tests list for students
         function renderStudentTestList() {
             const container = document.getElementById('available-tests-list');
-            container.innerHTML = testsDB.length === 0 ? `<p class="text-xs text-slate-400">No tests available.</p>` : '';
+            container.innerHTML = testsDB.length === 0 ? `<p class="text-xs text-slate-400">No tests available right now.</p>` : '';
             const now = new Date();
 
             testsDB.forEach((t, idx) => {
@@ -716,7 +578,7 @@
                 if(isExpired) {
                     actionBtn = `<span class="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-200">Closed (Expired)</span>`;
                 } else if(!t.isUnlocked) {
-                    actionBtn = `<button onclick="showAlert('આ ટેસ્ટ શિક્ષક દ્વારા લૉક કરેલ છે.')" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition shadow-sm"><i class="fa-solid fa-lock"></i> Locked</button>`;
+                    actionBtn = `<button onclick="showAlert('This test is locked by teacher.')" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition shadow-sm"><i class="fa-solid fa-lock"></i> Locked</button>`;
                 } else if(attempt) {
                     actionBtn = `
                         <div class="flex items-center gap-3 flex-wrap">
@@ -743,6 +605,7 @@
             });
         }
 
+        // Open test rules screen before starting quiz
         function openRulesScreen(idx) {
             if(!activeStudentName) { changeStudentIdentity(); return; }
             selectedTestIdx = idx;
@@ -753,6 +616,7 @@
             document.getElementById('test-rules-screen').classList.remove('hidden');
         }
 
+        // Initialize quiz questions and randomized options
         function verifyAndStartStudentTestDirect() {
             document.getElementById('test-rules-screen').classList.add('hidden');
             const t = testsDB[selectedTestIdx];
@@ -760,7 +624,11 @@
             document.getElementById('running-student-name').innerText = activeStudentName;
 
             runningQuizData = t.questions.map((q, qIdx) => {
-                let opts = [{text: q.correct, isCorrect:true}, {text: q.wrong1, isCorrect:false}, {text: q.wrong2, isCorrect:false}].sort(() => Math.random() - 0.5);
+                let opts = [
+                    {text: q.correct, isCorrect:true}, 
+                    {text: q.wrong1, isCorrect:false}, 
+                    {text: q.wrong2, isCorrect:false}
+                ].sort(() => Math.random() - 0.5);
                 return {question: q.q, options: opts, correctIdx: opts.findIndex(o => o.isCorrect)};
             });
 
@@ -769,13 +637,20 @@
             wrapper.innerHTML = runningQuizData.map((q, qIdx) => `
                 <div class="p-4 bg-white border border-slate-200 rounded-2xl space-y-2">
                     <p class="font-bold text-xs text-slate-900">Q${qIdx+1}. ${q.question}</p>
-                    ${q.options.map((o, oIdx) => `<label class="block p-2.5 bg-slate-50 border rounded-xl text-xs cursor-pointer hover:bg-slate-100"><input type="radio" name="q_${qIdx}" value="${oIdx}" onchange="studentAnswers[${qIdx}]=${oIdx}"> ${o.text}</label>`).join('')}
+                    ${q.options.map((o, oIdx) => `<label class="block p-2.5 bg-slate-50 border rounded-xl text-xs cursor-pointer hover:bg-slate-100"><input type="radio" name="q_${qIdx}" value="${oIdx}" onchange="studentAnswers[${qIdx}]=${oIdx}; updateProgressCount();"> ${o.text}</label>`).join('')}
                 </div>
             `).join('');
 
+            updateProgressCount();
             document.getElementById('active-test-container').classList.remove('hidden');
         }
 
+        function updateProgressCount() {
+            const answered = Object.keys(studentAnswers).length;
+            document.getElementById('test-progress-counter').innerText = `${answered} / ${runningQuizData.length} Answered`;
+        }
+
+        // Quiz submission handler with confirmation for unanswered questions
         function submitStudentQuiz(e) {
             e.preventDefault();
             const total = runningQuizData.length;
@@ -783,12 +658,13 @@
             const remaining = total - answered;
 
             if (remaining > 0) {
-                showCustomConfirm(`તમારા ${remaining} પ્રશ્નોના જવાબો આપવાના બાકી છે. શું તમે છતાં પણ ટેસ્ટ સબમિટ કરવા માંગો છો?`, forceSubmitQuiz);
+                showCustomConfirm(`You have left ${remaining} questions unanswered. Do you still want to submit the test?`, forceSubmitQuiz);
                 return;
             }
             forceSubmitQuiz();
         }
 
+        // Calculate score and store result in Supabase
         async function forceSubmitQuiz() {
             const t = testsDB[selectedTestIdx];
             let score = 0;
@@ -812,9 +688,18 @@
             const pct = Math.round((score/total)*100);
             const status = pct >= t.passMark ? "PASS" : "FAIL";
             const grade = pct >= 90 ? "A+" : pct >= 75 ? "A" : pct >= 50 ? "C" : "F";
+            const prevAttempts = resultsDB.filter(r => r.student === activeStudentName && r.testName === t.title).length;
 
             await supabaseClient.from('results').insert([{
-                student_name: activeStudentName, test_name: t.title, score: `${score} / ${total}`, percentage: pct, grade: grade, status: status, attempt: 1, allow_retake: true, wrong_answers_json: wrongDetailsList
+                student_name: activeStudentName, 
+                test_name: t.title, 
+                score: `${score} / ${total}`, 
+                percentage: pct, 
+                grade: grade, 
+                status: status, 
+                attempt: prevAttempts + 1, 
+                allow_retake: true, 
+                wrong_answers_json: wrongDetailsList
             }]);
 
             document.getElementById('active-test-container').classList.add('hidden');
@@ -827,7 +712,7 @@
             document.getElementById('res-status').innerText = status;
             document.getElementById('res-timestamp').innerText = new Date().toLocaleString();
             document.getElementById('congrats-remarks-box').className = status === 'PASS' ? "p-3.5 rounded-2xl text-center text-xs font-bold bg-emerald-50 text-emerald-800" : "p-3.5 rounded-2xl text-center text-xs font-bold bg-amber-50 text-amber-800";
-            document.getElementById('congrats-remarks-box').innerText = status === 'PASS' ? "🎉 Successfully Passed!" : "⚠️ Needs Improvement.";
+            document.getElementById('congrats-main-title').innerText = status === 'PASS' ? "🎉 Successfully Passed!" : "⚠️ Needs Improvement.";
 
             const solutionList = document.getElementById('solution-review-list');
             solutionList.innerHTML = '';
@@ -844,6 +729,7 @@
             loadAllDataFromSupabase();
         }
 
+        // WhatsApp Share for result report
         function shareResultWhatsAppText() {
             const student = document.getElementById('res-student-name').innerText;
             const test = document.getElementById('res-test-name').innerText;
@@ -853,58 +739,66 @@
             const status = document.getElementById('res-status').innerText;
 
             const text = `🎓 *BHARAT EDUCATION CENTER* 🎓\n-----------------------------------\n📊 *Official Test Result Report*\n\n👤 *Student Name:* ${student}\n📘 *Chapter/Test:* ${test}\n🎯 *Score Obtained:* ${score}\n📈 *Percentage:* ${pct}\n🏅 *Grade:* ${grade}\n⚡ *Status:* ${status}\n\n-----------------------------------\n*Teacher:* Chetan Soni | 📱 +91 99986 42506`;
-            
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
+        // ================= TEACHER ADMIN FUNCTIONS =================
+
+        // Add or Edit Student in Master List (Fixed)
         async function addStudentToMaster() {
             const nameInput = document.getElementById('new-master-student-input');
             const catInput = document.getElementById('new-master-student-category');
             const name = nameInput.value.trim();
             const category = catInput.value.trim() || 'General';
 
-            if(!name) { showAlert('Enter student name!'); return; }
+            if(!name) { showAlert('Please enter student name!'); return; }
 
             try {
                 if(editingStudentId) {
-                    await supabaseClient.from('students_master').update({student_name: name, category: category}).eq('id', editingStudentId);
+                    const { error } = await supabaseClient.from('students_master').update({student_name: name, category: category}).eq('id', editingStudentId);
+                    if(error) throw error;
                     resetStudentForm();
                 } else {
-                    await supabaseClient.from('students_master').insert([{student_name: name, category: category}]);
+                    const { error } = await supabaseClient.from('students_master').insert([{student_name: name, category: category}]);
+                    if(error) throw error;
                     nameInput.value = '';
                     nameInput.focus();
                 }
                 loadAllDataFromSupabase();
             } catch(e) {
-                showAlert("Error saving student to Supabase!");
+                showAlert("Error saving student to Supabase: " + e.message);
             }
         }
 
+        // Populate form for editing student
         function editStudentMaster(id, name, cat) {
             editingStudentId = id;
             document.getElementById('new-master-student-input').value = name;
             document.getElementById('new-master-student-category').value = cat || '';
             document.getElementById('student-form-title').innerText = "Edit Registered Student:";
-            document.getElementById('save-student-btn').innerText = "Update Student";
+            document.getElementById('save-student-btn').innerHTML = `<i class="fa-solid fa-user-pen"></i> Update Student`;
             document.getElementById('cancel-student-edit-btn').classList.remove('hidden');
         }
 
+        // Reset student form state
         function resetStudentForm() {
             editingStudentId = null;
             document.getElementById('new-master-student-input').value = '';
             document.getElementById('new-master-student-category').value = '';
             document.getElementById('student-form-title').innerText = "Add New Student to Master List:";
-            document.getElementById('save-student-btn').innerText = "Add Student";
+            document.getElementById('save-student-btn').innerHTML = `<i class="fa-solid fa-user-plus"></i> Add Student`;
             document.getElementById('cancel-student-edit-btn').classList.add('hidden');
         }
 
+        // Delete student from Master List
         async function deleteMasterStudent(id) {
-            if(confirm('Delete student from master list?')) {
+            showCustomConfirm("Are you sure you want to delete this student from Master list?", async () => {
                 await supabaseClient.from('students_master').delete().eq('id', id);
                 loadAllDataFromSupabase();
-            }
+            });
         }
 
+        // Render Master Students List in Admin UI
         function renderMasterStudentsList() {
             const container = document.getElementById('master-students-list');
             document.getElementById('master-student-count').innerText = masterStudentsDB.length;
@@ -926,6 +820,7 @@
             `).join('');
         }
 
+        // Switch Admin Dashboard Tabs
         function switchAdminTab(tab) {
             ['master','builder','manager','records'].forEach(t => {
                 document.getElementById(`admin-tab-${t}`).classList.add('hidden');
@@ -937,34 +832,44 @@
             document.getElementById(`tab-btn-${tab}`).className = "py-2.5 px-3 text-xs font-bold rounded-xl bg-blue-600 text-white transition shadow-sm";
         }
 
+        // Bulk Excel / CSV Upload Handler
         function handleExcelUpload() {
             const fileInput = document.getElementById('excel-file-input');
-            if(fileInput.files.length === 0) { showAlert('Select Excel file!'); return; }
+            if(fileInput.files.length === 0) { showAlert('Please select an Excel or CSV file!'); return; }
             const reader = new FileReader();
             reader.onload = function(e) {
-                const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
-                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {defval: ""});
-                draftQuestions = [];
-                json.forEach(row => {
-                    const vals = Object.values(row);
-                    if(vals.length >= 4) draftQuestions.push({q: vals[0], correct: vals[1], wrong1: vals[2], wrong2: vals[3]});
-                });
-                renderDraftList();
+                try {
+                    const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
+                    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {defval: ""});
+                    draftQuestions = [];
+                    json.forEach(row => {
+                        const vals = Object.values(row);
+                        if(vals.length >= 4) {
+                            draftQuestions.push({q: String(vals[0]), correct: String(vals[1]), wrong1: String(vals[2]), wrong2: String(vals[3])});
+                        }
+                    });
+                    renderDraftList();
+                    showAlert(`Successfully imported ${draftQuestions.length} questions from Excel!`);
+                } catch(err) {
+                    showAlert("Failed to parse Excel file. Check column headers (q, correct, wrong1, wrong2).");
+                }
             };
             reader.readAsArrayBuffer(fileInput.files[0]);
         }
 
+        // Add manual question to draft list
         function addQuestionToDraft() {
             const q = document.getElementById('q-text-input').value.trim();
             const correct = document.getElementById('q-correct-opt').value.trim();
             const w1 = document.getElementById('q-wrong-opt1').value.trim();
             const w2 = document.getElementById('q-wrong-opt2').value.trim();
-            if(!q || !correct || !w1 || !w2) { showAlert('Fill all fields!'); return; }
+            if(!q || !correct || !w1 || !w2) { showAlert('Please fill all question fields!'); return; }
             draftQuestions.push({q, correct, wrong1: w1, wrong2: w2});
             ['q-text-input','q-correct-opt','q-wrong-opt1','q-wrong-opt2'].forEach(id => document.getElementById(id).value = '');
             renderDraftList();
         }
 
+        // Render Draft Questions
         function renderDraftList() {
             document.getElementById('draft-q-count').innerText = draftQuestions.length;
             document.getElementById('draft-questions-list').innerHTML = draftQuestions.map((d, i) => `
@@ -975,23 +880,33 @@
             `).join('');
         }
 
+        // Publish Test to Supabase Database
         async function saveCompleteTest() {
             const title = document.getElementById('new-test-title-input').value.trim();
             const pass = parseInt(document.getElementById('new-test-pass-input').value) || 50;
             const timeLimit = parseInt(document.getElementById('new-test-time-input').value) || null;
             const deadline = document.getElementById('new-test-deadline-input').value || null;
 
-            if(!title || draftQuestions.length === 0) { showAlert('Provide title and questions!'); return; }
+            if(!title || draftQuestions.length === 0) { showAlert('Provide test title and at least one question!'); return; }
 
-            if(editingTestId) {
-                await supabaseClient.from('tests').update({title, pass_mark: pass, time_limit: timeLimit, deadline, questions_json: draftQuestions}).eq('id', editingTestId);
-            } else {
-                await supabaseClient.from('tests').insert([{title, pass_mark: pass, time_limit: timeLimit, deadline, is_unlocked: false, questions_json: draftQuestions}]);
+            try {
+                if(editingTestId) {
+                    const { error } = await supabaseClient.from('tests').update({title, pass_mark: pass, time_limit: timeLimit, deadline, questions_json: draftQuestions}).eq('id', editingTestId);
+                    if(error) throw error;
+                    showAlert("Test updated successfully!");
+                } else {
+                    const { error } = await supabaseClient.from('tests').insert([{title, pass_mark: pass, time_limit: timeLimit, deadline, is_unlocked: false, questions_json: draftQuestions}]);
+                    if(error) throw error;
+                    showAlert("Test published successfully to Supabase!");
+                }
+                resetTestBuilder();
+                showStudentPortal();
+            } catch(e) {
+                showAlert("Error publishing test: " + e.message);
             }
-            resetTestBuilder();
-            showStudentPortal();
         }
 
+        // Reset Test Builder form
         function resetTestBuilder() {
             editingTestId = null;
             document.getElementById('new-test-title-input').value = '';
@@ -1003,23 +918,28 @@
             document.getElementById('cancel-edit-btn').classList.add('hidden');
         }
 
+        // Render Tests Manager list
         function renderAdminTestsManager() {
             const container = document.getElementById('admin-tests-manage-list');
-            container.innerHTML = testsDB.map(t => `
-                <div class="p-4 bg-slate-50 border rounded-2xl flex justify-between items-center flex-wrap gap-3">
-                    <div>
-                        <b>${t.title} (${t.questions.length} Qs)</b>
-                        <p class="text-[11px] text-slate-500">Pass: ${t.passMark}%</p>
+            container.innerHTML = testsDB.length === 0 ? `<p class="text-xs text-slate-400">No tests created yet.</p>` : '';
+            testsDB.forEach(t => {
+                container.innerHTML += `
+                    <div class="p-4 bg-slate-50 border rounded-2xl flex justify-between items-center flex-wrap gap-3">
+                        <div>
+                            <b>${t.title} (${t.questions.length} Qs)</b>
+                            <p class="text-[11px] text-slate-500">Pass: ${t.passMark}%</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editTest(${t.id})" class="px-3 py-1 bg-indigo-600 text-white rounded-lg font-bold text-xs">Edit</button>
+                            <button onclick="toggleTestLock(${t.id}, ${!t.isUnlocked})" class="px-3 py-1 ${t.isUnlocked ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'} rounded-lg font-bold text-xs">${t.isUnlocked ? 'Unlocked' : 'Locked'}</button>
+                            <button onclick="deleteTest(${t.id})" class="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg font-bold text-xs">Delete</button>
+                        </div>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="editTest(${t.id})" class="px-3 py-1 bg-indigo-600 text-white rounded-lg font-bold">Edit</button>
-                        <button onclick="toggleTestLock(${t.id}, ${!t.isUnlocked})" class="px-3 py-1 ${t.isUnlocked ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'} rounded-lg font-bold">${t.isUnlocked ? 'Unlocked' : 'Locked'}</button>
-                        <button onclick="deleteTest(${t.id})" class="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg font-bold">Delete</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            });
         }
 
+        // Edit existing uploaded test
         function editTest(id) {
             const t = testsDB.find(item => item.id === id);
             if(!t) return;
@@ -1034,18 +954,21 @@
             switchAdminTab('test-builder');
         }
 
+        // Toggle test lock status
         async function toggleTestLock(id, state) {
             await supabaseClient.from('tests').update({is_unlocked: state}).eq('id', id);
             loadAllDataFromSupabase();
         }
 
+        // Delete test
         async function deleteTest(id) {
-            if(confirm('Delete test?')) {
+            showCustomConfirm("Are you sure you want to delete this test?", async () => {
                 await supabaseClient.from('tests').delete().eq('id', id);
                 loadAllDataFromSupabase();
-            }
+            });
         }
 
+        // Populate dropdown filters for reports
         function populateFilterDropdowns() {
             const ts = document.getElementById('filter-test-select');
             const ss = document.getElementById('filter-student-select');
@@ -1061,27 +984,32 @@
             renderAdminResultsTable(resultsDB.filter(r => (st === "" || r.testName === st) && (ss === "" || r.student === ss)));
         }
 
+        // Render Student Performance Results Table
         function renderAdminResultsTable(dataList) {
             const tbody = document.getElementById('student-results-table-body');
-            tbody.innerHTML = dataList.map(r => `
-                <tr class="border-b hover:bg-slate-50">
-                    <td class="p-3 text-slate-600">${r.date}</td>
-                    <td class="p-3 font-bold">${r.student}</td>
-                    <td class="p-3 text-blue-600">${r.testName}</td>
-                    <td class="p-3 font-bold">${r.score}</td>
-                    <td class="p-3 font-semibold text-slate-700">Attempt #${r.attempt || 1}</td>
-                    <td class="p-3">${r.pct}%</td>
-                    <td class="p-3 font-bold ${r.status === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}">${r.status}</td>
-                    <td class="p-3 no-print"><button onclick="deleteSingleResult(${r.id})" class="px-2.5 py-1 bg-rose-50 text-rose-700 text-[11px] font-bold rounded-lg">Delete</button></td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = dataList.length === 0 ? `<tr><td colspan="8" class="p-4 text-center text-slate-400">No results recorded yet.</td></tr>` : '';
+            dataList.forEach(r => {
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-3 text-slate-600">${r.date}</td>
+                        <td class="p-3 font-bold">${r.student}</td>
+                        <td class="p-3 text-blue-600">${r.testName}</td>
+                        <td class="p-3 font-bold">${r.score}</td>
+                        <td class="p-3 font-semibold text-slate-700">Attempt #${r.attempt || 1}</td>
+                        <td class="p-3">${r.pct}%</td>
+                        <td class="p-3 font-bold ${r.status === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}">${r.status}</td>
+                        <td class="p-3 no-print"><button onclick="deleteSingleResult(${r.id})" class="px-2.5 py-1 bg-rose-50 text-rose-700 text-[11px] font-bold rounded-lg">Delete</button></td>
+                    </tr>
+                `;
+            });
         }
 
+        // Delete single test result record
         async function deleteSingleResult(id) {
-            if(confirm('Delete this record?')) {
+            showCustomConfirm("Delete this result record?", async () => {
                 await supabaseClient.from('results').delete().eq('id', id);
                 loadAllDataFromSupabase();
-            }
+            });
         }
     </script>
 </body>
