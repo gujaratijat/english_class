@@ -57,9 +57,9 @@
             </div>
             <div>
                 <h3 class="text-base font-bold text-slate-900">Teacher Login</h3>
-                <p class="text-xs text-slate-500 mt-1">Admin Panel mate Password/PIN nako:</p>
+                <p class="text-xs text-slate-500 mt-1">Please Enter Login PIN:</p>
             </div>
-            <input type="password" id="teacher-pin-input" placeholder="Enter PIN (Default: 1234)" class="w-full text-center px-4 py-3 rounded-xl border border-slate-300 text-base font-bold tracking-widest outline-none focus:ring-2 focus:ring-slate-900">
+            <input type="password" id="teacher-pin-input" placeholder="Enter PIN" class="w-full text-center px-4 py-3 rounded-xl border border-slate-300 text-base font-bold tracking-widest outline-none focus:ring-2 focus:ring-slate-900">
             <div class="flex gap-2 pt-1">
                 <button onclick="closeTeacherLoginModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition">Cancel</button>
                 <button onclick="verifyTeacherPin()" class="w-1/2 py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 transition">Login</button>
@@ -367,7 +367,7 @@
         }
         function verifyTeacherPin() {
             const pin = document.getElementById('teacher-pin-input').value;
-            if(pin === "1234") {
+            if(pin === "98732") {
                 closeTeacherLoginModal();
                 document.getElementById('student-portal-view').classList.add('hidden');
                 document.getElementById('teacher-dashboard-view').classList.remove('hidden');
