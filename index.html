@@ -111,7 +111,7 @@
                     </div>
                     <div class="bg-blue-50 px-3.5 py-2 rounded-xl border border-blue-200 text-xs text-blue-900">
                         Student: <span id="current-logged-student" class="font-bold">Not Set</span> 
-                        <button onclick="changeStudentIdentity()" class="ml-2 text-blue-600 underline font-semibold hover:text-blue-800">Change</button>
+                        <button onclick="changeStudentIdentity()" class="ml-2 text-blue-600 underline font-semibold hover:text-blue-800">Change Name</button>
                     </div>
                 </div>
                 <div id="available-tests-list" class="space-y-3 pt-2">
@@ -143,16 +143,16 @@
                 </button>
             </div>
 
-            <!-- Student Name Entry Modal (Device localStorage based) -->
+            <!-- Student Name Entry Modal -->
             <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-[99998] modal-center p-4">
                 <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 text-center">
                     <div class="w-12 h-12 mx-auto rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-md">
                         <i class="fa-solid fa-user-graduate"></i>
                     </div>
                     <h3 class="text-lg font-bold text-slate-900">Enter Your Full Name</h3>
-                    <p class="text-xs text-slate-500">This name will be saved on your device for all future tests and result tracking.</p>
+                    <p class="text-xs text-slate-500">Please enter your name to start or verify your test attempt.</p>
                     <input type="text" id="student-entry-name" placeholder="e.g. Vikram Chaudhary" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm text-center outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400 font-bold">
-                    <button onclick="saveStudentIdentity()" class="w-full py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition">Save Name & Continue</button>
+                    <button onclick="saveStudentIdentity()" class="w-full py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition">Confirm Name & Continue</button>
                 </div>
             </div>
 
@@ -291,7 +291,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: Test Manager (Enable/Disable, Share Link, Delete) -->
+            <!-- TAB 2: Test Manager -->
             <div id="admin-tab-manager" class="hidden space-y-4">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
                     <h3 class="font-bold text-slate-800 text-sm">Manage Uploaded Tests (Enable / Disable & Share Links):</h3>
@@ -404,7 +404,7 @@
                 student_portal: "Student Portal",
                 teacher_dashboard: "Teacher Dashboard",
                 select_test: "Select Available Test:",
-                select_test_desc: "Click 'Start Test' or check test details below.",
+                select_test_desc: "Click 'Start Test' next to the test you want to attempt.",
                 rules_title: "Special Test Instructions:",
                 rule_1: "1. Each correct answer carries 1 Mark.",
                 rule_3: "3. Each student can attempt every chapter test once freely.",
@@ -462,7 +462,7 @@
                 document.getElementById('nav-teacher-btn').classList.add('hidden');
             }
             setLanguage('en');
-            checkStudentIdentity();
+            checkStudentIdentityDisplay();
             loadTestsFromSupabase();
             loadResultsFromSupabase();
         });
@@ -478,14 +478,15 @@
 
         let testsDB = [], resultsDB = [], draftQuestions = [], selectedTestIdx = null, activeStudentName = "", runningQuizData = [], studentAnswers = {}, editingTestId = null;
 
-        function checkStudentIdentity() {
-            let savedName = localStorage.getItem(' BEC_Student_Name');
-            if(!savedName) {
-                document.getElementById('student-name-modal').classList.remove('hidden');
-            } else {
-                activeStudentName = savedName;
-                document.getElementById('current-logged-student').innerText = activeStudentName;
-            }
+        function checkStudentIdentityDisplay() {
+            let savedName = localStorage.getItem('BEC_Student_Name');
+            activeStudentName = savedName || "";
+            document.getElementById('current-logged-student').innerText = activeStudentName ? activeStudentName : "Not Set";
+        }
+
+        function changeStudentIdentity() {
+            document.getElementById('student-entry-name').value = activeStudentName || '';
+            document.getElementById('student-name-modal').classList.remove('hidden');
         }
 
         function saveStudentIdentity() {
@@ -495,12 +496,7 @@
             activeStudentName = inputVal;
             document.getElementById('current-logged-student').innerText = activeStudentName;
             document.getElementById('student-name-modal').classList.add('hidden');
-            loadTestsFromSupabase();
-        }
-
-        function changeStudentIdentity() {
-            document.getElementById('student-entry-name').value = activeStudentName || '';
-            document.getElementById('student-name-modal').classList.remove('hidden');
+            showAlert(`Welcome, ${activeStudentName}!`);
         }
 
         function showStudentPortal() {
@@ -510,7 +506,7 @@
             document.getElementById('test-rules-screen').classList.add('hidden');
             document.getElementById('active-test-container').classList.add('hidden');
             document.getElementById('student-result-card').classList.add('hidden');
-            checkStudentIdentity();
+            checkStudentIdentityDisplay();
             loadTestsFromSupabase();
         }
 
@@ -577,7 +573,6 @@
         }
 
         function openRulesScreen(index) {
-            if(!activeStudentName) { checkStudentIdentity(); return; }
             selectedTestIdx = index;
             document.getElementById('rule-test-title').innerText = testsDB[index].title;
             document.getElementById('rule-pass-pct').innerText = `${testsDB[index].passMark}%`;
@@ -585,7 +580,18 @@
             document.getElementById('test-rules-screen').classList.remove('hidden');
         }
 
-        async function verifyAndStartStudentTestDirect() {
+        function verifyAndStartStudentTestDirect() {
+            let savedName = localStorage.getItem('BEC_Student_Name');
+            if(!savedName) {
+                document.getElementById('student-name-modal').classList.remove('hidden');
+                return;
+            }
+            activeStudentName = savedName;
+            document.getElementById('current-logged-student').innerText = activeStudentName;
+            checkAttemptAndProceed();
+        }
+
+        async function checkAttemptAndProceed() {
             const targetTest = testsDB[selectedTestIdx];
             const { data } = await supabaseClient.from('results').select('*').eq('student_name', activeStudentName).eq('test_name', targetTest.title);
 
@@ -665,7 +671,12 @@
             let nextAttempt = existingRecords ? existingRecords.length + 1 : 1;
 
             await supabaseClient.from('results').update({ allow_retake: false }).eq('student_name', activeStudentName).eq('test_name', targetTest.title);
-            await supabaseClient.from('results').insert([{ student_name: activeStudentName, test_name: targetTest.title, score: `${score} / ${total}`, percentage: percentage, grade: grade, status: status, attempt: nextAttempt, allow_retake: false }]);
+            const { error: insertErr } = await supabaseClient.from('results').insert([{ student_name: activeStudentName, test_name: targetTest.title, score: `${score} / ${total}`, percentage: percentage, grade: grade, status: status, attempt: nextAttempt, allow_retake: false }]);
+
+            if(insertErr) {
+                showAlert("Error submitting result to database. Check RLS policies!", true);
+                return;
+            }
 
             document.getElementById('active-test-container').classList.add('hidden');
             document.getElementById('student-result-card').classList.remove('hidden');
@@ -731,8 +742,8 @@
 
         async function loadRetakeRequests() {
             const listContainer = document.getElementById('retake-requests-list');
-            const { data } = await supabaseClient.from('retake_requests').select('*').eq('status', 'pending');
-            if(!data || data.length === 0) { listContainer.innerHTML = `<p class="text-slate-500 italic">No pending requests.</p>`; return; }
+            const { data, error } = await supabaseClient.from('retake_requests').select('*').eq('status', 'pending');
+            if(error || !data || data.length === 0) { listContainer.innerHTML = `<p class="text-slate-500 italic">No pending requests.</p>`; return; }
 
             listContainer.innerHTML = data.map(r => `
                 <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-amber-300 gap-2 flex-wrap">
@@ -779,7 +790,7 @@
         function renderDraftList() {
             const container = document.getElementById('draft-questions-list');
             document.getElementById('draft-q-count').innerText = draftQuestions.length;
-            container.innerHTML = draftQuestions.map((item, idx) => `<div class="p-3 bg-white border border-slate-200 rounded-xl flex justify-between items-center"><div><strong>Q${idx+1}:</strong> ${item.q}</div><button onclick="draftQuestions.splice(${idx},1);renderDraftList();" class="text-rose-600 font-bold px-2">X</button></div>`).join('');
+            container.innerHTML = draftQuestions.map((item, idx) => `<div class="p-3 bg-white border border-slate-200 rounded-xl flex justify-between items-center"><div><strong>Q${idx+1}:</strong> ${item.q}</div><button onclick="draftQuestions.psiplice(${idx},1);renderDraftList();" class="text-rose-600 font-bold px-2">X</button></div>`).join('');
         }
 
         async function saveCompleteTest() {
@@ -803,8 +814,6 @@
                 const card = document.createElement('div');
                 card.className = "p-4 bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-center flex-wrap gap-3";
                 
-                let testShareLink = window.location.href.split('?')[0] + `?test=${encodeURIComponent(t.title)}`;
-
                 card.innerHTML = `
                     <div>
                         <h4 class="font-bold text-slate-900 text-sm">${t.title}</h4>
