@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Inter, Noto Sans Gujarati (Bold & Heavy weights included) -->
+    <!-- Google Fonts: Inter, Noto Sans Gujarati -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@600;700;800&display=swap" rel="stylesheet">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -111,8 +111,8 @@
             <div id="student-test-select-screen" class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-4">
                 <div class="flex justify-between items-center flex-wrap gap-3">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-950" data-translate="select_test">Select Available Test:</h2>
-                        <p class="text-xs text-slate-500" data-translate="select_test_desc">Click 'Start Test' next to the test you want to attempt.</p>
+                        <h2 class="text-xl font-bold text-slate-950">Select Available Test:</h2>
+                        <p class="text-xs text-slate-500">Click 'Start Test' next to the test you want to attempt.</p>
                     </div>
                     <div class="bg-blue-50 px-3.5 py-2 rounded-xl border border-blue-200 text-xs text-blue-900">
                         Student: <span id="current-logged-student" class="font-bold">Not Set</span> 
@@ -139,7 +139,7 @@
                     <h3 class="font-bold text-slate-900 text-sm mb-2 border-b border-slate-200 pb-1">Special Test Instructions:</h3>
                     <p>1. Each correct answer carries 1 Mark.</p>
                     <p>2. Passing marks required: <b id="rule-pass-pct" class="text-blue-600">50%</b>.</p>
-                    <p>3. Time Limit: <b id="rule-time-limit" class="text-blue-600">50</b> Minutes.</p>
+                    <p>3. Time Limit: <b id="rule-time-limit" class="text-blue-600">Unlimited</b>.</p>
                     <p>4. Each student can attempt every chapter test once freely.</p>
                     <p>5. Tab switching or minimizing will trigger a warning and auto-submit after 3 warnings.</p>
                 </div>
@@ -186,7 +186,7 @@
                     </div>
                     <div class="flex items-center gap-3">
                         <span id="test-progress-counter" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full border border-blue-200">0 / 0 Answered</span>
-                        <span id="test-timer-badge" class="text-xs font-bold bg-rose-600 text-white px-3.5 py-1.5 rounded-full shadow-sm"><i class="fa-solid fa-clock"></i> <span id="timer-countdown-display">30:00</span></span>
+                        <span id="test-timer-badge" class="text-xs font-bold bg-rose-600 text-white px-3.5 py-1.5 rounded-full shadow-sm"><i class="fa-solid fa-clock"></i> <span id="timer-countdown-display">Unlimited</span></span>
                     </div>
                 </div>
 
@@ -200,17 +200,17 @@
 
             <!-- Student Result & Solution Review Screen -->
             <div id="student-result-card" class="hidden space-y-6 max-w-xl mx-auto">
-                <!-- Certificate / Medal Styled Report Card Frame (Perfect for Mobile & Sharing) -->
+                <!-- Certificate / Medal Styled Report Card Frame -->
                 <div id="printable-congrats-card" class="bg-gradient-to-b from-slate-50 via-white to-blue-50/30 p-6 md:p-8 rounded-3xl border-2 border-blue-200 shadow-2xl space-y-5 text-center relative overflow-hidden">
                     <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-100/50 rounded-full blur-2xl pointer-events-none"></div>
                     
-                    <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-4 gap-2 flex-wrap">
                         <div class="h-12 w-auto max-w-[150px] bg-transparent flex items-center justify-center">
                             <img src="bharat_logo.jpeg" alt="Logo" class="h-full w-full object-contain">
                         </div>
-                        <div class="text-right">
+                        <div>
                             <span id="res-medal-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold shadow-sm">
-                                <i id="res-medal-icon" class="fa-solid fa-medal"></i> <span id="res-medal-text">Certificate of Achievement</span>
+                                <i id="res-medal-icon" class="fa-solid fa-medal"></i> <span id="res-medal-text">Certificate</span>
                             </span>
                         </div>
                     </div>
@@ -255,7 +255,7 @@
                     <button onclick="showStudentPortal()" class="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Go to Home Screen</button>
                 </div>
 
-                <!-- Solution Review Section (Shows Only Incorrect/Mistaken Questions) -->
+                <!-- Solution Review Section (Incorrect Questions Answer Key) -->
                 <div id="incorrect-solutions-container" class="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg space-y-3">
                     <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 border-b pb-2">
                         <i class="fa-solid fa-circle-xmark text-rose-500"></i> Incorrect Questions Analysis (Answer Key)
@@ -286,21 +286,24 @@
 
             <!-- Admin Navigation Tabs -->
             <div class="flex border-b border-slate-200 gap-6 flex-wrap">
-                <button onclick="switchAdminTab('test-builder')" id="tab-btn-builder" class="pb-2.5 text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition">Create New Test</button>
+                <button onclick="switchAdminTab('test-builder')" id="tab-btn-builder" class="pb-2.5 text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition">Create / Edit Test</button>
                 <button onclick="switchAdminTab('test-manager')" id="tab-btn-manager" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Manage Tests (Enable/Disable)</button>
-                <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Student Result Tracker & Analytics</button>
+                <button onclick="switchAdminTab('student-records')" id="tab-btn-records" class="pb-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition">Student Result Tracker & Failed Analysis</button>
             </div>
 
             <!-- TAB 1: Test Builder -->
             <div id="admin-tab-builder" class="space-y-6">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="font-bold text-slate-800 text-sm">1. Set Test Information, Time Limit & Passing %:</h3>
+                    <div class="flex justify-between items-center">
+                        <h3 id="builder-mode-title" class="font-bold text-slate-800 text-sm">1. Set Test Information, Time Limit & Passing %:</h3>
+                        <button id="cancel-edit-btn" onclick="resetTestBuilder()" class="hidden text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-lg font-bold">Cancel Edit</button>
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <input type="text" id="new-test-title-input" placeholder="e.g. Chapter 1 English Test" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
                         <input type="number" id="new-test-pass-input" placeholder="Passing % (Default: 50)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                        <input type="number" id="new-test-time-input" placeholder="Time Limit in Mins (Def: 30)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" id="new-test-time-input" placeholder="Time Limit in Mins (Blank = Unlimited)" class="px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500">
                         <div>
-                            <input type="datetime-local" id="new-test-deadline-input" class="w-full px-3 py-3 rounded-xl border text-xs outline-none">
+                            <input type="datetime-local" id="new-test-deadline-input" class="w-full px-3 py-3 rounded-xl border text-xs outline-none" title="Deadline (Optional)">
                         </div>
                     </div>
                 </div>
@@ -333,13 +336,24 @@
             <!-- TAB 2: Test Manager -->
             <div id="admin-tab-manager" class="hidden space-y-4">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="font-bold text-slate-800 text-sm">Manage Uploaded Tests (Enable / Disable & Share Links):</h3>
+                    <h3 class="font-bold text-slate-800 text-sm">Manage Uploaded Tests (Edit, Enable / Disable & Share Links):</h3>
                     <div id="admin-tests-manage-list" class="space-y-3"></div>
                 </div>
             </div>
 
-            <!-- TAB 3: Student Records & Reports -->
+            <!-- TAB 3: Student Records & Failed Student Analysis Dropdown -->
             <div id="admin-tab-records" class="hidden space-y-6">
+                <!-- Failed Students & Weakness Dropdown Section -->
+                <div class="bg-rose-50 border border-rose-200 p-6 rounded-3xl space-y-4 shadow-sm">
+                    <h3 class="font-bold text-rose-900 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Failed Students & Weakness Analysis (Expandable Dropdowns)
+                    </h3>
+                    <p class="text-xs text-rose-700">Tap on any student below to inspect which specific questions they answered incorrectly so you can re-teach:</p>
+                    <div id="failed-students-accordion-list" class="space-y-3">
+                        <p class="text-xs text-slate-400 italic">No failed student records found.</p>
+                    </div>
+                </div>
+
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
                     <div class="flex flex-wrap gap-3 items-center justify-between no-print">
                         <div class="flex gap-3 flex-wrap">
@@ -431,29 +445,13 @@
                 loadResultsFromSupabase();
                 renderAdminTestsManagerList();
                 loadRetakeRequests();
+                renderFailedStudentsAccordion();
             } else {
                 showAlert("Incorrect Teacher PIN! Try again.", true);
             }
         }
 
         let currentLang = 'en';
-        const translations = {
-            en: {
-                site_title: "Bharat Education Center",
-                student_portal: "Student Portal",
-                teacher_dashboard: "Teacher Dashboard",
-                select_test: "Select Available Test:",
-                select_test_desc: "Click 'Start Test' next to the test you want to attempt."
-            },
-            gu: {
-                site_title: "ભારત એજ્યુકેશન સેન્ટર",
-                student_portal: "વિદ્યાર્થી પોર્ટલ",
-                teacher_dashboard: "ટીચર ડેશબોર્ડ",
-                select_test: "ઉપલબ્ધ ટેસ્ટ સિલેક્ટ કરો:",
-                select_test_desc: "ટેસ્ટ શરૂ કરવા માટે 'Start Test' પર ક્લિક કરો."
-            }
-        };
-
         function setLanguage(lang) {
             currentLang = lang;
             document.getElementById('lang-en-btn').className = lang === 'en' ? "px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white transition" : "px-3 py-1 text-xs font-bold rounded-lg text-slate-600 transition";
@@ -481,7 +479,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let testsDB = [], resultsDB = [], draftQuestions = [], selectedTestIdx = null, activeStudentName = "", runningQuizData = [], studentAnswers = {}, editingTestId = null;
-        let testTimerInterval = null, timeRemainingSeconds = 1800, cheatWarnings = 0;
+        let testTimerInterval = null, timeRemainingSeconds = 0, cheatWarnings = 0;
 
         function checkStudentIdentityDisplay() {
             let savedName = localStorage.getItem('BEC_Student_Name');
@@ -523,7 +521,7 @@
                     id: t.id, 
                     title: t.title, 
                     passMark: t.pass_mark, 
-                    timeLimit: t.time_limit || 30,
+                    timeLimit: t.time_limit || null,
                     deadline: t.deadline || null, 
                     isUnlocked: t.is_unlocked ?? false, 
                     createdDate: new Date(t.created_at || Date.now()).toLocaleString(),
@@ -538,10 +536,23 @@
         async function loadResultsFromSupabase() {
             const { data, error } = await supabaseClient.from('results').select('*').order('created_at', { ascending: false });
             if (!error && data) {
-                resultsDB = data.map(r => ({ id: r.id, date: new Date(r.created_at).toLocaleString(), student: r.student_name, testName: r.test_name, score: r.score, pct: r.percentage, grade: r.grade, status: r.status, attempt: r.attempt || 1, allowRetake: r.allow_retake || false }));
+                resultsDB = data.map(r => ({ 
+                    id: r.id, 
+                    date: new Date(r.created_at).toLocaleString(), 
+                    student: r.student_name, 
+                    testName: r.test_name, 
+                    score: r.score, 
+                    pct: r.percentage, 
+                    grade: r.grade, 
+                    status: r.status, 
+                    attempt: r.attempt || 1, 
+                    allowRetake: r.allow_retake || false,
+                    wrongAnswersJson: r.wrong_answers_json || []
+                }));
                 renderAdminResultsTable(resultsDB);
                 populateFilterDropdowns();
                 loadRetakeRequests();
+                renderFailedStudentsAccordion();
             }
         }
 
@@ -567,7 +578,7 @@
                 card.innerHTML = `
                     <div>
                         <h3 class="font-bold text-slate-900 text-sm">${t.title}</h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Questions: ${t.questions.length} | Time: ${t.timeLimit} Mins | Pass: ${t.passMark}%</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Questions: ${t.questions.length} | Time: ${t.timeLimit ? t.timeLimit + ' Mins' : 'Unlimited'} | Pass: ${t.passMark}%</p>
                     </div>
                     <div>${actionBtn}</div>
                 `;
@@ -583,7 +594,7 @@
             selectedTestIdx = index;
             document.getElementById('rule-test-title').innerText = testsDB[index].title;
             document.getElementById('rule-pass-pct').innerText = `${testsDB[index].passMark}%`;
-            document.getElementById('rule-time-limit').innerText = `${testsDB[index].timeLimit}`;
+            document.getElementById('rule-time-limit').innerText = testsDB[index].timeLimit ? `${testsDB[index].timeLimit} Mins` : `Unlimited`;
             document.getElementById('student-test-select-screen').classList.add('hidden');
             document.getElementById('test-rules-screen').classList.remove('hidden');
         }
@@ -630,20 +641,24 @@
             renderQuizQuestions();
             updateProgressDisplay();
 
-            // Setup Timer based on teacher defined time limit
-            timeRemainingSeconds = (targetTest.timeLimit || 30) * 60;
-            if(testTimerInterval) clearInterval(testTimerInterval);
-            testTimerInterval = setInterval(() => {
-                timeRemainingSeconds--;
-                let m = Math.floor(timeRemainingSeconds / 60);
-                let s = timeRemainingSeconds % 60;
-                document.getElementById('timer-countdown-display').innerText = `${m}:${s < 10 ? '0':''}${s}`;
-                if(timeRemainingSeconds <= 0) {
-                    clearInterval(testTimerInterval);
-                    showAlert("Time's up! Submitting test automatically.");
-                    forceSubmitQuiz();
-                }
-            }, 1000);
+            // Setup Timer if timeLimit is provided
+            if (targetTest.timeLimit && targetTest.timeLimit > 0) {
+                timeRemainingSeconds = targetTest.timeLimit * 60;
+                if(testTimerInterval) clearInterval(testTimerInterval);
+                testTimerInterval = setInterval(() => {
+                    timeRemainingSeconds--;
+                    let m = Math.floor(timeRemainingSeconds / 60);
+                    let s = timeRemainingSeconds % 60;
+                    document.getElementById('timer-countdown-display').innerText = `${m}:${s < 10 ? '0':''}${s}`;
+                    if(timeRemainingSeconds <= 0) {
+                        clearInterval(testTimerInterval);
+                        showAlert("Time's up! Submitting test automatically.");
+                        forceSubmitQuiz();
+                    }
+                }, 1000);
+            } else {
+                document.getElementById('timer-countdown-display').innerText = "Unlimited";
+            }
 
             cheatWarnings = 0;
             document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -690,7 +705,7 @@
                 q.options.forEach((opt, optIdx) => {
                     optsHTML += `<label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium text-slate-700 hover:bg-slate-50 transition"><input type="radio" name="q_${qIdx}" value="${optIdx}" onchange="selectStudentOpt(${qIdx}, ${optIdx})" class="w-4 h-4 text-blue-600"><span class="ml-2.5">${opt.text}</span></label>`;
                 });
-                card.innerHTML = `<div class="font-bold text-sm text-slate-900 mb-3">Q${qIdx+1}. ${q.question}</div><div class="space-y-2">${optsHTML}</div>`;
+                card.innerHTML = `<div class="font-bold text-sm text-slate-900 mb-3">Q ${qIdx+1}. ${q.question}</div><div class="space-y-2">${optsHTML}</div>`;
                 wrapper.appendChild(card);
             });
         }
@@ -723,7 +738,22 @@
             document.removeEventListener('visibilitychange', handleVisibilityChange);
 
             let score = 0;
-            runningQuizData.forEach((q, idx) => { if(studentAnswers[idx] === q.correctIndex) score++; });
+            let wrongDetailsList = [];
+
+            runningQuizData.forEach((q, idx) => { 
+                let studentAnsIdx = studentAnswers[idx];
+                if(studentAnsIdx === q.correctIndex) {
+                    score++;
+                } else {
+                    wrongDetailsList.push({
+                        qNumber: idx + 1,
+                        question: q.question,
+                        studentAnswer: studentAnsIdx !== undefined ? q.options[studentAnsIdx].text : 'Not Answered',
+                        correctAnswer: q.options[q.correctIndex].text
+                    });
+                }
+            });
+
             const total = runningQuizData.length, percentage = Math.round((score / total) * 100), targetTest = testsDB[selectedTestIdx], status = percentage >= (targetTest.passMark || 50) ? "PASS" : "FAIL";
             let grade = percentage >= 90 ? "A+" : percentage >= 75 ? "A" : percentage >= 60 ? "B" : percentage >= 50 ? "C" : "F";
             const submissionTimestamp = new Date().toLocaleString();
@@ -732,6 +762,7 @@
             let nextAttempt = existingRecords ? existingRecords.length + 1 : 1;
 
             await supabaseClient.from('results').update({ allow_retake: false }).eq('student_name', activeStudentName).eq('test_name', targetTest.title);
+            
             const { error: insertErr } = await supabaseClient.from('results').insert([{ 
                 student_name: activeStudentName, 
                 test_name: targetTest.title, 
@@ -740,7 +771,8 @@
                 grade: grade, 
                 status: status, 
                 attempt: nextAttempt, 
-                allow_retake: false 
+                allow_retake: false,
+                wrong_answers_json: wrongDetailsList
             }]);
 
             if(insertErr) {
@@ -782,34 +814,25 @@
                 remarksText.innerText = "⚠️ Need Improvement! Keep Trying & Practice More to Pass.";
             }
 
-            // Solution Review (Only incorrect answers)
+            // Solution Review (Incorrect questions below card)
             const solutionList = document.getElementById('solution-review-list');
             const solutionContainer = document.getElementById('incorrect-solutions-container');
             solutionList.innerHTML = '';
             
-            let incorrectCount = 0;
-            runningQuizData.forEach((q, idx) => {
-                let studentAnsIdx = studentAnswers[idx];
-                let isCorrect = studentAnsIdx === q.correctIndex;
-
-                if (!isCorrect) {
-                    incorrectCount++;
-                    let studentAnsText = studentAnsIdx !== undefined ? q.options[studentAnsIdx].text : 'Not Attempted';
-                    let div = document.createElement('div');
-                    div.className = "p-3.5 rounded-xl border border-rose-200 bg-rose-50/40 text-xs space-y-1";
-                    div.innerHTML = `
-                        <div class="font-bold text-slate-900">Q${idx+1}. ${q.question}</div>
-                        <div class="text-rose-600">Your Answer: <span class="font-bold">${studentAnsText}</span></div>
-                        <div class="text-emerald-700">Correct Answer: <span class="font-bold">${q.options[q.correctIndex].text}</span></div>
-                    `;
-                    solutionList.appendChild(div);
-                }
-            });
-
-            if(incorrectCount === 0) {
+            if (wrongDetailsList.length === 0) {
                 solutionContainer.classList.add('hidden');
             } else {
                 solutionContainer.classList.remove('hidden');
+                wrongDetailsList.forEach(item => {
+                    let div = document.createElement('div');
+                    div.className = "p-3.5 rounded-xl border border-rose-200 bg-rose-50/40 text-xs space-y-1";
+                    div.innerHTML = `
+                        <div class="font-bold text-slate-900">Q ${item.qNumber}. ${item.question}</div>
+                        <div class="text-rose-600">Your Answer: <span class="font-bold">${item.studentAnswer}</span></div>
+                        <div class="text-emerald-700">Correct Answer: <span class="font-bold">${item.correctAnswer}</span></div>
+                    `;
+                    solutionList.appendChild(div);
+                });
             }
 
             loadResultsFromSupabase();
@@ -863,7 +886,10 @@
             listContainer.innerHTML = data.map(r => `
                 <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-amber-300 gap-2 flex-wrap">
                     <span>Student: <b class="text-slate-900">${r.student_name}</b> | Chapter: <b class="text-blue-700">${r.test_name}</b></span>
-                    <button onclick="approveRetakeReq('${r.id}', '${r.student_name}', '${r.test_name}')" class="px-3.5 py-1.5 bg-emerald-600 text-white rounded-lg font-bold text-xs hover:bg-emerald-700 transition">Allow Retake</button>
+                    <div class="flex gap-2">
+                        <button onclick="approveRetakeReq('${r.id}', '${r.student_name}', '${r.test_name}')" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-bold text-xs hover:bg-emerald-700 transition">Allow</button>
+                        <button onclick="denyRetakeReq('${r.id}')" class="px-3.5 py-1.5 bg-rose-600 text-white rounded-lg font-bold text-xs hover:bg-rose-700 transition">Deny / Ignore</button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -874,6 +900,76 @@
             showAlert(`Granted retake permission for ${student}!`);
             loadRetakeRequests();
             loadResultsFromSupabase();
+        }
+
+        async function denyRetakeReq(reqId) {
+            const { error } = await supabaseClient.from('retake_requests').delete().eq('id', reqId);
+            if(error) {
+                showAlert('Error denying request!', true);
+            } else {
+                showAlert('Retake request denied and removed.');
+                loadRetakeRequests();
+            }
+        }
+
+        function renderFailedStudentsAccordion() {
+            const container = document.getElementById('failed-students-accordion-list');
+            const failedResults = resultsDB.filter(r => r.status === 'FAIL');
+
+            if (failedResults.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 italic">No failed student records found.</p>`;
+                return;
+            }
+
+            container.innerHTML = failedResults.map((res, idx) => {
+                let wrongItemsHTML = '';
+                if (res.wrongAnswersJson && res.wrongAnswersJson.length > 0) {
+                    wrongItemsHTML = res.wrongAnswersJson.map(w => `
+                        <div class="p-2.5 bg-white rounded-xl border border-rose-200 text-xs space-y-0.5">
+                            <div class="font-bold text-slate-900">Q ${w.qNumber}. ${w.question}</div>
+                            <div class="text-rose-600">Student Answer: <b>${w.studentAnswer}</b></div>
+                            <div class="text-emerald-700">Correct Answer: <b>${w.correctAnswer}</b></div>
+                        </div>
+                    `).join('');
+                } else {
+                    wrongItemsHTML = `<p class="text-xs text-slate-500 italic">Detailed wrong answer logs not available for this record.</p>`;
+                }
+
+                return `
+                    <div class="bg-white rounded-2xl border border-rose-200 shadow-sm overflow-hidden">
+                        <button onclick="toggleAccordion(${idx})" class="w-full p-4 flex justify-between items-center bg-rose-50/60 hover:bg-rose-100/50 transition text-left">
+                            <div>
+                                <span class="font-bold text-slate-900 text-sm">${res.student}</span>
+                                <span class="text-xs text-blue-700 font-semibold ml-2">(${res.testName})</span>
+                                <span class="block text-[11px] text-slate-500">Submitted: ${res.date} | Score: <b class="text-rose-600">${res.score} (${res.pct}%)</b></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-rose-700 bg-rose-100 px-3 py-1 rounded-full">FAIL</span>
+                                <i id="accordion-icon-${idx}" class="fa-solid fa-chevron-down text-slate-500 text-xs transition"></i>
+                            </div>
+                        </button>
+                        <div id="accordion-content-${idx}" class="hidden p-4 bg-slate-50 border-t border-rose-200 space-y-2">
+                            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wide mb-2">Incorrectly Answered Questions (For Re-teaching):</h4>
+                            ${wrongItemsHTML}
+                            <div class="flex justify-end pt-2">
+                                <button onclick="deleteSingleResult(${res.id})" class="px-3 py-1.5 bg-rose-600 text-white rounded-xl text-xs font-bold hover:bg-rose-700 transition">Delete Record</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleAccordion(idx) {
+            const content = document.getElementById(`accordion-content-${idx}`);
+            const icon = document.getElementById(`accordion-icon-${idx}`);
+            if(content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.className = "fa-solid fa-chevron-up text-slate-500 text-xs transition";
+            } else {
+                content.classList.add('hidden');
+                icon.className = "fa-solid fa-chevron-down text-slate-500 text-xs transition";
+            }
         }
 
         function handleExcelUpload() {
@@ -905,18 +1001,78 @@
         function renderDraftList() {
             const container = document.getElementById('draft-questions-list');
             document.getElementById('draft-q-count').innerText = draftQuestions.length;
-            container.innerHTML = draftQuestions.map((item, idx) => `<div class="p-3 bg-white border border-slate-200 rounded-xl flex justify-between items-center"><div><strong>Q${idx+1}:</strong> ${item.q}</div><button onclick="draftQuestions.splice(${idx},1);renderDraftList();" class="text-rose-600 font-bold px-2">X</button></div>`).join('');
+            container.innerHTML = draftQuestions.map((item, idx) => `<div class="p-3 bg-white border border-slate-200 rounded-xl flex justify-between items-center"><div><strong>Q ${idx+1}:</strong> ${item.q}</div><button onclick="draftQuestions.splice(${idx},1);renderDraftList();" class="text-rose-600 font-bold px-2">X</button></div>`).join('');
+        }
+
+        function editTest(testId) {
+            const t = testsDB.find(item => item.id === testId);
+            if(!t) return;
+            editingTestId = t.id;
+            document.getElementById('new-test-title-input').value = t.title;
+            document.getElementById('new-test-pass-input').value = t.passMark;
+            document.getElementById('new-test-time-input').value = t.timeLimit || '';
+            document.getElementById('new-test-deadline-input').value = t.deadline || '';
+            draftQuestions = [...t.questions];
+            renderDraftList();
+            
+            document.getElementById('builder-mode-title').innerText = `Editing Test: ${t.title}`;
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            switchAdminTab('test-builder');
+        }
+
+        function resetTestBuilder() {
+            editingTestId = null;
+            document.getElementById('new-test-title-input').value = '';
+            document.getElementById('new-test-pass-input').value = '';
+            document.getElementById('new-test-time-input').value = '';
+            document.getElementById('new-test-deadline-input').value = '';
+            draftQuestions = [];
+            renderDraftList();
+            document.getElementById('builder-mode-title').innerText = "1. Set Test Information, Time Limit & Passing %:";
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
         }
 
         async function saveCompleteTest() {
-            const title = document.getElementById('new-test-title-input').value.trim(), passPct = parseInt(document.getElementById('new-test-pass-input').value) || 50, timeLimit = parseInt(document.getElementById('new-test-time-input').value) || 30, deadline = document.getElementById('new-test-deadline-input').value;
+            const title = document.getElementById('new-test-title-input').value.trim();
+            const passPct = parseInt(document.getElementById('new-test-pass-input').value) || 50;
+            const timeLimitVal = document.getElementById('new-test-time-input').value.trim();
+            const timeLimit = timeLimitVal ? parseInt(timeLimitVal) : null;
+            const deadline = document.getElementById('new-test-deadline-input').value.trim() || null;
+
             if(!title || draftQuestions.length === 0) return showAlert('Provide title & questions!', true);
             
-            await supabaseClient.from('tests').insert([{ title, pass_mark: passPct, time_limit: timeLimit, deadline, questions_json: draftQuestions, is_unlocked: false }]);
+            if(editingTestId) {
+                const { error } = await supabaseClient.from('tests').update({ 
+                    title, 
+                    pass_mark: passPct, 
+                    time_limit: timeLimit, 
+                    deadline, 
+                    questions_json: draftQuestions 
+                }).eq('id', editingTestId);
+                
+                if(error) {
+                    showAlert('Error updating test!', true);
+                    return;
+                }
+                showAlert('Test updated successfully!');
+            } else {
+                const { error } = await supabaseClient.from('tests').insert([{ 
+                    title, 
+                    pass_mark: passPct, 
+                    time_limit: timeLimit, 
+                    deadline, 
+                    questions_json: draftQuestions, 
+                    is_unlocked: false 
+                }]);
+                
+                if(error) {
+                    showAlert('Error publishing test!', true);
+                    return;
+                }
+                showAlert('Test published successfully! (Locked by default)');
+            }
             
-            showAlert('Test published successfully with custom time limit! (Locked by default)');
-            draftQuestions = [];
-            renderDraftList();
+            resetTestBuilder();
             showStudentPortal();
         }
 
@@ -931,14 +1087,17 @@
                 card.innerHTML = `
                     <div>
                         <h4 class="font-bold text-slate-900 text-sm">${t.title}</h4>
-                        <p class="text-xs text-slate-500 mt-0.5">Uploaded: ${t.createdDate} | Questions: ${t.questions.length} | Time: ${t.timeLimit}m | Pass: ${t.passMark}%</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Uploaded: ${t.createdDate} | Questions: ${t.questions.length} | Time: ${t.timeLimit ? t.timeLimit + 'm' : 'Unlimited'} | Pass: ${t.passMark}%</p>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
+                        <button onclick="editTest(${t.id})" class="px-3.5 py-1.5 bg-indigo-600 text-white font-bold rounded-xl text-xs hover:bg-indigo-700 transition">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
                         <button onclick="toggleTestUnlock(${t.id}, ${!t.isUnlocked})" class="px-3.5 py-1.5 rounded-xl font-bold text-xs transition ${t.isUnlocked ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-amber-500 text-white hover:bg-amber-600'}">
                             ${t.isUnlocked ? '<i class="fa-solid fa-lock-open"></i> Unlocked' : '<i class="fa-solid fa-lock"></i> Locked'}
                         </button>
                         <button onclick="copyTestLinkToClipboard('${t.title}')" class="px-3.5 py-1.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-copy"></i> Copy Test Link
+                            <i class="fa-solid fa-copy"></i> Copy Link
                         </button>
                         <button onclick="deleteTest(${t.id})" class="px-3.5 py-1.5 bg-rose-50 text-rose-700 font-bold rounded-xl text-xs hover:bg-rose-100 transition">Delete</button>
                     </div>
