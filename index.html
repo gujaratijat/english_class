@@ -33,7 +33,6 @@
             align-items: center;
             justify-content: center;
         }
-        /* Strict Clean Print Styling */
         @media print {
             body { background: white !important; color: black !important; }
             body * { visibility: hidden !important; }
@@ -52,7 +51,7 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- Foreground Custom Alert Popup Modal -->
+    <!-- Custom Alert Popup Modal -->
     <div id="custom-alert-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99999] modal-center p-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4 relative">
             <button onclick="closeCustomAlert()" class="absolute top-3 right-3 text-slate-400 hover:text-slate-600 font-bold text-sm"><i class="fa-solid fa-xmark"></i></button>
@@ -79,7 +78,7 @@
         </div>
     </div>
 
-    <!-- Teacher Login Modal UI (Numeric Keyboard & X Close) -->
+    <!-- Teacher Login Modal UI -->
     <div id="teacher-login-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99999] modal-center p-4">
         <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4 relative">
             <button onclick="closeTeacherLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -128,7 +127,7 @@
 
     <main class="max-w-5xl mx-auto px-4 py-8 w-full flex-grow">
 
-        <!-- ================= STUDENT PORTAL ================= -->
+        <!-- STUDENT PORTAL -->
         <div id="student-portal-view" class="space-y-6">
             <div id="student-test-select-screen" class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-4">
                 <div class="flex justify-between items-center flex-wrap gap-3">
@@ -282,7 +281,7 @@
             </div>
         </div>
 
-        <!-- ================= TEACHER ADMIN DASHBOARD ================= -->
+        <!-- TEACHER ADMIN DASHBOARD -->
         <div id="teacher-dashboard-view" class="hidden space-y-6">
             <div class="flex justify-between items-center bg-white border border-slate-200 p-5 rounded-3xl shadow-sm flex-wrap gap-4">
                 <div>
@@ -490,8 +489,8 @@
                 enter_pin: "કૃપા કરીને લૉગિન પિન દાખલ કરો:",
                 cancel: "રદ કરો",
                 login: "લૉગિન કરો",
-                student_portal: "Student Portal",
-                teacher_dashboard: "Teacher Dashboard",
+                student_portal: "વિદ્યાર્થી પોર્ટલ",
+                teacher_dashboard: "શિક્ષક ડેશબોર્ડ",
                 select_test: "ઉપલબ્ધ ટેસ્ટ પસંદ કરો:",
                 select_test_desc: "ટેસ્ટ આપવા માટે 'Start Test' પર ક્લિક કરો અથવા તમારું સ્કોરકાર્ડ જુઓ.",
                 student_label: "વિદ્યાર્થી",
@@ -645,18 +644,22 @@
             const inputVal = document.getElementById('student-entry-name').value.trim();
             if(!inputVal) { showAlert('Please enter your full name!'); return; }
 
-            const { data, error } = await supabaseClient.from('students_master').select('*').ilike('student_name', inputVal);
-            if (error || !data || data.length === 0) {
-                showAlert(`તમારું નામ "${inputVal}" સ્ટુડન્ટ માસ્ટર લિસ્ટમાં રજિસ્ટર્ડ નથી! શિક્ષકનો સંપર્ક કરો.`);
-                return;
-            }
+            try {
+                const { data, error } = await supabaseClient.from('students_master').select('*').ilike('student_name', inputVal);
+                if (error || !data || data.length === 0) {
+                    showAlert(`તમારું નામ "${inputVal}" સ્ટુડન્ટ માસ્ટર લિસ્ટમાં રજિસ્ટર્ડ નથી! શિક્ષકનો સંપર્ક કરો.`);
+                    return;
+                }
 
-            const exactName = data[0].student_name;
-            localStorage.setItem('BEC_Student_Name', exactName);
-            activeStudentName = exactName;
-            document.getElementById('current-logged-student').innerText = activeStudentName;
-            document.getElementById('student-name-modal').classList.add('hidden');
-            if(selectedTestIdx !== null) verifyAndStartStudentTestDirect();
+                const exactName = data[0].student_name;
+                localStorage.setItem('BEC_Student_Name', exactName);
+                activeStudentName = exactName;
+                document.getElementById('current-logged-student').innerText = activeStudentName;
+                document.getElementById('student-name-modal').classList.add('hidden');
+                if(selectedTestIdx !== null) verifyAndStartStudentTestDirect();
+            } catch(e) {
+                showAlert("Connection error. Check Supabase connection!");
+            }
         }
 
         function showStudentPortal() {
@@ -673,25 +676,31 @@
         function showTeacherDashboard() {
             document.getElementById('student-portal-view').classList.add('hidden');
             document.getElementById('teacher-dashboard-view').classList.remove('hidden');
+            switchAdminTab('student-master');
             loadAllDataFromSupabase();
         }
 
         async function loadAllDataFromSupabase() {
-            const [tRes, rRes, mRes] = await Promise.all([
-                supabaseClient.from('tests').select('*'),
-                supabaseClient.from('results').select('*').order('created_at', { ascending: false }),
-                supabaseClient.from('students_master').select('*').order('student_name')
-            ]);
+            try {
+                const [tRes, rRes, mRes] = await Promise.all([
+                    supabaseClient.from('tests').select('*'),
+                    supabaseClient.from('results').select('*').order('created_at', { ascending: false }),
+                    supabaseClient.from('students_master').select('*').order('student_name')
+                ]);
 
-            if(tRes.data) testsDB = tRes.data.map(t => ({id: t.id, title: t.title, passMark: t.pass_mark, isUnlocked: t.is_unlocked, timeLimit: t.time_limit, deadline: t.deadline, questions: t.questions_json}));
-            if(rRes.data) resultsDB = rRes.data.map(r => ({id: r.id, student: r.student_name, testName: r.test_name, score: r.score, pct: r.percentage, status: r.status, allowRetake: r.allow_retake, attempt: r.attempt, wrongAnswersJson: r.wrong_answers_json, date: new Date(r.created_at).toLocaleString()}));
-            if(mRes.data) masterStudentsDB = mRes.data;
+                if(tRes.data) testsDB = tRes.data.map(t => ({id: t.id, title: t.title, passMark: t.pass_mark, isUnlocked: t.is_unlocked, timeLimit: t.time_limit, deadline: t.deadline, questions: t.questions_json}));
+                if(rRes.data) resultsDB = rRes.data.map(r => ({id: r.id, student: r.student_name, testName: r.test_name, score: r.score, pct: r.percentage, status: r.status, allowRetake: r.allow_retake, attempt: r.attempt, wrongAnswersJson: r.wrong_answers_json, date: new Date(r.created_at).toLocaleString()}));
+                if(mRes.data) masterStudentsDB = mRes.data;
 
-            renderStudentTestList();
-            renderMasterStudentsList();
-            renderAdminTestsManager();
-            renderAdminResultsTable(resultsDB);
-            populateFilterDropdowns();
+                renderStudentTestList();
+                renderMasterStudentsList();
+                renderAdminTestsManager();
+                renderAdminResultsTable(resultsDB);
+                populateFilterDropdowns();
+            } catch(e) {
+                console.error("Supabase load error:", e);
+                document.getElementById('master-students-list').innerHTML = `<p class="text-xs text-rose-500 font-bold">Failed to load data from Supabase. Make sure table 'students_master' exists.</p>`;
+            }
         }
 
         function renderStudentTestList() {
@@ -856,15 +865,19 @@
 
             if(!name) { showAlert('Enter student name!'); return; }
 
-            if(editingStudentId) {
-                await supabaseClient.from('students_master').update({student_name: name, category: category}).eq('id', editingStudentId);
-                resetStudentForm();
-            } else {
-                await supabaseClient.from('students_master').insert([{student_name: name, category: category}]);
-                nameInput.value = '';
-                nameInput.focus();
+            try {
+                if(editingStudentId) {
+                    await supabaseClient.from('students_master').update({student_name: name, category: category}).eq('id', editingStudentId);
+                    resetStudentForm();
+                } else {
+                    await supabaseClient.from('students_master').insert([{student_name: name, category: category}]);
+                    nameInput.value = '';
+                    nameInput.focus();
+                }
+                loadAllDataFromSupabase();
+            } catch(e) {
+                showAlert("Error saving student to Supabase!");
             }
-            loadAllDataFromSupabase();
         }
 
         function editStudentMaster(id, name, cat) {
@@ -895,6 +908,10 @@
         function renderMasterStudentsList() {
             const container = document.getElementById('master-students-list');
             document.getElementById('master-student-count').innerText = masterStudentsDB.length;
+            if(masterStudentsDB.length === 0) {
+                container.innerHTML = `<p class="text-slate-400">No students registered yet in Master list.</p>`;
+                return;
+            }
             container.innerHTML = masterStudentsDB.map(s => `
                 <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center">
                     <div>
