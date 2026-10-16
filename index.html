@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <!-- Teacher Login Modal UI with Masked Password Dots (***) -->
+    <!-- Teacher Login Modal UI -->
     <div id="teacher-login-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[99999] modal-center p-4">
         <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4">
             <div class="w-12 h-12 mx-auto rounded-2xl bg-slate-900 text-white flex items-center justify-center text-lg shadow-md">
@@ -79,7 +79,6 @@
                     <img src="bharat_logo.jpeg" alt="Bharat Logo" class="h-full w-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-xs font-bold text-blue-900\'>BHARAT CENTER</span>';">
                 </div>
                 <div>
-                    <!-- Larger Official Title Font -->
                     <h1 class="official-title text-xl md:text-2xl font-black text-blue-900 tracking-tight" id="main-site-title" data-translate="site_title">Bharat Education Center</h1>
                     <p class="text-xs text-slate-500 font-medium">Teacher: Chetan Soni | Contact: +91 99986 42506</p>
                 </div>
@@ -105,10 +104,18 @@
         <!-- ================= STUDENT PORTAL ================= -->
         <div id="student-portal-view" class="space-y-6">
             <div id="student-test-select-screen" class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-xl space-y-4">
-                <h2 class="text-xl font-bold text-slate-900" data-translate="select_test">Select Available Test:</h2>
-                <p class="text-xs text-slate-500" data-translate="select_test_desc">Click 'Start Test' next to the test you want to attempt.</p>
+                <div class="flex justify-between items-center flex-wrap gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900" data-translate="select_test">Select Available Test:</h2>
+                        <p class="text-xs text-slate-500" data-translate="select_test_desc">Click 'Start Test' next to the test you want to attempt.</p>
+                    </div>
+                    <div class="bg-blue-50 px-3.5 py-2 rounded-xl border border-blue-200 text-xs text-blue-900">
+                        Student: <span id="current-logged-student" class="font-bold">Not Set</span> 
+                        <button onclick="changeStudentIdentity()" class="ml-2 text-blue-600 underline font-semibold hover:text-blue-800">Change</button>
+                    </div>
+                </div>
                 <div id="available-tests-list" class="space-y-3 pt-2">
-                    <p class="text-xs text-slate-400">Loading active tests...</p>
+                    <p class="text-xs text-slate-400">Loading tests...</p>
                 </div>
             </div>
 
@@ -131,28 +138,35 @@
                     <p data-translate="rule_4">4. Do not refresh the page or open a new tab during the test.</p>
                 </div>
 
-                <button onclick="proceedToStudentNameModal()" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl text-sm shadow-lg hover:bg-blue-700 transition">
-                    <span data-translate="proceed_btn">I understand the rules -> Proceed</span>
+                <button onclick="verifyAndStartStudentTestDirect()" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl text-sm shadow-lg hover:bg-blue-700 transition">
+                    <span data-translate="proceed_btn">Start Test -> Proceed</span>
                 </button>
             </div>
 
-            <!-- Student Name Entry & Retake Modal -->
+            <!-- Student Name Entry Modal (Device localStorage based) -->
             <div id="student-name-modal" class="hidden fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-[99998] modal-center p-4">
-                <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4">
-                    <h3 class="text-lg font-bold text-slate-900" id="active-test-modal-title">Test Name</h3>
-                    <p class="text-xs text-slate-500" data-translate="enter_name_prompt">Enter your full name:</p>
-                    <input type="text" id="student-entry-name" placeholder="e.g. Vikram Chaudhary" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400">
-                    
-                    <div id="modal-retake-notice" class="hidden p-3.5 bg-amber-50 border border-amber-300 rounded-xl space-y-2">
-                        <p id="modal-retake-msg" class="text-xs text-amber-900 font-medium"></p>
-                        <button id="modal-req-btn" onclick="sendRetakeRequestFromModal()" class="w-full py-2 bg-amber-600 text-white text-xs font-bold rounded-lg hover:bg-amber-700 transition">
-                            <i class="fa-solid fa-bell"></i> Request Retake Permission
-                        </button>
+                <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 text-center">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-md">
+                        <i class="fa-solid fa-user-graduate"></i>
                     </div>
+                    <h3 class="text-lg font-bold text-slate-900">Enter Your Full Name</h3>
+                    <p class="text-xs text-slate-500">This name will be saved on your device for all future tests and result tracking.</p>
+                    <input type="text" id="student-entry-name" placeholder="e.g. Vikram Chaudhary" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm text-center outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400 font-bold">
+                    <button onclick="saveStudentIdentity()" class="w-full py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition">Save Name & Continue</button>
+                </div>
+            </div>
 
-                    <div class="flex gap-2 pt-2" id="modal-actions-bar">
-                        <button onclick="closeStudentModal()" class="w-1/2 py-3 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition" data-translate="cancel_btn">Cancel</button>
-                        <button onclick="verifyAndStartStudentTest()" class="w-1/2 py-3 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition" data-translate="start_test_btn">Start Test</button>
+            <!-- Retake Request Modal Notice -->
+            <div id="retake-modal" class="hidden fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-[99998] modal-center p-4">
+                <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 text-center">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-500 text-white flex items-center justify-center text-lg shadow-md">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Test Already Attempted</h3>
+                    <p id="retake-modal-text" class="text-xs text-slate-600">You have already submitted this test. You need teacher permission for a retake.</p>
+                    <div class="flex gap-2 pt-2">
+                        <button onclick="closeRetakeModal()" class="w-1/2 py-3 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-200 transition">Cancel</button>
+                        <button onclick="sendRetakeRequestFromModal()" class="w-1/2 py-3 bg-amber-600 text-white font-bold text-xs rounded-xl hover:bg-amber-700 transition">Request Retake</button>
                     </div>
                 </div>
             </div>
@@ -175,7 +189,7 @@
                 </form>
             </div>
 
-            <!-- Student Result Screen & Perfect Score Card -->
+            <!-- Student Result Screen -->
             <div id="student-result-card" class="hidden bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-xl text-center space-y-5 max-w-lg mx-auto">
                 <div id="printable-congrats-card" class="p-6 rounded-2xl border bg-slate-50 border-slate-200 shadow-sm space-y-4">
                     <div class="h-14 w-auto max-w-[200px] mx-auto bg-transparent flex items-center justify-center">
@@ -277,10 +291,10 @@
                 </div>
             </div>
 
-            <!-- TAB 2: Test Manager (Enable/Disable & Detailed Info) -->
+            <!-- TAB 2: Test Manager (Enable/Disable, Share Link, Delete) -->
             <div id="admin-tab-manager" class="hidden space-y-4">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="font-bold text-slate-800 text-sm">Manage Uploaded Tests (Enable / Disable for Students):</h3>
+                    <h3 class="font-bold text-slate-800 text-sm">Manage Uploaded Tests (Enable / Disable & Share Links):</h3>
                     <div id="admin-tests-manage-list" class="space-y-3"></div>
                 </div>
             </div>
@@ -390,12 +404,12 @@
                 student_portal: "Student Portal",
                 teacher_dashboard: "Teacher Dashboard",
                 select_test: "Select Available Test:",
-                select_test_desc: "Click 'Start Test' next to the test you want to attempt.",
+                select_test_desc: "Click 'Start Test' or check test details below.",
                 rules_title: "Special Test Instructions:",
                 rule_1: "1. Each correct answer carries 1 Mark.",
                 rule_3: "3. Each student can attempt every chapter test once freely.",
                 rule_4: "4. Do not refresh the page or open a new tab during the test.",
-                proceed_btn: "I understand the rules -> Proceed",
+                proceed_btn: "Start Test -> Proceed",
                 enter_name_prompt: "Enter your full name:",
                 cancel_btn: "Cancel",
                 start_test_btn: "Start Test",
@@ -411,12 +425,12 @@
                 student_portal: "વિદ્યાર્થી પોર્ટલ",
                 teacher_dashboard: "ટીચર ડેશબોર્ડ",
                 select_test: "ઉપલબ્ધ ટેસ્ટ સિલેક્ટ કરો:",
-                select_test_desc: "તમારે જે ટેસ્ટ આપવો હોય તેની સામે 'ટેસ્ટ શરૂ કરો' પર ક્લિક કરો.",
+                select_test_desc: "ટેસ્ટ શરૂ કરો અથવા વિગતો જુઓ.",
                 rules_title: "ટેસ્ટ આપવાના ખાસ નિયમો (Instructions):",
                 rule_1: "૧. દરેક સાચા પ્રશ્નનો ૧ ગુણ (1 Mark) છે.",
                 rule_3: "૩. દરેક વિદ્યાર્થી દરેક ચેપ્ટરનો ૧-૧ અટેમ્પટ આપી શકશે.",
                 rule_4: "૪. ટેસ્ટ આપતી વખતે પેજ રિફ્રેશ કરવું કે નવી ટેબ ખોલવી નહીં.",
-                proceed_btn: "હું નિયમો સમજ્યો છું -> આગળ વધો",
+                proceed_btn: "ટેસ્ટ ચાલુ કરો",
                 enter_name_prompt: "તમારું આખું નામ દાખલ કરો:",
                 cancel_btn: "કેન્સલ",
                 start_test_btn: "ટેસ્ટ ચાલુ કરો",
@@ -448,6 +462,7 @@
                 document.getElementById('nav-teacher-btn').classList.add('hidden');
             }
             setLanguage('en');
+            checkStudentIdentity();
             loadTestsFromSupabase();
             loadResultsFromSupabase();
         });
@@ -463,6 +478,31 @@
 
         let testsDB = [], resultsDB = [], draftQuestions = [], selectedTestIdx = null, activeStudentName = "", runningQuizData = [], studentAnswers = {}, editingTestId = null;
 
+        function checkStudentIdentity() {
+            let savedName = localStorage.getItem(' BEC_Student_Name');
+            if(!savedName) {
+                document.getElementById('student-name-modal').classList.remove('hidden');
+            } else {
+                activeStudentName = savedName;
+                document.getElementById('current-logged-student').innerText = activeStudentName;
+            }
+        }
+
+        function saveStudentIdentity() {
+            const inputVal = document.getElementById('student-entry-name').value.trim();
+            if(!inputVal) { showAlert('Please enter your full name!', true); return; }
+            localStorage.setItem('BEC_Student_Name', inputVal);
+            activeStudentName = inputVal;
+            document.getElementById('current-logged-student').innerText = activeStudentName;
+            document.getElementById('student-name-modal').classList.add('hidden');
+            loadTestsFromSupabase();
+        }
+
+        function changeStudentIdentity() {
+            document.getElementById('student-entry-name').value = activeStudentName || '';
+            document.getElementById('student-name-modal').classList.remove('hidden');
+        }
+
         function showStudentPortal() {
             document.getElementById('student-portal-view').classList.remove('hidden');
             document.getElementById('teacher-dashboard-view').classList.add('hidden');
@@ -470,6 +510,7 @@
             document.getElementById('test-rules-screen').classList.add('hidden');
             document.getElementById('active-test-container').classList.add('hidden');
             document.getElementById('student-result-card').classList.add('hidden');
+            checkStudentIdentity();
             loadTestsFromSupabase();
         }
 
@@ -503,31 +544,40 @@
 
         function renderStudentTestList() {
             const listContainer = document.getElementById('available-tests-list');
-            // Filter only unlocked tests for students
-            const activeTests = testsDB.filter(t => t.isUnlocked === true);
-            listContainer.innerHTML = activeTests.length === 0 ? `<div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">No active tests unlocked by teacher right now.</div>` : '';
+            listContainer.innerHTML = testsDB.length === 0 ? `<div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">No tests available right now.</div>` : '';
             const now = new Date();
 
-            activeTests.forEach((t) => {
-                let originalIdx = testsDB.findIndex(item => item.id === t.id);
+            testsDB.forEach((t, idx) => {
                 let isExpired = t.deadline && now > new Date(t.deadline);
                 const card = document.createElement('div');
-                card.className = "flex justify-between items-center p-4 border border-slate-200 rounded-2xl bg-slate-50/50 hover:bg-slate-50 transition";
+                card.className = "flex justify-between items-center p-4 border border-slate-200 rounded-2xl bg-slate-50/50 hover:bg-slate-50 transition flex-wrap gap-3";
+                
+                let actionBtn = "";
+                if(isExpired) {
+                    actionBtn = `<span class="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-200">Closed (Expired)</span>`;
+                } else if(t.isUnlocked) {
+                    actionBtn = `<button onclick="openRulesScreen(${idx})" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm">Start Test</button>`;
+                } else {
+                    actionBtn = `<button onclick="handleLockedTestClick()" class="px-4 py-2 bg-slate-300 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-400 transition shadow-sm"><i class="fa-solid fa-lock"></i> Locked</button>`;
+                }
+
                 card.innerHTML = `
                     <div>
                         <h3 class="font-bold text-slate-900 text-sm">${t.title}</h3>
-                        <p class="text-xs text-slate-500">Questions: ${t.questions.length} | Pass: ${t.passMark}% | Deadline: ${t.deadline ? new Date(t.deadline).toLocaleString() : 'No Deadline'}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Questions: ${t.questions.length} | Pass: ${t.passMark}% | Deadline: ${t.deadline ? new Date(t.deadline).toLocaleString() : 'None'}</p>
                     </div>
-                    <div>
-                        ${isExpired ? '<span class="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-200">Closed</span>' : 
-                        `<button onclick="openRulesScreen(${originalIdx})" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition shadow-sm">Start Test</button>`}
-                    </div>
+                    <div>${actionBtn}</div>
                 `;
                 listContainer.appendChild(card);
             });
         }
 
+        function handleLockedTestClick() {
+            showAlert("This test is currently locked by the teacher. Please contact Chetan Soni (+91 99986 42506) to unlock this test.", true);
+        }
+
         function openRulesScreen(index) {
+            if(!activeStudentName) { checkStudentIdentity(); return; }
             selectedTestIdx = index;
             document.getElementById('rule-test-title').innerText = testsDB[index].title;
             document.getElementById('rule-pass-pct').innerText = `${testsDB[index].passMark}%`;
@@ -535,42 +585,24 @@
             document.getElementById('test-rules-screen').classList.remove('hidden');
         }
 
-        function proceedToStudentNameModal() {
-            document.getElementById('active-test-modal-title').innerText = testsDB[selectedTestIdx].title;
-            document.getElementById('modal-retake-notice').classList.add('hidden');
-            document.getElementById('student-name-modal').classList.remove('hidden');
-        }
-
-        function closeStudentModal() {
-            document.getElementById('student-name-modal').classList.add('hidden');
-        }
-
-        async function verifyAndStartStudentTest() {
-            const nameInput = document.getElementById('student-entry-name').value.trim();
-            if(!nameInput) { showAlert('Please enter your full name!', true); return; }
-
-            activeStudentName = nameInput;
+        async function verifyAndStartStudentTestDirect() {
             const targetTest = testsDB[selectedTestIdx];
-
             const { data } = await supabaseClient.from('results').select('*').eq('student_name', activeStudentName).eq('test_name', targetTest.title);
 
             if(data && data.length > 0) {
                 const canRetake = data.some(r => r.allow_retake === true);
                 if(!canRetake) {
-                    const noticeBox = document.getElementById('modal-retake-notice');
-                    document.getElementById('modal-retake-msg').innerText = `Dear ${activeStudentName}, you have already attempted "${targetTest.title}". Request teacher permission below.`;
-                    noticeBox.classList.remove('hidden');
+                    document.getElementById('retake-modal-text').innerText = `Dear ${activeStudentName}, you have already attempted "${targetTest.title}". Would you like to send a retake permission request to the teacher?`;
+                    document.getElementById('retake-modal').classList.remove('hidden');
                     return;
                 }
             }
 
-            closeStudentModal();
             document.getElementById('test-rules-screen').classList.add('hidden');
             document.getElementById('running-test-title').innerText = targetTest.title;
             document.getElementById('running-student-name').innerText = activeStudentName;
             document.getElementById('test-progress-counter').innerText = `0 / ${targetTest.questions.length}`;
 
-            // SHUFFLE QUESTIONS AND OPTIONS FOR EVERY STUDENT & ATTEMPT
             let shuffledQuestions = [...targetTest.questions].sort(() => Math.random() - 0.5);
             runningQuizData = shuffledQuestions.map((q, idx) => {
                 let opts = [
@@ -586,14 +618,18 @@
             document.getElementById('active-test-container').classList.remove('hidden');
         }
 
+        function closeRetakeModal() {
+            document.getElementById('retake-modal').classList.add('hidden');
+        }
+
         async function sendRetakeRequestFromModal() {
             const targetTest = testsDB[selectedTestIdx];
             const { error } = await supabaseClient.from('retake_requests').insert([{ student_name: activeStudentName, test_name: targetTest.title, status: 'pending' }]);
             if(error) {
                 showAlert('Error sending request!', true);
             } else {
-                showAlert(`Re-test request sent to teacher for ${activeStudentName}!`);
-                closeStudentModal();
+                showAlert(`Re-test request sent successfully to teacher for ${activeStudentName}!`);
+                closeRetakeModal();
             }
             loadRetakeRequests();
         }
@@ -766,20 +802,31 @@
             testsDB.forEach((t) => {
                 const card = document.createElement('div');
                 card.className = "p-4 bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-center flex-wrap gap-3";
+                
+                let testShareLink = window.location.href.split('?')[0] + `?test=${encodeURIComponent(t.title)}`;
+
                 card.innerHTML = `
                     <div>
                         <h4 class="font-bold text-slate-900 text-sm">${t.title}</h4>
                         <p class="text-xs text-slate-500 mt-0.5">Uploaded: ${t.createdDate} | Questions: ${t.questions.length} | Pass %: ${t.passMark}% | Deadline: ${t.deadline ? new Date(t.deadline).toLocaleString() : 'None'}</p>
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 flex-wrap">
                         <button onclick="toggleTestUnlock(${t.id}, ${!t.isUnlocked})" class="px-3.5 py-1.5 rounded-xl font-bold text-xs transition ${t.isUnlocked ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-amber-500 text-white hover:bg-amber-600'}">
-                            ${t.isUnlocked ? '<i class="fa-solid fa-lock-open"></i> Unlocked (Enabled)' : '<i class="fa-solid fa-lock"></i> Locked (Disabled)'}
+                            ${t.isUnlocked ? '<i class="fa-solid fa-lock-open"></i> Unlocked' : '<i class="fa-solid fa-lock"></i> Locked'}
+                        </button>
+                        <button onclick="shareTestWhatsApp('${t.title}')" class="px-3.5 py-1.5 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 transition flex items-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp"></i> Share Link
                         </button>
                         <button onclick="deleteTest(${t.id})" class="px-3 py-1.5 bg-rose-50 text-rose-700 font-bold rounded-xl text-xs hover:bg-rose-100 transition">Delete</button>
                     </div>
                 `;
                 container.appendChild(card);
             });
+        }
+
+        function shareTestWhatsApp(testTitle) {
+            let msg = `*BHARAT EDUCATION CENTER*\nTest Available: *${testTitle}*\nPortal Link: ${window.location.href.split('?')[0]}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         async function toggleTestUnlock(testId, newState) {
