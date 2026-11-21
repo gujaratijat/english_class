@@ -3058,6 +3058,29 @@ function boot(){
   // warn before closing the tab during a test
   window.addEventListener('beforeunload', e => { if(S.run){ e.preventDefault(); e.returnValue = ''; } });
 }
+     /* ################################################################
+   JS 28. CODE PROTECTION (sirf rukavat, pakki suraksha nahi)
+   ################################################################ */
+(function(){
+  const block = e => { e.preventDefault(); e.stopPropagation(); return false; };
+
+  // right click band
+  document.addEventListener('contextmenu', block);
+
+  // F12, Ctrl+Shift+I/J/C, Ctrl+U (view source), Ctrl+S (save page)
+  document.addEventListener('keydown', e => {
+    const k = String(e.key).toLowerCase();
+    if(
+      e.key === 'F12' ||
+      (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(k)) ||
+      (e.ctrlKey && ['u','s'].includes(k)) ||
+      (e.metaKey && e.altKey && ['i','j','c','u'].includes(k))   // Mac
+    ) block(e);
+  }, true);
+
+  // image / text drag band
+  document.addEventListener('dragstart', block);
+})();
 boot();
 </script>
 </body>
